@@ -15,6 +15,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-const analytics = getAnalytics(app);
+
+let analytics;
+// 브라우저 환경(window 객체가 존재할 때)에서만 analytics를 초기화
+if (typeof window !== "undefined") {
+  analytics = getAnalytics(app);
+}
 
 export { auth, provider, analytics };
