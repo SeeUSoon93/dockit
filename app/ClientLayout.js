@@ -4,7 +4,7 @@
 import { PanelProvider, usePanels } from "./LIB/context/PanelContext";
 import { DarkModeProvider, useDarkMode } from "./LIB/context/DarkModeContext";
 import { LayoutProvider } from "./LIB/context/LayoutContext";
-import { UserProvider } from "./LIB/context/UserContext";
+import { UserProvider, useUser } from "./LIB/context/UserContext";
 // dnd-kit
 import {
   DndContext,
@@ -25,6 +25,7 @@ import Content from "./LIB/components/ClientLayout/Content";
 import Drawers from "./LIB/components/ClientLayout/Drawers";
 
 function LayoutContent({ children }) {
+  const { user, userLoading } = useUser();
   const { isDarkMode, setIsDarkMode } = useDarkMode();
   const { left, right, setLeft, setRight } = usePanels();
 
@@ -98,6 +99,8 @@ function LayoutContent({ children }) {
             background="mint-1"
           >
             <Header
+              user={user}
+              userLoading={userLoading}
               isDarkMode={isDarkMode}
               setIsDarkMode={setIsDarkMode}
               setOpenLeftDrawer={setOpenLeftDrawer}

@@ -12,6 +12,8 @@ import { Button, Div, Tooltip } from "sud-ui";
 import { logoutUser } from "../../utils/authUtils";
 import { useRouter } from "next/navigation";
 export default function Header({
+  user,
+  userLoading,
   isDarkMode,
   setIsDarkMode,
   setOpenLeftDrawer,
@@ -89,19 +91,23 @@ export default function Header({
 
   return (
     <Div className="flex justify-between items-center">
-      {/* 왼쪽 */}
-      <div>{leftIcons.map((data) => renderBtn(data))}</div>
-      {/* 중앙 */}
-      <div className="flex items-center gap-2">
-        <div className="text-lg font-bold">
-          {/* 작성중인 문서 제목 들어감 */}
+      {!userLoading && user && (
+        <>
+          {/* 왼쪽 */}
+          <div>{leftIcons.map((data) => renderBtn(data))}</div>
+          {/* 중앙 */}
+          <div className="flex items-center gap-2">
+            <div className="text-lg font-bold">
+              {/* 작성중인 문서 제목 들어감 */}
 
-          {/* 자동저장 중이라는 표시로 원 표시 */}
-        </div>
-      </div>
+              {/* 자동저장 중이라는 표시로 원 표시 */}
+            </div>
+          </div>
 
-      {/* 오른쪽 */}
-      <div>{rightIcons.map((data) => renderBtn(data))}</div>
+          {/* 오른쪽 */}
+          <div>{rightIcons.map((data) => renderBtn(data))}</div>
+        </>
+      )}
     </Div>
   );
 }
