@@ -24,20 +24,18 @@
     "@tiptap/react": "^3.4.2",
     "@tiptap/starter-kit": "^3.4.2",
     "firebase": "^12.2.1",
-    "next": "15.5.2",
-    "next-pwa": "^5.6.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "next": "15.5.3",
+    "next-pwa": "^5.6.0",
     "react-icons": "^5.5.0",
     "sud-icons": "^1.0.4",
     "sud-ui": "^0.7.0",
     "xmldom": "^0.6.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "15.5.2",
-    "tailwindcss": "^4"
+    "eslint-config-next": "15.5.3",
+    "@eslint/eslintrc": "^3"
   }
 }
