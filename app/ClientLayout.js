@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 // context
 import { PanelProvider, usePanels } from "./LIB/context/PanelContext";
 import { DarkModeProvider, useDarkMode } from "./LIB/context/DarkModeContext";
@@ -17,10 +18,16 @@ import { arrayMove } from "@dnd-kit/sortable";
 
 // sud-ui
 import { Div, SoonUIDesign } from "sud-ui";
-import Header from "./LIB/components/ClientLayout/Header";
-import { useEffect, useRef, useState } from "react";
+import "sud-ui/dist/index.css";
+
+// theme
 import { darkTheme } from "./LIB/config/darkTheme";
+
+// utils
 import { handleDragEnd, handleDragOver } from "./LIB/utils/layoutUtils";
+
+// components
+import Header from "./LIB/components/ClientLayout/Header";
 import Content from "./LIB/components/ClientLayout/Content";
 import Drawers from "./LIB/components/ClientLayout/Drawers";
 
@@ -69,7 +76,7 @@ function LayoutContent({ children }) {
   return (
     <SoonUIDesign isDarkMode={isDarkMode} darkTheme={darkTheme}>
       <Div
-        className="h-dvh w-screen flex flex-col relative"
+        className="relative flex flex-col w-screen h-dvh"
         background="mint-1"
         color="mint-10"
       >
@@ -95,7 +102,7 @@ function LayoutContent({ children }) {
           {/*■■■■■ 헤더 ■■■■■*/}
           <Div
             ref={headerRef}
-            className="absolute top-0 left-0 right-0 z-10 shadow-sm rounded-b-2xl rounded-t-none"
+            className="absolute top-0 left-0 right-0 z-10 rounded-t-none shadow-sm rounded-b-2xl"
             background="mint-1"
           >
             <Header
@@ -110,7 +117,7 @@ function LayoutContent({ children }) {
           </Div>
           {/*■■■■■ 본문 ■■■■■*/}
           <main
-            className="flex-grow flex justify-center"
+            className="flex justify-center flex-grow"
             style={{ paddingTop: `${headerHeight}px` }}
           >
             <Content
