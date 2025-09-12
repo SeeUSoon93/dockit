@@ -19,7 +19,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center w-100">
       {/* 메인페이지는 나중에 꾸미기 */}
       {/* 우선은 로그인만 구현 */}
       <Button icon={<LogoGoogle />} shape="capsule" onClick={onLogin}>

@@ -30,32 +30,32 @@ import { handleDragEnd, handleDragOver } from "./LIB/utils/layoutUtils";
 import Header from "./LIB/components/ClientLayout/Header";
 import Content from "./LIB/components/ClientLayout/Content";
 import Drawers from "./LIB/components/ClientLayout/Drawers";
+import { usePathname } from "next/navigation";
+import { DocumentProvider, useDocument } from "./LIB/context/DocumentContext";
+import { SettingProvider } from "./LIB/context/SettingContext";
+import { useZoom } from "./LIB/hook/useZoom";
+import Footer from "./LIB/components/ClientLayout/Footer";
 
 function LayoutContent({ children }) {
+  const { document, loadDocument, clearDocument, saveDocument, isSaving } =
+    useDocument();
   const { user, userLoading } = useUser();
   const { isDarkMode, setIsDarkMode } = useDarkMode();
   const { left, right, setLeft, setRight } = usePanels();
 
-  //■■■■■■■■■■■■ 헤더 높이 측정 ■■■■■■■■■■■■■■■■■■■■■■
-  const headerRef = useRef(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
-  useEffect(() => {
-    // headerRef.current (헤더 div)의 사이즈가 변경될 때마다 실행됨
-    const observer = new ResizeObserver((entries) => {
-      // entries[0].contentRect.height로 실제 높이를 가져옴
-      const newHeight = entries[0]?.contentRect?.height || 0;
-      setHeaderHeight(newHeight);
-    });
-    // 관찰 시작
-    if (headerRef.current) {
-      observer.observe(headerRef.current);
-    }
-    // 컴포넌트 언마운트 시 관찰 중지
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  const { containerRef, scale } = useZoom();
+  // 현재
+  const pathname = usePathname();
+  const isEditPage = pathname.split("/")[1] === "workspace";
+  const id = pathname.split("/")[2];
 
+  useEffect(() => {
+    if (isEditPage && id) {
+      loadDocument(id); // Context의 함수 호출
+    } else {
+      clearDocument(); // 다른 페이지로 이동 시 데이터 비우기
+    }
+  }, [isEditPage, id, loadDocument, clearDocument]);
   //■■■■■■■■■■■■ 위젯 관련 상태 ■■■■■■■■■■■■■■■■■■■■■■
   const [activeId, setActiveId] = useState(null); // 현재 드래그 중인 아이템의 ID
   const [overContainerId, setOverContainerId] = useState(null);
@@ -76,9 +76,9 @@ function LayoutContent({ children }) {
   return (
     <SoonUIDesign isDarkMode={isDarkMode} darkTheme={darkTheme}>
       <Div
-        className="relative flex flex-col w-screen h-dvh"
-        background="mint-1"
+        className="flex flex-col w-screen overflow-hidden h-dvh"
         color="mint-10"
+        background={"white-9"}
       >
         <DndContext
           sensors={sensors}
@@ -101,8 +101,7 @@ function LayoutContent({ children }) {
         >
           {/*■■■■■ 헤더 ■■■■■*/}
           <Div
-            ref={headerRef}
-            className="absolute top-0 left-0 right-0 z-10 rounded-t-none shadow-sm rounded-b-2xl"
+            className="z-10 rounded-t-none shadow-sm rounded-b-2xl"
             background="mint-1"
           >
             <Header
@@ -113,25 +112,35 @@ function LayoutContent({ children }) {
               setOpenLeftDrawer={setOpenLeftDrawer}
               setOpenWidgetDrawer={setOpenWidgetDrawer}
               setOpenSettingsDrawer={setOpenSettingsDrawer}
+              isEditPage={isEditPage}
+              document={document}
+              saveDocument={saveDocument}
+              isSaving={isSaving}
             />
           </Div>
           {/*■■■■■ 본문 ■■■■■*/}
-          <main
-            className="flex justify-center flex-grow"
-            style={{ paddingTop: `${headerHeight}px` }}
-          >
+          <main className="relative z-0 flex-grow overflow-auto">
             <Content
               left={left}
               right={right}
               overContainerId={overContainerId}
+              containerRef={containerRef}
+              scale={scale}
             >
               {children}
             </Content>
           </main>
+          {/* ■■■■■ 푸터 ■■■■■ */}
+          {isEditPage && document && (
+            <Div className="z-10 shadow-sm" background="mint-1">
+              <Footer scale={scale} />
+            </Div>
+          )}
+
           {/*■■■■■ 드래그 오버레이 ■■■■■*/}
           <DragOverlay>
             {activeId ? (
-              <div className="w-100 max-w-px-350">
+              <div className="w-full max-w-px-350">
                 {/* 복사할 위젯 들어갈 곳 */}
               </div>
             ) : null}
@@ -157,7 +166,11 @@ export default function ClientLayout({ children }) {
       <LayoutProvider>
         <DarkModeProvider>
           <PanelProvider>
-            <LayoutContent>{children}</LayoutContent>
+            <DocumentProvider>
+              <SettingProvider>
+                <LayoutContent>{children}</LayoutContent>
+              </SettingProvider>
+            </DocumentProvider>
           </PanelProvider>
         </DarkModeProvider>
       </LayoutProvider>

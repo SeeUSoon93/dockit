@@ -23,3 +23,68 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* 
+■■■■■■■■■■■■■■■■■■■■■■■■■■■
+■■■■■■ tiptap css ■■■■■■
+■■■■■■■■■■■■■■■■■■■■■■■■■■■
+*/
+.tiptap:focus {
+  outline: none;
+}
+.tiptap {
+  border: none;
+}
+.tiptap * {
+  font-family: var(--editor-font-family) !important;
+}
+
+.tiptap {
+  border: none;
+  outline: none;
+  min-height: 1.5rem;
+  min-width: 10px;
+}
+
+.tiptap p.is-editor-empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+.tiptap {
+  counter-reset: h1counter;
+}
+
+.tiptap h1 {
+  counter-increment: h1counter;
+  counter-reset: h2counter;
+}
+.tiptap h1::before {
+  content: counter(h1counter) ". ";
+  font-weight: bold;
+}
+
+.tiptap h2 {
+  counter-increment: h2counter;
+  counter-reset: h3counter;
+}
+.tiptap h2::before {
+  content: counter(h1counter) "." counter(h2counter) ". ";
+  font-weight: bold;
+}
+
+.tiptap h3 {
+  counter-increment: h3counter;
+}
+.tiptap h3::before {
+  content: counter(h1counter) "." counter(h2counter) "." counter(h3counter) ". ";
+  font-weight: bold;
+}
+.tiptap h1,
+.tiptap h2,
+.tiptap h3 {
+  line-height: 1.5; /* 줄 간격 늘리기 */
+  margin: 0.4em 0; /* 위아래 여백 추가 */
+}
