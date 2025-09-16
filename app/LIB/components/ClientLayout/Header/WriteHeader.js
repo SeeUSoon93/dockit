@@ -1,4 +1,4 @@
-import { Button, Tabs } from "sud-ui";
+import { Button, Divider, Tabs } from "sud-ui";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 import HomeChildren from "./Children/HomeChildren";
 export default function WriteHeader() {
@@ -17,27 +17,9 @@ export default function WriteHeader() {
     );
   };
 
-  const options = [
-    {
-      key: "home",
-      label: "홈",
-      children: <HomeChildren renderBtn={renderBtn} editor={editor} />
-    },
-    {
-      key: "components",
-      label: "삽입",
-      children: <div>Components Content</div>
-    },
-    {
-      key: "css",
-      label: "레이아웃",
-      children: <div>CSS Content</div>
-    }
-  ];
-
   return (
-    <div>
-      <Tabs size="sm" options={options} />
+    <div className="pd-10">
+      <HomeChildren renderBtn={renderBtn} editor={editor} />
     </div>
   );
 }
