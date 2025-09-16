@@ -1,12 +1,14 @@
 import { TbArrowBackUp, TbArrowForwardUp } from "react-icons/tb";
-import { Print } from "sud-icons";
+import { Minus, Plus, Print } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
-import { Button, Divider, Dropdown, Select } from "sud-ui";
-import { use, useEffect, useState } from "react";
+import { Divider, Input, Select } from "sud-ui";
+import { useEffect, useState } from "react";
+import { HiMinus, HiPlus } from "react-icons/hi";
 export default function HomeChildren({ renderBtn }) {
   const { editor, printAction, saveAction } = useEditorContext();
   const [font, setFont] = useState("Pretendard-Medium");
+  const [currentFontSize, setCurrentFontSize] = useState(16);
   const options = [
     // Pretendard
     { value: "Pretendard-Black", label: "프리텐다드 Black" },
@@ -53,6 +55,41 @@ export default function HomeChildren({ renderBtn }) {
     { value: "KoPubWorld Dotum Medium", label: "Kopub 돋움 Medium" }
   ];
 
+  useEffect(() => {
+    if (!editor) return;
+
+    const updateFontSize = () => {
+      const size = editor.getAttributes("textStyle").fontSize;
+      if (size) {
+        // 'px' 단위를 제거하고 숫자로 변환
+        setCurrentFontSize(parseInt(size, 10));
+      } else {
+        // 기본 폰트 크기 (또는 원하는 값)
+        setCurrentFontSize(16);
+      }
+    };
+
+    editor.on("transaction", updateFontSize);
+    editor.on("selectionUpdate", updateFontSize);
+
+    return () => {
+      editor.off("transaction", updateFontSize);
+      editor.off("selectionUpdate", updateFontSize);
+    };
+  }, [editor]);
+
+  // [추가] 폰트 크기 변경 로직을 처리하는 함수
+  const handleFontSize = (size) => {
+    if (editor) {
+      // setFontSize 대신 setMark를 사용하고, px 단위를 붙여줍니다.
+      editor
+        .chain()
+        .focus()
+        .setMark("textStyle", { fontSize: `${size}px` })
+        .run();
+    }
+  };
+
   return (
     <div className="flex gap-5 items-center">
       {/* 취소 & 재실행 */}
@@ -76,14 +113,14 @@ export default function HomeChildren({ renderBtn }) {
         style={{ height: "20px", margin: "0" }}
         borderColor="mint"
       />
-      {/* 폰트 설정 */}
-      <div className="w-px-150" onMouseDown={(event) => event.preventDefault()}>
+      {/* 폰트 패밀리 설정 */}
+      <div onMouseDown={(event) => event.preventDefault()}>
         <Select
-          background={"mint-1"}
+          colorType="text"
           size="sm"
           shadow="none"
           options={options}
-          underline
+          border={false}
           value={font}
           onChange={(value) => {
             console.log(value);
@@ -92,6 +129,51 @@ export default function HomeChildren({ renderBtn }) {
             editor?.chain().focus().setFontFamily(value).run();
           }}
         />
+      </div>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* 폰트 크기 설정 */}
+      <div
+        className="flex items-center gap-1"
+        onMouseDown={(event) => {
+          // [수정] 클릭된 요소의 태그 이름이 'INPUT'이 아닐 때만 기본 동작을 막습니다.
+          if (event.target.tagName !== "INPUT") {
+            event.preventDefault();
+          }
+        }}
+      >
+        {renderBtn(
+          HiMinus,
+          // 새로운 핸들러 함수를 사용
+          () => handleFontSize(currentFontSize - 1),
+          !editor,
+          ""
+        )}
+        {/* <Input
+          value={currentFontSize}
+          size="sm"
+          style={{ width: "30px" }}
+          border={false}
+          shadow="none"
+          onChange={(e) => {
+            const newSize = parseInt(e.target.value, 10);
+            if (!isNaN(newSize) && newSize > 0) {
+              setCurrentFontSize(newSize);
+              handleFontSize(newSize);
+            }
+          }}
+        /> */}
+        <span>{currentFontSize}px</span>
+        {renderBtn(
+          HiPlus,
+          // 새로운 핸들러 함수를 사용
+          () => handleFontSize(currentFontSize + 1),
+          !editor,
+          ""
+        )}
       </div>
     </div>
   );

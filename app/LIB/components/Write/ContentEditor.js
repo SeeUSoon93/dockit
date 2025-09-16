@@ -11,7 +11,7 @@ import { UndoRedo } from "@tiptap/extensions";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import Heading from "@tiptap/extension-heading";
-import { FontFamily, TextStyle } from "@tiptap/extension-text-style";
+import { FontFamily, FontSize, TextStyle } from "@tiptap/extension-text-style";
 
 import { useEffect } from "react";
 import TypeBubble from "./TypeBubble";
@@ -31,6 +31,9 @@ export default function ContentEditor({
       Text,
       TextStyle,
       FontFamily.configure({
+        types: ["textStyle"]
+      }),
+      FontSize.configure({
         types: ["textStyle"]
       }),
       Bold,
