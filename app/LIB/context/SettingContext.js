@@ -4,10 +4,12 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const DEFAULT_SETTING = {
   autoSaveDelay: 2000,
-  pageSize: { width: 210, height: 297 },
-  pagePadding: { top: 30, bottom: 25.4, left: 25.4, right: 25.4 },
-  showPageNumber: true,
-  pageNumberPosition: "bottom-right" // top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
+  pageWidth: 210,
+  pageHeight: 297,
+  paddingTop: 25.4,
+  paddingBottom: 25.4,
+  paddingLeft: 25.4,
+  paddingRight: 25.4 // top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
 };
 
 const LOCAL_STORAGE_KEY = "DOCKIT.PAGE.Setting";

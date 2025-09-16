@@ -11,10 +11,29 @@ import { UndoRedo } from "@tiptap/extensions";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import Heading from "@tiptap/extension-heading";
-import { FontFamily, FontSize, TextStyle } from "@tiptap/extension-text-style";
+import {
+  BackgroundColor,
+  Color,
+  FontFamily,
+  FontSize,
+  TextStyle
+} from "@tiptap/extension-text-style";
 
 import { useEffect } from "react";
 import TypeBubble from "./TypeBubble";
+import Blockquote from "@tiptap/extension-blockquote";
+import CodeBlock from "@tiptap/extension-code-block";
+import {
+  BulletList,
+  ListItem,
+  OrderedList,
+  TaskItem,
+  TaskList
+} from "@tiptap/extension-list";
+import Highlight from "@tiptap/extension-highlight";
+
+import TextAlign from "@tiptap/extension-text-align";
+import { TableKit } from "@tiptap/extension-table";
 
 export default function ContentEditor({
   value,
@@ -27,12 +46,31 @@ export default function ContentEditor({
       // 2. StarterKit을 제거하고, 필요한 기능들을 직접 배열에 추가합니다.
       Document,
       Paragraph,
+      Blockquote,
+      CodeBlock,
+      BulletList,
+      OrderedList,
+      ListItem,
+      TaskList,
+      TaskItem.configure({
+        nested: true
+      }),
+      Highlight.configure({ multicolor: true }),
       Heading.configure({ levels: [1, 2, 3] }),
       Text,
       TextStyle,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+        defaultAlignment: "left"
+      }),
+      TableKit.configure({
+        table: { resizable: true }
+      }),
+      Color.configure({ types: ["textStyle"] }),
       FontFamily.configure({
         types: ["textStyle"]
       }),
+      BackgroundColor.configure({ types: ["textStyle"] }),
       FontSize.configure({
         types: ["textStyle"]
       }),
@@ -101,7 +139,7 @@ export default function ContentEditor({
   return (
     <div className="relative w-full">
       {editor && <TypeBubble editor={editor} />}
-      <EditorContent editor={editor} />
+      {editor && <EditorContent editor={editor} />}
     </div>
   );
 }

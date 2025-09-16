@@ -26,7 +26,26 @@ export function DocumentProvider({ children }) {
     setLoading(true);
     try {
       const data = await fetchData("documents", id);
-      const fetchedDoc = data.content;
+      let fetchedDoc = data.content;
+
+      // docSetting이 없으면 기본값을 설정하고 DB에 저장하는 로직
+      if (!fetchedDoc.docSetting) {
+        const defaultSettings = {
+          pageWidth: 210,
+          pageHeight: 297,
+          paddingTop: 25.4,
+          paddingBottom: 25.4,
+          paddingLeft: 25.4,
+          paddingRight: 25.4
+        };
+
+        // 불러온 문서 객체에 기본 설정 추가
+        fetchedDoc = { ...fetchedDoc, docSetting: defaultSettings };
+
+        // 이 문서를 위해 기본 설정을 DB에 저장 (다음 로드부터는 이 값 사용)
+        await updateData("documents", id, { docSetting: defaultSettings });
+      }
+
       if (fetchedDoc.contentURL) {
         const response = await fetch(fetchedDoc.contentURL);
         const content = await response.text();
@@ -51,6 +70,7 @@ export function DocumentProvider({ children }) {
     // 1. 저장할 데이터를 명확하게 분리합니다.
     const titleToSave = docData.title;
     const contentToSave = docData.content;
+    const settingsToSave = docData.docSetting;
 
     // DB에 업데이트할 최종 데이터 객체
     const dataForDB = {};
@@ -58,6 +78,10 @@ export function DocumentProvider({ children }) {
     // 2. 제목이 있으면 DB에 업데이트할 내용에 추가
     if (typeof titleToSave !== "undefined") {
       dataForDB.title = titleToSave;
+    }
+    // [추가] docSetting이 있으면 DB에 업데이트할 내용에 추가
+    if (typeof settingsToSave !== "undefined") {
+      dataForDB.docSetting = settingsToSave;
     }
 
     try {
@@ -80,6 +104,7 @@ export function DocumentProvider({ children }) {
           ...prev,
           title: titleToSave ?? prev.title, // 새로 저장한 title 우선 적용
           content: contentToSave ?? prev.content, // 새로 저장한 content 우선 적용
+          docSetting: settingsToSave ?? prev.docSetting,
           contentURL: dataForDB.contentURL ?? prev.contentURL
         }));
       }

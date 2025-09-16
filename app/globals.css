@@ -50,43 +50,128 @@ body {
   float: left;
   height: 0;
 }
-.tiptap {
-  counter-reset: h1counter;
+strong,
+em,
+s,
+u {
+  font-family: inherit;
 }
 
-.tiptap h1 {
-  counter-increment: h1counter;
-  counter-reset: h2counter;
-}
-.tiptap h1::before {
-  content: counter(h1counter) ". ";
-  font-weight: bold;
+/* 일반 리스트(ul, ol) 기본 스타일 */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding: 0 1rem;
+  margin: 1.25rem 1rem 1.25rem 0.4rem;
 }
 
-.tiptap h2 {
-  counter-increment: h2counter;
-  counter-reset: h3counter;
-}
-.tiptap h2::before {
-  content: counter(h1counter) "." counter(h2counter) ". ";
-  font-weight: bold;
+.ProseMirror ul li p,
+.ProseMirror ol li p {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
 }
 
-.tiptap h3 {
-  counter-increment: h3counter;
+/* Task 리스트 스타일 */
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  margin-left: 0;
+  padding: 0;
 }
-.tiptap h3::before {
-  content: counter(h1counter) "." counter(h2counter) "." counter(h3counter) ". ";
-  font-weight: bold;
+
+/* Task 리스트의 각 항목(li)에 flex 레이아웃 적용 (핵심) */
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: center;
 }
-.tiptap h1,
-.tiptap h2,
-.tiptap h3 {
-  line-height: 1.5; /* 줄 간격 늘리기 */
-  margin: 0.4em 0; /* 위아래 여백 추가 */
+
+/* 체크박스 영역(label) 스타일 */
+.ProseMirror ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  user-select: none;
 }
+
+/* 텍스트 영역(div) 스타일 */
+.ProseMirror ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+}
+
+/* 체크박스 커서 스타일 */
+.ProseMirror ul[data-type="taskList"] input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* 중첩된 Task 리스트 마진 제거 */
+.ProseMirror ul[data-type="taskList"] ul[data-type="taskList"] {
+  margin: 0;
+}
+
+/* 체크된 항목 텍스트에 취소선 적용 (기존 스타일 유지) */
+.ProseMirror li[data-checked="true"] > div {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* 에디터 첫 요소의 불필요한 상단 마진 제거 */
+.ProseMirror > :first-child {
+  margin-top: 0;
+}
+
+/* 인용(Blockquote) 스타일 */
+.ProseMirror blockquote {
+  border-left: 5px solid #a3a3a3;
+  margin: 1.5rem 0;
+  padding-left: 0.8rem;
+}
+@font-face {
+  font-family: "IntelOneMono";
+  src: url("/fonts/IntelOneMono-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+/* 코드 블록(Code Block) 스타일 */
+.ProseMirror pre {
+  background: #666666;
+  color: white;
+  border-radius: 0.5rem;
+  font-family: IntelOneMono !important;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+}
+
+/* 코드 블록 내부의 code 태그 스타일 */
+.ProseMirror pre code {
+  font-family: IntelOneMono !important;
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+.ProseMirror table {
+  /* 테이블 선을 한 줄로 합쳐줍니다. */
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.ProseMirror table th,
+.ProseMirror table td {
+  border: 1px solid #ccc; /* 기본 선 색상 */
+  padding: 8px 12px;
+  vertical-align: top;
+}
+
+.sud-tabs__content {
+  padding: 8px !important;
+}
+.sud-select,
+.sud-select sud-hover {
+  background: transparent !important;
+}
+
+/* globals.css */
 
 @media print {
+  /* [기존] 인쇄 시 불필요한 요소 숨기기 */
   body * {
     visibility: hidden;
   }
@@ -94,10 +179,14 @@ body {
   .sud-sider {
     display: none !important;
   }
+
+  /* [기존] 인쇄할 영역(.print-card)과 그 자식 요소들만 보이도록 설정 */
   .print-card,
   .print-card * {
     visibility: visible;
   }
+
+  /* [수정] 기존 .print-card 규칙에 스타일 강제 적용 코드 추가 */
   .print-card {
     position: absolute;
     top: 0;
@@ -106,6 +195,26 @@ body {
     height: 100%;
     background: white;
     z-index: 9999;
+
+    /* [추가] 배경, 색상 등 모든 디자인을 강제로 인쇄하도록 설정 */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* [추가] prose 스타일이 인쇄 시에도 적용되도록 보장 (줄바꿈, 간격 등) */
+  .print-card.prose {
+    display: block;
+  }
+
+  /* [추가] 코드 블록 스타일이 깨지지 않도록 별도 지정 */
+  .print-card pre {
+    background-color: #f6f8fa !important;
+    color: #333 !important;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    white-space: pre-wrap; /* 자동 줄바꿈 */
+    word-break: break-all; /* 긴 단어 강제 줄바꿈 */
   }
 }
 

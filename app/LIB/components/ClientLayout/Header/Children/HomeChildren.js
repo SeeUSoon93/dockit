@@ -1,14 +1,48 @@
-import { TbArrowBackUp, TbArrowForwardUp } from "react-icons/tb";
-import { Minus, Plus, Print } from "sud-icons";
+import { TbArrowBackUp, TbArrowForwardUp, TbBlockquote } from "react-icons/tb";
+import { Code, Print } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
-import { Divider, Input, Select } from "sud-ui";
+import { ColorPicker, Divider, Select } from "sud-ui";
 import { useEffect, useState } from "react";
 import { HiMinus, HiPlus } from "react-icons/hi";
+import { GrDocumentConfig } from "react-icons/gr";
+
+import {
+  PiHighlighterFill,
+  PiListBulletsBold,
+  PiListChecksBold,
+  PiListNumbersBold,
+  PiTableFill,
+  PiTextAlignCenterBold,
+  PiTextAlignLeftBold,
+  PiTextAlignRightBold,
+  PiTextBBold,
+  PiTextItalicBold,
+  PiTextStrikethroughBold,
+  PiTextUnderlineBold
+} from "react-icons/pi";
+import { MdFormatColorText, MdOutlineFormatColorFill } from "react-icons/md";
+import DocSettingModal from "./DocSettingModal";
 export default function HomeChildren({ renderBtn }) {
   const { editor, printAction, saveAction } = useEditorContext();
   const [font, setFont] = useState("Pretendard-Medium");
   const [currentFontSize, setCurrentFontSize] = useState(16);
+
+  const [fontColorPickerOpen, setFontColorPickerOpen] = useState(false);
+  const [fontColor, setFontColor] = useState("#000000");
+
+  const [bgColorPickerOpen, setBgColorPickerOpen] = useState(false);
+  const [bgColor, setBgColor] = useState("#ffffff");
+
+  const [docSettingModalOpen, setDocSettingModalOpen] = useState(false);
+
+  const [textAlign, setTextAlign] = useState("left");
+  const alignOptions = [
+    { value: "left", label: <PiTextAlignLeftBold size={16} /> },
+    { value: "center", label: <PiTextAlignCenterBold size={16} /> },
+    { value: "right", label: <PiTextAlignRightBold size={16} /> }
+  ];
+
   const options = [
     // Pretendard
     { value: "Pretendard-Black", label: "프리텐다드 Black" },
@@ -93,21 +127,15 @@ export default function HomeChildren({ renderBtn }) {
   return (
     <div className="flex gap-5 items-center">
       {/* 취소 & 재실행 */}
-      {renderBtn(
-        TbArrowBackUp,
-        () => editor?.chain().focus().undo().run(),
-        !editor?.can().undo(),
-        ""
-      )}
+      {renderBtn(TbArrowBackUp, () => editor?.chain().focus().undo().run(), "")}
       {renderBtn(
         TbArrowForwardUp,
         () => editor?.chain().focus().redo().run(),
-        !editor?.can().redo(),
         ""
       )}
       {/* 인쇄 & 저장 */}
-      {renderBtn(Print, () => printAction?.(), !printAction, "")}
-      {renderBtn(AiFillSave, () => saveAction?.(), !saveAction, "")}
+      {renderBtn(Print, () => printAction?.(), "")}
+      {renderBtn(AiFillSave, () => saveAction?.(), "")}
       <Divider
         vertical
         style={{ height: "20px", margin: "0" }}
@@ -175,6 +203,165 @@ export default function HomeChildren({ renderBtn }) {
           ""
         )}
       </div>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* 폰트 굵기 등 스타일 */}
+      <>
+        {renderBtn(
+          PiTextBBold,
+          () => editor.chain().focus().toggleBold().run(),
+          ""
+        )}
+        {renderBtn(
+          PiTextItalicBold,
+          () => editor.chain().focus().toggleItalic().run(),
+          ""
+        )}
+        {renderBtn(
+          PiTextStrikethroughBold,
+          () => editor.chain().focus().toggleStrike().run(),
+
+          ""
+        )}
+        {renderBtn(
+          PiTextUnderlineBold,
+          () => editor.chain().focus().toggleUnderline().run(),
+          ""
+        )}
+      </>
+      {/* 색상 */}
+      <>
+        {/* 글자색 */}
+        <div onMouseDown={(event) => event.preventDefault()}>
+          <ColorPicker
+            open={fontColorPickerOpen}
+            setOpen={setFontColorPickerOpen}
+            color={fontColor}
+            onChange={(color) => {
+              setFontColor(color.hex);
+              editor?.chain().focus().setColor(color.hex).run();
+            }}
+          >
+            {renderBtn(MdFormatColorText, () => {}, "")}
+          </ColorPicker>
+        </div>
+        {/* 글자 배경색 */}
+        <div onMouseDown={(event) => event.preventDefault()}>
+          <ColorPicker
+            open={bgColorPickerOpen}
+            setOpen={setBgColorPickerOpen}
+            color={bgColor}
+            onChange={(color) => {
+              setBgColor(color.hex);
+              editor?.chain().focus().setBackgroundColor(color.hex).run();
+            }}
+          >
+            {renderBtn(MdOutlineFormatColorFill, () => {}, "")}
+          </ColorPicker>
+        </div>
+      </>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* 정렬 */}
+      <>
+        {renderBtn(
+          PiTextAlignLeftBold,
+          () => editor?.chain().focus().setTextAlign("left").run(),
+          ""
+        )}
+        {renderBtn(
+          PiTextAlignCenterBold,
+          () => editor?.chain().focus().setTextAlign("center").run(),
+          ""
+        )}
+        {renderBtn(
+          PiTextAlignRightBold,
+          () => editor?.chain().focus().setTextAlign("right").run(),
+          ""
+        )}
+      </>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* highlight */}
+      <>
+        {renderBtn(
+          PiHighlighterFill,
+          () => editor?.chain().focus().toggleHighlight().run(),
+          ""
+        )}
+      </>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* 리스트 */}
+      <>
+        {renderBtn(
+          PiListBulletsBold,
+          () => editor?.chain().focus().toggleBulletList().run(),
+          ""
+        )}
+        {renderBtn(
+          PiListNumbersBold,
+          () => editor?.chain().focus().toggleOrderedList().run(),
+          ""
+        )}
+        {renderBtn(
+          PiListChecksBold,
+          () => editor?.chain().focus().toggleTaskList().run(),
+          ""
+        )}
+      </>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* 인용, 코드, 테이블 */}
+      <>
+        {renderBtn(
+          TbBlockquote,
+          () => editor?.chain().focus().toggleBlockquote().run(),
+          ""
+        )}
+        {renderBtn(
+          Code,
+          () => editor?.chain().focus().toggleCodeBlock().run(),
+          ""
+        )}
+        {renderBtn(
+          PiTableFill,
+          () =>
+            editor
+              ?.chain()
+              .focus()
+              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+              .run(),
+          ""
+        )}
+      </>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* 문서 설정 */}
+      <>{renderBtn(GrDocumentConfig, () => setDocSettingModalOpen(true), "")}</>
+
+      <DocSettingModal
+        setDocSettingModalOpen={setDocSettingModalOpen}
+        docSettingModalOpen={docSettingModalOpen}
+      />
     </div>
   );
 }

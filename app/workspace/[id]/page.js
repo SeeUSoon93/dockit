@@ -9,10 +9,21 @@ import { useDebounce } from "@/app/LIB/utils/useDebounce";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 
 // 인쇄될 내용을 표시하는 간단한 컴포넌트
-function PrintableContent({ htmlContent }) {
+function PrintableContent({ htmlContent, docSetting }) {
+  // [추가] docSetting을 기반으로 인쇄용 스타일 객체 생성
+  const printStyle = {
+    paddingTop: `${docSetting.paddingTop}mm`,
+    paddingBottom: `${docSetting.paddingBottom}mm`,
+    paddingLeft: `${docSetting.paddingLeft}mm`,
+    paddingRight: `${docSetting.paddingRight}mm`,
+    width: `${docSetting.pageWidth}mm`,
+    boxSizing: "border-box" // 패딩이 너비/높이에 포함되도록 설정
+  };
+
   return (
     <div
-      className="print-card prose prose-sm sm:prose-base" // 에디터와 유사한 스타일 적용
+      className="print-card prose prose-sm sm:prose-base"
+      style={printStyle} // [수정] 인라인 스타일 적용
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );
@@ -20,7 +31,8 @@ function PrintableContent({ htmlContent }) {
 
 export default function WritePage() {
   const { document, saveDocument, loading } = useDocument();
-  const { setEditor, setPrintAction, setSaveAction } = useEditorContext();
+  const { setEditor, setPrintAction, setSaveAction, editor } =
+    useEditorContext();
 
   // content 상태는 이제 HTML 문자열을 저장합니다.
   const [content, setContent] = useState(null);
@@ -108,9 +120,41 @@ export default function WritePage() {
     };
   }, [handleSave]);
 
+  const divStyle = () => {
+    if (!document?.docSetting) return {}; // docSetting이 없을 경우 대비
+
+    const widthRatio = 800 / document.docSetting.pageWidth;
+    const paddingTop = document.docSetting.paddingTop * widthRatio;
+    const paddingBottom = document.docSetting.paddingBottom * widthRatio;
+    const paddingLeft = document.docSetting.paddingLeft * widthRatio;
+    const paddingRight = document.docSetting.paddingRight * widthRatio;
+
+    // [추가] 화면에 표시될 페이지 한 장의 높이
+    const scaledPageHeight = document.docSetting.pageHeight * widthRatio;
+
+    return {
+      paddingTop: `${paddingTop}px`,
+      paddingBottom: `${paddingBottom}px`,
+      paddingLeft: `${paddingLeft}px`,
+      paddingRight: `${paddingRight}px`,
+      // [추가] 페이지 높이마다 회색 점선을 배경 이미지로 그립니다.
+      backgroundImage: `repeating-linear-gradient(
+      transparent 0,
+      transparent ${scaledPageHeight - 1}px,
+      #e0e0e0 ${scaledPageHeight - 1}px,
+      #e0e0e0 ${scaledPageHeight}px
+    )`,
+      // [추가] 배경 이미지의 시작 위치를 상단 여백(paddingTop) 아래로 지정
+      backgroundPosition: `0 ${paddingTop}px`
+    };
+  };
+
   return isPrinting ? (
     <PrintCardPortal>
-      <PrintableContent htmlContent={content} />
+      <PrintableContent
+        htmlContent={content}
+        docSetting={document.docSetting}
+      />
     </PrintCardPortal>
   ) : (
     <div className="flex flex-col items-center justify-center gap-10 pd-y-10">
@@ -119,8 +163,9 @@ export default function WritePage() {
       ) : (
         // 1. 화면에 항상 보이는 '편집' 영역
         <Div
-          className="w-px-800 max-w-[90vw] min-h-[100vh] rad-20 shadow-sm pd-60"
+          className="w-px-800 max-w-[90vw] min-h-[100vh] rad-20 shadow-sm"
           background="white-10"
+          style={divStyle()}
         >
           <ContentEditor
             value={content}
