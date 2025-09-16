@@ -1,44 +1,25 @@
 "use client";
 
 import { useDocument } from "@/app/LIB/context/DocumentContext";
-import { useCallback, useEffect, useState } from "react";
-import { Div, DotSpinner, toast } from "sud-ui";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Div, DotSpinner, notification, toast } from "sud-ui";
 import ContentEditor from "@/app/LIB/components/Write/ContentEditor";
-import PrintCardPortal from "./PrintCardPortal";
 import { useDebounce } from "@/app/LIB/utils/useDebounce";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 
-// 인쇄될 내용을 표시하는 간단한 컴포넌트
-function PrintableContent({ htmlContent, docSetting }) {
-  // [추가] docSetting을 기반으로 인쇄용 스타일 객체 생성
-  const printStyle = {
-    paddingTop: `${docSetting.paddingTop}mm`,
-    paddingBottom: `${docSetting.paddingBottom}mm`,
-    paddingLeft: `${docSetting.paddingLeft}mm`,
-    paddingRight: `${docSetting.paddingRight}mm`,
-    width: `${docSetting.pageWidth}mm`,
-    boxSizing: "border-box" // 패딩이 너비/높이에 포함되도록 설정
-  };
-
-  return (
-    <div
-      className="print-card prose prose-sm sm:prose-base"
-      style={printStyle} // [수정] 인라인 스타일 적용
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
-    />
-  );
-}
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export default function WritePage() {
   const { document, saveDocument, loading } = useDocument();
-  const { setEditor, setPrintAction, setSaveAction, editor } =
-    useEditorContext();
+  const { setEditor, setSaveAction, setDownloadPDFAction } = useEditorContext();
 
   // content 상태는 이제 HTML 문자열을 저장합니다.
   const [content, setContent] = useState(null);
-  const [isPrinting, setIsPrinting] = useState(false);
 
   const debouncedContent = useDebounce(content, 10000);
+
+  const editorRef = useRef(null);
 
   // 자동 저장 로직 (HTML 기준)
   useEffect(() => {
@@ -64,21 +45,6 @@ export default function WritePage() {
     }
   }, [document]);
 
-  // isPrinting 상태가 true로 바뀌면 인쇄 실행
-  useEffect(() => {
-    if (isPrinting) {
-      // setTimeout으로 감싸서 React가 DOM을 업데이트할 시간을 줍니다.
-      setTimeout(() => {
-        window.print();
-        setIsPrinting(false);
-      }, 100); // 딜레이를 0으로 주어도 이벤트 루프의 다음 틱으로 넘어가기 때문에 충분합니다.
-    }
-  }, [isPrinting]);
-  // 1. 인쇄와 저장 핸들러를 정의합니다.
-  const handlePrint = () => {
-    setIsPrinting(true);
-  };
-
   const handleSave = useCallback(() => {
     // 즉시 저장 로직
     if (document && content !== null) {
@@ -86,17 +52,59 @@ export default function WritePage() {
       toast.success("저장되었습니다!"); // 사용자 피드백
     }
   }, [document, content, saveDocument]);
-  useEffect(() => {
-    // 함수 자체를 넘겨주어 Context에 등록
-    setPrintAction(() => handlePrint);
-    setSaveAction(() => handleSave);
 
-    // 컴포넌트가 사라질 때 등록된 함수를 정리합니다.
+  const handleDownloadPDF = useCallback(async () => {
+    const editorElement = editorRef.current;
+    if (!editorElement || !content) {
+      toast.error("다운로드할 콘텐츠가 없습니다.");
+      return;
+    }
+
+    try {
+      toast.loading("다운로드 중...");
+      const canvas = await html2canvas(editorElement, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+
+      // A4 사이즈: 210mm x 297mm
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = 210; // A4 가로 길이
+      const pageHeight = 297; // A4 세로 길이
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // 첫 페이지 추가
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // 콘텐츠가 한 페이지를 넘을 경우, 새 페이지를 추가하고 이미지를 잘라 넣습니다.
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const fileName = document?.title
+        ? `${document.title}.pdf`
+        : "document.pdf";
+      pdf.save(fileName);
+      toast.success("PDF 파일이 다운로드되었습니다!");
+    } catch (error) {
+      console.error("PDF 생성 오류:", error);
+      toast.error("PDF 생성 중 오류가 발생했습니다.");
+    }
+  }, [content, document?.title]);
+
+  useEffect(() => {
+    setSaveAction(() => handleSave);
+    setDownloadPDFAction(() => handleDownloadPDF);
+
     return () => {
-      setPrintAction(null);
       setSaveAction(null);
+      setDownloadPDFAction(null);
     };
-  }, [document, content]);
+  }, [handleSave, handleDownloadPDF, setSaveAction, setDownloadPDFAction]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -106,11 +114,6 @@ export default function WritePage() {
       if (isCtrlOrCmd && event.key === "s") {
         event.preventDefault(); // 브라우저 기본 저장 동작 방지
         handleSave(); // 저장 함수 호출
-      }
-      // 기존 Ctrl+P 인쇄 로직
-      else if (isCtrlOrCmd && event.key === "p") {
-        event.preventDefault();
-        setIsPrinting(true);
       }
     };
 
@@ -149,20 +152,14 @@ export default function WritePage() {
     };
   };
 
-  return isPrinting ? (
-    <PrintCardPortal>
-      <PrintableContent
-        htmlContent={content}
-        docSetting={document.docSetting}
-      />
-    </PrintCardPortal>
-  ) : (
+  return (
     <div className="flex flex-col items-center justify-center gap-10 pd-y-10">
       {loading || content === null ? (
         <DotSpinner />
       ) : (
         // 1. 화면에 항상 보이는 '편집' 영역
         <Div
+          ref={editorRef}
           className="w-px-800 max-w-[90vw] min-h-[100vh] rad-20 shadow-sm"
           background="white-10"
           style={divStyle()}

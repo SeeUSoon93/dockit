@@ -8,6 +8,7 @@ import { HiMinus, HiPlus } from "react-icons/hi";
 import { GrDocumentConfig } from "react-icons/gr";
 
 import {
+  PiFilePdfBold,
   PiHighlighterFill,
   PiListBulletsBold,
   PiListChecksBold,
@@ -24,7 +25,8 @@ import {
 import { MdFormatColorText, MdOutlineFormatColorFill } from "react-icons/md";
 import DocSettingModal from "./DocSettingModal";
 export default function HomeChildren({ renderBtn }) {
-  const { editor, printAction, saveAction } = useEditorContext();
+  const { editor, printAction, saveAction, downloadPDFAction } =
+    useEditorContext();
   const [font, setFont] = useState("Pretendard-Medium");
   const [currentFontSize, setCurrentFontSize] = useState(16);
 
@@ -35,13 +37,6 @@ export default function HomeChildren({ renderBtn }) {
   const [bgColor, setBgColor] = useState("#ffffff");
 
   const [docSettingModalOpen, setDocSettingModalOpen] = useState(false);
-
-  const [textAlign, setTextAlign] = useState("left");
-  const alignOptions = [
-    { value: "left", label: <PiTextAlignLeftBold size={16} /> },
-    { value: "center", label: <PiTextAlignCenterBold size={16} /> },
-    { value: "right", label: <PiTextAlignRightBold size={16} /> }
-  ];
 
   const options = [
     // Pretendard
@@ -356,7 +351,10 @@ export default function HomeChildren({ renderBtn }) {
         borderColor="mint"
       />
       {/* 문서 설정 */}
-      <>{renderBtn(GrDocumentConfig, () => setDocSettingModalOpen(true), "")}</>
+      <>
+        {renderBtn(GrDocumentConfig, () => setDocSettingModalOpen(true), "")}
+        {renderBtn(PiFilePdfBold, () => downloadPDFAction?.(), "")}
+      </>
 
       <DocSettingModal
         setDocSettingModalOpen={setDocSettingModalOpen}
