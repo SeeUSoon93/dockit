@@ -139,7 +139,7 @@ export default function Header({
                     size="sm"
                     color={"cool-gray"}
                   >
-                    <MdSync className="animate-spin" /> 자동저장 중...
+                    <MdSync className="animate-spin" /> 저장 중...
                   </Typography>
                 )}
               </div>

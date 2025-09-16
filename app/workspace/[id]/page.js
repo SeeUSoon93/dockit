@@ -1,142 +1,134 @@
 "use client";
 
 import { useDocument } from "@/app/LIB/context/DocumentContext";
-import { useSetting } from "@/app/LIB/context/SettingContext";
-import { useDebounce } from "@/app/LIB/utils/useDebounce";
-import { useEffect, useState, useMemo, useRef } from "react";
-import { Div, DotSpinner } from "sud-ui";
+import { useCallback, useEffect, useState } from "react";
+import { Div, DotSpinner, toast } from "sud-ui";
 import ContentEditor from "@/app/LIB/components/Write/ContentEditor";
-import {
-  splitContentByPageBreak,
-  joinContentPages
-} from "@/app/LIB/utils/tiptapUtils";
+import PrintCardPortal from "./PrintCardPortal";
+import { useDebounce } from "@/app/LIB/utils/useDebounce";
+import { useEditorContext } from "@/app/LIB/context/EditorContext";
+
+// 인쇄될 내용을 표시하는 간단한 컴포넌트
+function PrintableContent({ htmlContent }) {
+  return (
+    <div
+      className="print-card prose prose-sm sm:prose-base" // 에디터와 유사한 스타일 적용
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
+  );
+}
 
 export default function WritePage() {
   const { document, saveDocument, loading } = useDocument();
-  const { setting } = useSetting();
+  const { setEditor, setPrintAction, setSaveAction } = useEditorContext();
 
-  // 1. 페이지별로 나뉜 콘텐츠(JSON 객체)를 담는 로컬 state
-  const [pages, setPages] = useState([]);
-  const pageRefs = useRef([]); // 각 페이지 DOM 요소에 접근하기 위한 ref
+  // content 상태는 이제 HTML 문자열을 저장합니다.
+  const [content, setContent] = useState(null);
+  const [isPrinting, setIsPrinting] = useState(false);
 
-  // 2. 디바운싱된 pages가 변경되면, 하나로 합쳐서 저장하는 로직
-  const debouncedPages = useDebounce(pages, 2000);
+  const debouncedContent = useDebounce(content, 10000);
+
+  // 자동 저장 로직 (HTML 기준)
   useEffect(() => {
-    if (!loading && pages.length > 0 && document?.content) {
-      const fullContentJSON = joinContentPages(debouncedPages);
-      if (
-        JSON.stringify(fullContentJSON) !== JSON.stringify(document.content)
-      ) {
-        saveDocument(document._id, { ...document, content: fullContentJSON });
+    if (
+      !loading &&
+      debouncedContent !== null &&
+      document?.content !== undefined
+    ) {
+      // HTML 문자열을 직접 비교하여 변경되었을 때만 저장
+      if (debouncedContent !== document.content) {
+        saveDocument(document._id, { ...document, content: debouncedContent });
       }
     }
-  }, [debouncedPages, document, saveDocument, loading]);
+  }, [debouncedContent, document, saveDocument, loading]);
 
-  // 3. Context에서 document를 불러오면, 페이지 배열 state를 초기화
+  // 문서 로딩 로직 (HTML 기준)
   useEffect(() => {
     if (document?.content) {
-      const pageContents = splitContentByPageBreak(document.content);
-      setPages(pageContents);
+      setContent(document.content);
     } else if (document) {
-      // 콘텐츠가 없는 새 문서
-      setPages([{ type: "doc", content: [] }]);
+      // 콘텐츠가 없는 새 문서는 빈 문자열로 시작
+      setContent("");
     }
   }, [document]);
 
-  // 4. 페이지 오버플로우를 감지하고 페이지를 나누는 핵심 로직
+  // isPrinting 상태가 true로 바뀌면 인쇄 실행
   useEffect(() => {
-    // 마지막 페이지에서만 오버플로우를 체크
-    const lastPageIndex = pages.length - 1;
-    const lastPageElement = pageRefs.current[lastPageIndex];
-
-    if (
-      lastPageElement &&
-      lastPageElement.scrollHeight > lastPageElement.clientHeight
-    ) {
-      const editorElement = lastPageElement.querySelector(".ProseMirror");
-      if (!editorElement) return;
-
-      let overflowIndex = -1;
-
-      // 마지막 노드부터 거꾸로 탐색하며 페이지를 넘어가는 첫 노드를 찾음
-      for (let i = editorElement.childNodes.length - 1; i >= 0; i--) {
-        const node = editorElement.childNodes[i];
-        if (node.offsetTop + node.offsetHeight > lastPageElement.clientHeight) {
-          overflowIndex = i;
-        } else {
-          break;
-        }
-      }
-
-      if (overflowIndex > -1) {
-        const lastPageContent = pages[lastPageIndex];
-        if (!lastPageContent || !lastPageContent.content) return;
-
-        // 넘어간 노드부터 끝까지를 잘라내어 새 페이지로 만듦
-        const nodesToMove = lastPageContent.content.slice(overflowIndex);
-        const currentPageNodes = lastPageContent.content.slice(
-          0,
-          overflowIndex
-        );
-
-        // 무한 루프를 방지하기 위해, 실제로 옮길 노드가 있을 때만 state 업데이트
-        if (nodesToMove.length > 0) {
-          setPages((currentPages) => {
-            const newPages = [...currentPages];
-            newPages[lastPageIndex] = {
-              ...newPages[lastPageIndex],
-              content: currentPageNodes
-            };
-            newPages.push({ type: "doc", content: nodesToMove });
-            return newPages;
-          });
-        }
-      }
+    if (isPrinting) {
+      // setTimeout으로 감싸서 React가 DOM을 업데이트할 시간을 줍니다.
+      setTimeout(() => {
+        window.print();
+        setIsPrinting(false);
+      }, 100); // 딜레이를 0으로 주어도 이벤트 루프의 다음 틱으로 넘어가기 때문에 충분합니다.
     }
-  }, [pages]); // pages state가 변경될 때마다 이 로직 실행
-
-  // 특정 페이지의 내용이 변경될 때 state 업데이트
-  const handlePageChange = (updatedPageContent, pageIndex) => {
-    const newPages = pages.map((page, index) =>
-      index === pageIndex ? updatedPageContent : page
-    );
-    setPages(newPages);
+  }, [isPrinting]);
+  // 1. 인쇄와 저장 핸들러를 정의합니다.
+  const handlePrint = () => {
+    setIsPrinting(true);
   };
 
-  const pageStyles = useMemo(() => {
-    const pageWidth = 800; // px
-    const scaleFactor = pageWidth / setting.pageSize.width;
-    const pageHeight = setting.pageSize.height * scaleFactor;
-    return {
-      width: `${pageWidth}px`,
-      height: `${pageHeight}px`,
-      paddingTop: `${setting.pagePadding.top * scaleFactor}px`,
-      paddingBottom: `${setting.pagePadding.bottom * scaleFactor}px`,
-      paddingLeft: `${setting.pagePadding.left * scaleFactor}px`,
-      paddingRight: `${setting.pagePadding.right * scaleFactor}px`
-    };
-  }, [setting]);
+  const handleSave = useCallback(() => {
+    // 즉시 저장 로직
+    if (document && content !== null) {
+      saveDocument(document._id, { ...document, content });
+      toast.success("저장되었습니다!"); // 사용자 피드백
+    }
+  }, [document, content, saveDocument]);
+  useEffect(() => {
+    // 함수 자체를 넘겨주어 Context에 등록
+    setPrintAction(() => handlePrint);
+    setSaveAction(() => handleSave);
 
-  return (
-    <div className="flex flex-col items-center justify-center gap-10 pd-y-50">
-      {loading || pages.length === 0 ? (
+    // 컴포넌트가 사라질 때 등록된 함수를 정리합니다.
+    return () => {
+      setPrintAction(null);
+      setSaveAction(null);
+    };
+  }, [document, content]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const isCtrlOrCmd = event.metaKey || event.ctrlKey;
+
+      // Ctrl+S 저장 로직 추가
+      if (isCtrlOrCmd && event.key === "s") {
+        event.preventDefault(); // 브라우저 기본 저장 동작 방지
+        handleSave(); // 저장 함수 호출
+      }
+      // 기존 Ctrl+P 인쇄 로직
+      else if (isCtrlOrCmd && event.key === "p") {
+        event.preventDefault();
+        setIsPrinting(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleSave]);
+
+  return isPrinting ? (
+    <PrintCardPortal>
+      <PrintableContent htmlContent={content} />
+    </PrintCardPortal>
+  ) : (
+    <div className="flex flex-col items-center justify-center gap-10 pd-y-10">
+      {loading || content === null ? (
         <DotSpinner />
       ) : (
-        pages.map((pageContent, index) => (
-          <Div
-            ref={(el) => (pageRefs.current[index] = el)}
-            key={index}
-            className={`aspect-[${setting.pageSize.width}/${setting.pageSize.height}] shadow-md`}
-            background="white-10"
-            style={{ ...pageStyles, overflow: "hidden" }}
-          >
-            <ContentEditor
-              value={pageContent}
-              onChange={(newContent) => handlePageChange(newContent, index)}
-              autoFocus={index === pages.length - 1} // 마지막 페이지만 자동 포커스
-            />
-          </Div>
-        ))
+        // 1. 화면에 항상 보이는 '편집' 영역
+        <Div
+          className="w-px-800 max-w-[90vw] min-h-[100vh] rad-20 shadow-sm pd-60"
+          background="white-10"
+        >
+          <ContentEditor
+            value={content}
+            onChange={setContent}
+            autoFocus={true}
+            onEditorCreated={setEditor}
+          />
+        </Div>
       )}
     </div>
   );

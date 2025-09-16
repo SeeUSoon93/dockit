@@ -35,6 +35,7 @@ import { DocumentProvider, useDocument } from "./LIB/context/DocumentContext";
 import { SettingProvider } from "./LIB/context/SettingContext";
 import { useZoom } from "./LIB/hook/useZoom";
 import Footer from "./LIB/components/ClientLayout/Footer";
+import { EditorProvider } from "./LIB/context/EditorContext";
 
 function LayoutContent({ children }) {
   const { document, loadDocument, clearDocument, saveDocument, isSaving } =
@@ -168,7 +169,9 @@ export default function ClientLayout({ children }) {
           <PanelProvider>
             <DocumentProvider>
               <SettingProvider>
-                <LayoutContent>{children}</LayoutContent>
+                <EditorProvider>
+                  <LayoutContent>{children}</LayoutContent>
+                </EditorProvider>
               </SettingProvider>
             </DocumentProvider>
           </PanelProvider>

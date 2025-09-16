@@ -16,7 +16,6 @@ export default function TypeBubble({ editor }) {
   const renderBtn = (label, action, isActive, extraClass = "") => (
     <Button
       colorType="text"
-      background={isActive && "mint-2"}
       onClick={action}
       className={`bubble-font ${isActive ? "is-active" : ""} ${extraClass}`}
       icon={label}

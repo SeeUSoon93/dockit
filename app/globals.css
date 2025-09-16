@@ -35,9 +35,6 @@ body {
 .tiptap {
   border: none;
 }
-.tiptap * {
-  font-family: var(--editor-font-family) !important;
-}
 
 .tiptap {
   border: none;
@@ -87,4 +84,178 @@ body {
 .tiptap h3 {
   line-height: 1.5; /* 줄 간격 늘리기 */
   margin: 0.4em 0; /* 위아래 여백 추가 */
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .sud-drawer,
+  .sud-sider {
+    display: none !important;
+  }
+  .print-card,
+  .print-card * {
+    visibility: visible;
+  }
+  .print-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 9999;
+  }
+}
+
+/* 
+■■■■■■■■■■■■■■■■■■■■■■■■■■■
+■■■■■■ font css ■■■■■■
+■■■■■■■■■■■■■■■■■■■■■■■■■■■
+*/
+/* GmarketSans */
+@font-face {
+  font-family: "GmarketSansTTFBold";
+  src: url("/fonts/GmarketSansTTFBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "GmarketSansTTFLight";
+  src: url("/fonts/GmarketSansTTFLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "GmarketSansTTFMedium";
+  src: url("/fonts/GmarketSansTTFMedium.ttf") format("truetype");
+}
+
+/* KoPubWorld */
+@font-face {
+  font-family: "KoPubWorld Batang Bold";
+  src: url("/fonts/KoPubWorld Batang Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "KoPubWorld Batang Light";
+  src: url("/fonts/KoPubWorld Batang Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "KoPubWorld Batang Medium";
+  src: url("/fonts/KoPubWorld Batang Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "KoPubWorld Dotum Bold";
+  src: url("/fonts/KoPubWorld Dotum Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "KoPubWorld Dotum Light";
+  src: url("/fonts/KoPubWorld Dotum Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "KoPubWorld Dotum Medium";
+  src: url("/fonts/KoPubWorld Dotum Medium.ttf") format("truetype");
+}
+
+/* NotoSansKR */
+@font-face {
+  font-family: "NotoSansKR-Black";
+  src: url("/fonts/NotoSansKR-Black.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-Bold";
+  src: url("/fonts/NotoSansKR-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-ExtraBold";
+  src: url("/fonts/NotoSansKR-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-ExtraLight";
+  src: url("/fonts/NotoSansKR-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-Light";
+  src: url("/fonts/NotoSansKR-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-Medium";
+  src: url("/fonts/NotoSansKR-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-Regular";
+  src: url("/fonts/NotoSansKR-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-SemiBold";
+  src: url("/fonts/NotoSansKR-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansKR-Thin";
+  src: url("/fonts/NotoSansKR-Thin.ttf") format("truetype");
+}
+
+/* NotoSerifKR */
+@font-face {
+  font-family: "NotoSerifKR-Black";
+  src: url("/fonts/NotoSerifKR-Black.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSerifKR-Bold";
+  src: url("/fonts/NotoSerifKR-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSerifKR-ExtraLight";
+  src: url("/fonts/NotoSerifKR-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSerifKR-Light";
+  src: url("/fonts/NotoSerifKR-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSerifKR-Medium";
+  src: url("/fonts/NotoSerifKR-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSerifKR-Regular";
+  src: url("/fonts/NotoSerifKR-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSerifKR-SemiBold";
+  src: url("/fonts/NotoSerifKR-SemiBold.ttf") format("truetype");
+}
+
+/* Pretendard */
+@font-face {
+  font-family: "Pretendard-Black";
+  src: url("/fonts/Pretendard-Black.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-Bold";
+  src: url("/fonts/Pretendard-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-ExtraBold";
+  src: url("/fonts/Pretendard-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-ExtraLight";
+  src: url("/fonts/Pretendard-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-Light";
+  src: url("/fonts/Pretendard-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-Medium";
+  src: url("/fonts/Pretendard-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("/fonts/Pretendard-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-SemiBold";
+  src: url("/fonts/Pretendard-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Pretendard-Thin";
+  src: url("/fonts/Pretendard-Thin.ttf") format("truetype");
 }
