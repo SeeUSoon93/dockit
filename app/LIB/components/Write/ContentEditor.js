@@ -19,7 +19,7 @@ import {
   TextStyle
 } from "@tiptap/extension-text-style";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import TypeBubble from "./TypeBubble";
 import Blockquote from "@tiptap/extension-blockquote";
 import CodeBlock from "@tiptap/extension-code-block";
@@ -180,6 +180,104 @@ export default function ContentEditor({
     () => generateCssVariables(bulletStyle),
     [bulletStyle]
   );
+  // 헤딩과 리스트 스타일 동기화 함수 - 성공했던 방식으로 개별 처리
+  const syncHeadingStyles = useCallback(() => {
+    console.log("🔧 syncHeadingStyles 함수 실행됨");
+
+    if (!editor) {
+      console.log("❌ editor가 없음");
+      return;
+    }
+
+    const editorElement = editor.view.dom;
+
+    // 동적 CSS 생성
+    let styleElement = document.getElementById("dynamic-heading-styles");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "dynamic-heading-styles";
+      document.head.appendChild(styleElement);
+    }
+
+    let allStyles = "";
+
+    // 1. 헤딩 개별 처리 - 성공했던 방식 사용
+    const headings = editorElement.querySelectorAll("h1, h2, h3");
+    console.log(`📝 찾은 헤딩 개수: ${headings.length}`);
+
+    headings.forEach((heading, index) => {
+      const span = heading.querySelector("span");
+      if (span) {
+        const computedStyle = window.getComputedStyle(span);
+
+        // 각 헤딩별로 전역 스타일 생성 (성공했던 방식)
+        allStyles += `
+.tiptap-container ${heading.tagName.toLowerCase()}:nth-of-type(${
+          index + 1
+        })::before {
+  font-family: ${computedStyle.fontFamily} !important;
+  font-size: ${computedStyle.fontSize} !important;
+  font-weight: ${computedStyle.fontWeight} !important;
+  color: ${computedStyle.color} !important;
+}
+        `;
+
+        console.log(
+          `✅ 헤딩 ${heading.tagName} (${index + 1}번째) 스타일 적용:`,
+          {
+            fontSize: computedStyle.fontSize,
+            fontFamily: computedStyle.fontFamily
+          }
+        );
+      }
+    });
+
+    // 2. 리스트 아이템 개별 처리
+    const listItems = editorElement.querySelectorAll(
+      "ul:not([data-type='taskList']) li, ol li"
+    );
+    console.log(`📝 찾은 리스트 아이템 개수: ${listItems.length}`);
+
+    listItems.forEach((li, index) => {
+      const span = li.querySelector("span");
+      if (span) {
+        const computedStyle = window.getComputedStyle(span);
+
+        // 각 리스트별로 전역 스타일 생성
+        allStyles += `
+.tiptap-container li:nth-of-type(${index + 1})::before {
+  font-family: ${computedStyle.fontFamily} !important;
+  font-size: ${computedStyle.fontSize} !important;
+  font-weight: ${computedStyle.fontWeight} !important;
+  color: ${computedStyle.color} !important;
+}
+        `;
+
+        console.log(`✅ 리스트 아이템 (${index + 1}번째) 스타일 적용:`, {
+          fontSize: computedStyle.fontSize,
+          fontFamily: computedStyle.fontFamily
+        });
+      }
+    });
+
+    // 스타일 적용 (성공했던 방식 그대로)
+    styleElement.textContent = allStyles;
+    console.log("✨ 모든 개별 스타일 적용 완료");
+  }, [editor]);
+  useEffect(() => {
+    if (editor) {
+      editor.on("update", syncHeadingStyles);
+      editor.on("selectionUpdate", syncHeadingStyles);
+
+      // 초기 동기화
+      syncHeadingStyles();
+
+      return () => {
+        editor.off("update", syncHeadingStyles);
+        editor.off("selectionUpdate", syncHeadingStyles);
+      };
+    }
+  }, [editor, syncHeadingStyles]);
 
   // 3. 외부 value(JSON)와 에디터 내부 content(JSON)를 비교하고 동기화합니다.
   useEffect(() => {

@@ -111,26 +111,28 @@ u {
 
 /* --- 리스트(Lists) --- */
 
-/* 1. 모든 리스트 아이템에 상대 위치 설정 */
+/* 1. 모든 리스트 아이템에 flex 레이아웃 설정 */
 .tiptap-container ul:not([data-type="taskList"]) li,
 .tiptap-container ol li {
-  position: relative;
+  display: flex;
+  align-items: baseline; /* center 대신 baseline으로 변경 */
   margin: 0.25em 0;
-  padding-left: 1.5em; /* 기호/숫자를 위한 공간 확보 */
+  padding-left: 0; /* flex로 바꾸면서 padding 제거 */
 }
 
 .tiptap-container ul:not([data-type="taskList"]) li > p,
 .tiptap-container ol li > p {
   margin: 0;
+  flex: 1; /* 텍스트가 남은 공간을 모두 차지 */
 }
 
 .tiptap-container ul:not([data-type="taskList"]) li::before,
 .tiptap-container ol li::before {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 1.5em;
-  text-align: left;
+  margin-right: 0.3em; /* 번호와 텍스트 사이 간격 */
+  line-height: inherit; /* p와 동일한 line-height 사용 */
+  vertical-align: baseline; /* 베이스라인 미세 조정 */
+  position: relative;
+  top: 0.05em; /* 살짝 아래로 미세 조정 */
 }
 
 /* 2. 일반 리스트(ul) 스타일 */
@@ -188,19 +190,6 @@ u {
 .tiptap-container ol li[data-indent="64"]::before {
   content: counter(item, var(--order-list-4-type, decimal))
     var(--order-list-4-suffix, ". ");
-}
-
-/* --- 공통 상속 스타일 --- */
-.tiptap-container h1::before,
-.tiptap-container h2::before,
-.tiptap-container h3::before,
-.tiptap-container ul:not([data-type="taskList"]) li::before,
-.tiptap-container ol li::before {
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  color: inherit;
-  line-height: inherit;
 }
 
 /* --- 들여쓰기 스타일 --- */
