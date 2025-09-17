@@ -19,7 +19,7 @@ import {
   TextStyle
 } from "@tiptap/extension-text-style";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import TypeBubble from "./TypeBubble";
 import Blockquote from "@tiptap/extension-blockquote";
 import CodeBlock from "@tiptap/extension-code-block";
@@ -34,12 +34,78 @@ import Highlight from "@tiptap/extension-highlight";
 
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
+import Indent from "./indent-extension";
+
+// styleValueMap: ul 심볼과 ol 접미사를 실제 CSS content 값으로 변환
+const styleValueMap = {
+  disc: '"•"',
+  dash: '"-"',
+  "circle-outline": '"○"',
+  "circle-filled": '"●"',
+  "square-outline": '"□"',
+  "square-filled": '"■"',
+  "diamond-outline": '"◇"',
+  "diamond-filled": '"◆"',
+  dot: '". "',
+  paren: '") "'
+};
+
+// [추가] counterStyleMap: 사용자가 정한 value를 실제 CSS counter 타입으로 변환
+const counterStyleMap = {
+  decimal: "decimal",
+  "upper-roman": "upper-roman",
+  "lower-roman": "lower-roman",
+  "upper-alpha": "upper-alpha",
+  "lower-alpha": "lower-alpha",
+  korean: "hangul-consonant", // "ㄱ" -> CSS 'hangul-consonant'
+  "korean-2": "hangul" // "가" -> CSS 'hangul'
+};
+
+const generateCssVariables = (bulletStyle) => {
+  const variables = {};
+
+  if (bulletStyle) {
+    // [수정] h1, h2, h3 값을 counterStyleMap으로 변환
+    variables["--h1-style"] = counterStyleMap[bulletStyle.h1] || "decimal";
+    variables["--h2-style"] = counterStyleMap[bulletStyle.h2] || "decimal";
+    variables["--h3-style"] = counterStyleMap[bulletStyle.h3] || "decimal";
+
+    // 뎁스별 리스트 스타일 처리 (뎁스 4 이상은 4와 같은 스타일)
+    for (let i = 1; i <= 4; i++) {
+      const listStyle = bulletStyle[`list-${i}`] || "disc";
+      variables[`--list-${i}-content`] = styleValueMap[listStyle] || '"•"';
+    }
+
+    // 뎁스별 순서 리스트 스타일 처리 (뎁스 4 이상은 4와 같은 스타일)
+    for (let i = 1; i <= 4; i++) {
+      const orderListStyle = bulletStyle[`order-list-${i}`] || "decimal-dot";
+
+      const lastDashIndex = orderListStyle.lastIndexOf("-");
+      if (lastDashIndex !== -1) {
+        const type = orderListStyle.substring(0, lastDashIndex);
+        const suffixKey = orderListStyle.substring(lastDashIndex + 1);
+
+        variables[`--order-list-${i}-type`] =
+          counterStyleMap[type] || "decimal";
+        variables[`--order-list-${i}-suffix`] =
+          styleValueMap[suffixKey] || '". "';
+      } else {
+        variables[`--order-list-${i}-type`] =
+          counterStyleMap[orderListStyle] || "decimal";
+        variables[`--order-list-${i}-suffix`] = '". "';
+      }
+    }
+  }
+
+  return variables;
+};
 
 export default function ContentEditor({
   value,
   onChange,
   autoFocus = true,
-  onEditorCreated
+  onEditorCreated,
+  bulletStyle
 }) {
   const editor = useEditor({
     extensions: [
@@ -77,6 +143,7 @@ export default function ContentEditor({
       Bold,
       Italic,
       Strike,
+      Indent,
       Underline,
       Placeholder.configure({
         placeholder: "내용을 입력하세요...",
@@ -88,6 +155,7 @@ export default function ContentEditor({
       })
     ],
     content: value,
+    autofocus: autoFocus ? "end" : false,
     immediatelyRender: false,
     editorProps: {
       attributes: {
@@ -98,14 +166,18 @@ export default function ContentEditor({
     onUpdate: ({ editor }) => {
       // 2. 변경된 내용을 HTML이 아닌 JSON으로 부모에게 전달합니다.
       onChange(editor.getHTML());
+    },
+    onCreate: ({ editor }) => {
+      if (onEditorCreated) {
+        onEditorCreated(editor);
+      }
     }
   });
 
-  useEffect(() => {
-    if (editor && onEditorCreated) {
-      onEditorCreated(editor);
-    }
-  }, [editor, onEditorCreated]);
+  const editorStyleVariables = useMemo(
+    () => generateCssVariables(bulletStyle),
+    [bulletStyle]
+  );
 
   // 3. 외부 value(JSON)와 에디터 내부 content(JSON)를 비교하고 동기화합니다.
   useEffect(() => {
@@ -120,24 +192,20 @@ export default function ContentEditor({
     }
   }, [value, editor]);
 
-  // 자동 포커스 (변경 없음)
-  useEffect(() => {
-    if (editor && autoFocus) {
-      editor.chain().focus("end").run();
-    }
-  }, [editor, autoFocus]);
-
   // 에디터 인스턴스 제거 (메모리 누수 방지, 변경 없음)
   useEffect(() => {
     return () => {
-      if (editor) {
+      if (editor && !editor.isDestroyed) {
         editor.destroy();
       }
     };
   }, [editor]);
 
   return (
-    <div className="relative w-full">
+    <div
+      className="relative w-full tiptap-container prose prose-sm sm:prose-base"
+      style={editorStyleVariables}
+    >
       {editor && <TypeBubble editor={editor} />}
       {editor && <EditorContent editor={editor} />}
     </div>

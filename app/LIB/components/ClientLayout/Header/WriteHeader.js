@@ -18,7 +18,7 @@ export default function WriteHeader() {
   };
 
   return (
-    <div className="pd-10">
+    <div className="pd-10 overflow-x-auto">
       <HomeChildren renderBtn={renderBtn} editor={editor} />
     </div>
   );

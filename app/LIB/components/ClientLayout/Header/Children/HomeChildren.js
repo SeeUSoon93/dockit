@@ -18,7 +18,9 @@ import {
   PiTextAlignLeftBold,
   PiTextAlignRightBold,
   PiTextBBold,
+  PiTextIndentFill,
   PiTextItalicBold,
+  PiTextOutdentFill,
   PiTextStrikethroughBold,
   PiTextUnderlineBold
 } from "react-icons/pi";
@@ -278,6 +280,17 @@ export default function HomeChildren({ renderBtn }) {
         {renderBtn(
           PiTextAlignRightBold,
           () => editor?.chain().focus().setTextAlign("right").run(),
+          ""
+        )}
+        {/* [추가] 들여쓰기 & 내어쓰기 버튼 */}
+        {renderBtn(
+          PiTextOutdentFill,
+          () => editor?.chain().focus().outdent().run(),
+          ""
+        )}
+        {renderBtn(
+          PiTextIndentFill,
+          () => editor?.chain().focus().indent().run(),
           ""
         )}
       </>

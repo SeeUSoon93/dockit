@@ -57,67 +57,256 @@ u {
   font-family: inherit;
 }
 
-/* 일반 리스트(ul, ol) 기본 스타일 */
-.ProseMirror ul,
-.ProseMirror ol {
-  padding: 0 1rem;
-  margin: 1.25rem 1rem 1.25rem 0.4rem;
+/* ■■■■■■■■■■■■■■■■■■■■■■■■■■■
+   최종 동적 글머리 기호 스타일 (prose 호환)
+   ■■■■■■■■■■■■■■■■■■■■■■■■■■■ */
+
+/* --- 제목(Headings) --- */
+
+/* 1. 카운터 설정 - .tiptap-container에서도 적용되도록 수정 */
+.tiptap-container {
+  counter-reset: h1;
+}
+.tiptap-container h1 {
+  counter-increment: h1;
+  counter-reset: h2;
+}
+.tiptap-container h2 {
+  counter-increment: h2;
+  counter-reset: h3;
+}
+.tiptap-container h3 {
+  counter-increment: h3;
 }
 
-.ProseMirror ul li p,
-.ProseMirror ol li p {
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
+/* 2. 제목 ::before 스타일 (번호 표시) */
+.tiptap-container h1::before {
+  content: counter(h1, var(--h1-style, decimal)) ". ";
+  margin-right: 0.3em;
+  float: none;
+}
+.tiptap-container h2::before {
+  content: counter(h1, var(--h1-style, decimal)) "."
+    counter(h2, var(--h2-style, decimal)) ". ";
+  margin-right: 0.3em;
+  float: none;
+}
+.tiptap-container h3::before {
+  content: counter(h1, var(--h1-style, decimal)) "."
+    counter(h2, var(--h2-style, decimal)) "."
+    counter(h3, var(--h3-style, decimal)) ". ";
+  margin-right: 0.3em;
+  float: none;
 }
 
-/* Task 리스트 스타일 */
-.ProseMirror ul[data-type="taskList"] {
+/* --- 리스트(Lists) --- */
+
+/* 1. 모든 리스트 아이템에 상대 위치 설정 */
+.tiptap-container ul:not([data-type="taskList"]) li,
+.tiptap-container ol li {
+  position: relative;
+  margin: 0.25em 0;
+  padding-left: 1.5em; /* 기호/숫자를 위한 공간 확보 */
+}
+
+.tiptap-container ul:not([data-type="taskList"]) li > p,
+.tiptap-container ol li > p {
+  margin: 0;
+}
+
+.tiptap-container ul:not([data-type="taskList"]) li::before,
+.tiptap-container ol li::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.5em;
+  text-align: left;
+}
+
+/* 2. 일반 리스트(ul) 스타일 */
+.tiptap-container ul:not([data-type="taskList"]) {
   list-style: none;
-  margin-left: 0;
   padding: 0;
+  margin: 1em 0;
+}
+.tiptap-container ul:not([data-type="taskList"]) li::before {
+  content: var(--list-1-content, "•");
+}
+
+/* 들여쓰기 레벨별 리스트 스타일 */
+.tiptap-container ul:not([data-type="taskList"]) li[data-indent="16"]::before {
+  content: var(--list-2-content, "•");
+}
+.tiptap-container ul:not([data-type="taskList"]) li[data-indent="32"]::before {
+  content: var(--list-3-content, "•");
+}
+.tiptap-container ul:not([data-type="taskList"]) li[data-indent="48"]::before {
+  content: var(--list-4-content, "•");
+}
+.tiptap-container ul:not([data-type="taskList"]) li[data-indent="64"]::before {
+  content: var(--list-4-content, "•");
+}
+
+/* 3. 번호 리스트(ol) 스타일 */
+.tiptap-container ol {
+  list-style: none;
+  padding: 0;
+  margin: 1em 0;
+  counter-reset: item;
+}
+.tiptap-container ol li {
+  counter-increment: item;
+}
+.tiptap-container ol li::before {
+  content: counter(item, var(--order-list-1-type, decimal))
+    var(--order-list-1-suffix, ". ");
+}
+
+/* 들여쓰기 레벨별 순서 리스트 스타일 */
+.tiptap-container ol li[data-indent="16"]::before {
+  content: counter(item, var(--order-list-2-type, decimal))
+    var(--order-list-2-suffix, ". ");
+}
+.tiptap-container ol li[data-indent="32"]::before {
+  content: counter(item, var(--order-list-3-type, decimal))
+    var(--order-list-3-suffix, ". ");
+}
+.tiptap-container ol li[data-indent="48"]::before {
+  content: counter(item, var(--order-list-4-type, decimal))
+    var(--order-list-4-suffix, ". ");
+}
+.tiptap-container ol li[data-indent="64"]::before {
+  content: counter(item, var(--order-list-4-type, decimal))
+    var(--order-list-4-suffix, ". ");
+}
+
+/* --- 공통 상속 스타일 --- */
+.tiptap-container h1::before,
+.tiptap-container h2::before,
+.tiptap-container h3::before,
+.tiptap-container ul:not([data-type="taskList"]) li::before,
+.tiptap-container ol li::before {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+
+/* --- 들여쓰기 스타일 --- */
+
+/* 리스트 아이템 들여쓰기 */
+.tiptap-container li[data-indent="16"] {
+  margin-left: 16px !important;
+}
+
+.tiptap-container li[data-indent="32"] {
+  margin-left: 32px !important;
+}
+
+.tiptap-container li[data-indent="48"] {
+  margin-left: 48px !important;
+}
+
+.tiptap-container li[data-indent="64"] {
+  margin-left: 64px !important;
+}
+
+/* Task 리스트 들여쓰기 - p 요소의 indent에 따라 전체 li 들여쓰기 */
+.tiptap-container ul[data-type="taskList"] li:has(p[data-indent="16"]) {
+  margin-left: 16px !important;
+}
+
+.tiptap-container ul[data-type="taskList"] li:has(p[data-indent="32"]) {
+  margin-left: 32px !important;
+}
+
+.tiptap-container ul[data-type="taskList"] li:has(p[data-indent="48"]) {
+  margin-left: 48px !important;
+}
+
+.tiptap-container ul[data-type="taskList"] li:has(p[data-indent="64"]) {
+  margin-left: 64px !important;
+}
+
+/* Task 리스트의 p 요소 자체의 margin은 제거 */
+.tiptap-container ul[data-type="taskList"] p[data-indent] {
+  margin-left: 0 !important;
+}
+
+/* 일반 요소 들여쓰기 */
+.tiptap-container p[data-indent="16"],
+.tiptap-container h1[data-indent="16"],
+.tiptap-container h2[data-indent="16"],
+.tiptap-container h3[data-indent="16"],
+.tiptap-container blockquote[data-indent="16"],
+.tiptap-container table[data-indent="16"] {
+  margin-left: 16px !important;
+}
+
+.tiptap-container p[data-indent="32"],
+.tiptap-container h1[data-indent="32"],
+.tiptap-container h2[data-indent="32"],
+.tiptap-container h3[data-indent="32"],
+.tiptap-container blockquote[data-indent="32"],
+.tiptap-container table[data-indent="32"] {
+  margin-left: 32px !important;
+}
+
+.tiptap-container p[data-indent="48"],
+.tiptap-container h1[data-indent="48"],
+.tiptap-container h2[data-indent="48"],
+.tiptap-container h3[data-indent="48"],
+.tiptap-container blockquote[data-indent="48"],
+.tiptap-container table[data-indent="48"] {
+  margin-left: 48px !important;
+}
+
+.tiptap-container p[data-indent="64"],
+.tiptap-container h1[data-indent="64"],
+.tiptap-container h2[data-indent="64"],
+.tiptap-container h3[data-indent="64"],
+.tiptap-container blockquote[data-indent="64"],
+.tiptap-container table[data-indent="64"] {
+  margin-left: 64px !important;
 }
 
 /* Task 리스트의 각 항목(li)에 flex 레이아웃 적용 (핵심) */
-.ProseMirror ul[data-type="taskList"] li {
+.tiptap-container ul[data-type="taskList"] li {
   display: flex;
   align-items: center;
 }
 
 /* 체크박스 영역(label) 스타일 */
-.ProseMirror ul[data-type="taskList"] li > label {
+.tiptap-container ul[data-type="taskList"] li > label {
   flex: 0 0 auto;
   margin-right: 0.5rem;
   user-select: none;
 }
 
 /* 텍스트 영역(div) 스타일 */
-.ProseMirror ul[data-type="taskList"] li > div {
+.tiptap-container ul[data-type="taskList"] li > div {
   flex: 1 1 auto;
 }
 
 /* 체크박스 커서 스타일 */
-.ProseMirror ul[data-type="taskList"] input[type="checkbox"] {
+.tiptap-container ul[data-type="taskList"] input[type="checkbox"] {
   cursor: pointer;
 }
 
 /* 중첩된 Task 리스트 마진 제거 */
-.ProseMirror ul[data-type="taskList"] ul[data-type="taskList"] {
+.tiptap-container ul[data-type="taskList"] ul[data-type="taskList"] {
   margin: 0;
 }
 
 /* 체크된 항목 텍스트에 취소선 적용 (기존 스타일 유지) */
-.ProseMirror li[data-checked="true"] > div {
+.tiptap-container li[data-checked="true"] > div {
   text-decoration: line-through;
   opacity: 0.6;
 }
 
-/* 에디터 첫 요소의 불필요한 상단 마진 제거 */
-.ProseMirror > :first-child {
-  margin-top: 0;
-}
-
 /* 인용(Blockquote) 스타일 */
-.ProseMirror blockquote {
+.tiptap-container blockquote {
   border-left: 5px solid #a3a3a3;
   margin: 1.5rem 0;
   padding-left: 0.8rem;
@@ -129,7 +318,7 @@ u {
   font-style: normal;
 }
 /* 코드 블록(Code Block) 스타일 */
-.ProseMirror pre {
+.tiptap-container pre {
   background: #666666;
   color: white;
   border-radius: 0.5rem;
@@ -139,22 +328,22 @@ u {
 }
 
 /* 코드 블록 내부의 code 태그 스타일 */
-.ProseMirror pre code {
+.tiptap-container pre code {
   font-family: IntelOneMono !important;
   background: none;
   color: inherit;
   padding: 0;
 }
 
-.ProseMirror table {
+.tiptap-container table {
   /* 테이블 선을 한 줄로 합쳐줍니다. */
   border-collapse: collapse;
   width: 100%;
   margin: 1rem 0;
 }
 
-.ProseMirror table th,
-.ProseMirror table td {
+.tiptap-container table th,
+.tiptap-container table td {
   border: 1px solid #ccc; /* 기본 선 색상 */
   padding: 8px 12px;
   vertical-align: top;

@@ -22,7 +22,7 @@ export default function TitleEditor({
         codeBlock: false
       }),
       Placeholder.configure({
-        placeholder: placeholder || "내용을 입력하세요.",
+        placeholder: placeholder || "제목을 입력하세요.",
         emptyEditorClass: "is-editor-empty"
       })
     ],

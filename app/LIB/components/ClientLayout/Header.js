@@ -16,6 +16,7 @@ import TitleEditor from "../Write/TitleEditor";
 import { useDebounce } from "../../utils/useDebounce";
 import WriteHeader from "./Header/WriteHeader";
 import { MdSync } from "react-icons/md";
+import { useSetting } from "../../context/SettingContext";
 export default function Header({
   user,
   userLoading,
@@ -30,17 +31,19 @@ export default function Header({
   isSaving
 }) {
   const router = useRouter();
+  const { setting } = useSetting();
 
   // ■■■■■■■■■ 제목 ■■■■■■■■■■■■■■■■
   const [title, setTitle] = useState("");
-  const debouncedTitle = useDebounce(title, 1000);
+  const debouncedTitle = useDebounce(title, setting.autoSaveDelay);
 
   useEffect(() => {
     if (document) {
-      setTitle(document.title || "제목 없음");
+      setTitle(document.title);
     }
   }, [document]);
   // 제목이 바뀔 때마다 저장
+
   useEffect(() => {
     if (document && debouncedTitle !== document.title) {
       saveDocument(document._id, { ...document, title: debouncedTitle });

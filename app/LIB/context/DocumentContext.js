@@ -71,6 +71,7 @@ export function DocumentProvider({ children }) {
     const titleToSave = docData.title;
     const contentToSave = docData.content;
     const settingsToSave = docData.docSetting;
+    const bulletStyleToSave = docData.bulletStyle;
 
     // DB에 업데이트할 최종 데이터 객체
     const dataForDB = {};
@@ -82,6 +83,10 @@ export function DocumentProvider({ children }) {
     // [추가] docSetting이 있으면 DB에 업데이트할 내용에 추가
     if (typeof settingsToSave !== "undefined") {
       dataForDB.docSetting = settingsToSave;
+    }
+    // [추가] bulletStyle이 있으면 DB에 업데이트할 내용에 추가
+    if (typeof bulletStyleToSave !== "undefined") {
+      dataForDB.bulletStyle = bulletStyleToSave;
     }
 
     try {
@@ -105,6 +110,7 @@ export function DocumentProvider({ children }) {
           title: titleToSave ?? prev.title, // 새로 저장한 title 우선 적용
           content: contentToSave ?? prev.content, // 새로 저장한 content 우선 적용
           docSetting: settingsToSave ?? prev.docSetting,
+          bulletStyle: bulletStyleToSave ?? prev.bulletStyle,
           contentURL: dataForDB.contentURL ?? prev.contentURL
         }));
       }

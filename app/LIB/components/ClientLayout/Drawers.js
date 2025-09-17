@@ -1,3 +1,5 @@
+import SettingDrawer from "./Drawer/SettingDrawer";
+
 export default function Drawers({
   openLeftDrawer,
   setOpenLeftDrawer,
@@ -6,5 +8,12 @@ export default function Drawers({
   openSettingsDrawer,
   setOpenSettingsDrawer
 }) {
-  return <></>;
+  return (
+    <>
+      <SettingDrawer
+        openSettingsDrawer={openSettingsDrawer}
+        setOpenSettingsDrawer={setOpenSettingsDrawer}
+      />
+    </>
+  );
 }

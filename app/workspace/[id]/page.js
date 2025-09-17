@@ -2,27 +2,31 @@
 
 import { useDocument } from "@/app/LIB/context/DocumentContext";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Div, DotSpinner, notification, toast } from "sud-ui";
+import { Div, DotSpinner, toast } from "sud-ui";
 import ContentEditor from "@/app/LIB/components/Write/ContentEditor";
 import { useDebounce } from "@/app/LIB/utils/useDebounce";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { useSetting } from "@/app/LIB/context/SettingContext";
 
 export default function WritePage() {
   const { document, saveDocument, loading } = useDocument();
   const { setEditor, setSaveAction, setDownloadPDFAction } = useEditorContext();
 
+  const { setting } = useSetting();
+
   // content 상태는 이제 HTML 문자열을 저장합니다.
   const [content, setContent] = useState(null);
 
-  const debouncedContent = useDebounce(content, 10000);
+  const debouncedContent = useDebounce(content, setting.autoSaveDelay);
 
   const editorRef = useRef(null);
 
   // 자동 저장 로직 (HTML 기준)
   useEffect(() => {
+    if (!setting.autoSave) return; // 자동 저장이 비활성화된 경우 아무 작업도 하지 않음
     if (
       !loading &&
       debouncedContent !== null &&
@@ -33,7 +37,7 @@ export default function WritePage() {
         saveDocument(document._id, { ...document, content: debouncedContent });
       }
     }
-  }, [debouncedContent, document, saveDocument, loading]);
+  }, [debouncedContent, document, saveDocument, loading, setting.autoSave]);
 
   // 문서 로딩 로직 (HTML 기준)
   useEffect(() => {
@@ -151,6 +155,14 @@ export default function WritePage() {
       backgroundPosition: `0 ${paddingTop}px`
     };
   };
+  const handleEditorCreated = useCallback(
+    (editor) => {
+      if (editor && editor.view) {
+        setEditor(editor);
+      }
+    },
+    [setEditor]
+  );
 
   return (
     <div className="flex flex-col items-center justify-center gap-10 pd-y-10">
@@ -168,7 +180,8 @@ export default function WritePage() {
             value={content}
             onChange={setContent}
             autoFocus={true}
-            onEditorCreated={setEditor}
+            onEditorCreated={handleEditorCreated}
+            bulletStyle={document?.bulletStyle}
           />
         </Div>
       )}
