@@ -23,18 +23,16 @@ export default function Content({
     >
       {/* 왼쪽패널 */}
       {showLeftPanel && isDocument && (
-        <div className="h-full overflow-y-auto">
-          <PanelContainer
-            side="left"
-            widgets={left}
-            layoutMode={layoutMode}
-            isDropTarget={overContainerId === "left"}
-          />
-        </div>
+        <PanelContainer
+          side="left"
+          widgets={left}
+          layoutMode={layoutMode}
+          isDropTarget={overContainerId === "left"}
+        />
       )}
       {/* 본문 */}
       <div
-        className="pd-10 w-px-800 overflow-y-auto"
+        className="pd-10 w-100 overflow-y-auto"
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "top center"
@@ -44,14 +42,12 @@ export default function Content({
       </div>
       {/* 오른쪽패널 */}
       {showRightPanel && isDocument && (
-        <div className="h-full overflow-y-auto">
-          <PanelContainer
-            side="right"
-            widgets={right}
-            layoutMode={layoutMode}
-            isDropTarget={overContainerId === "right"}
-          />
-        </div>
+        <PanelContainer
+          side="right"
+          widgets={right}
+          layoutMode={layoutMode}
+          isDropTarget={overContainerId === "right"}
+        />
       )}
     </Div>
   );

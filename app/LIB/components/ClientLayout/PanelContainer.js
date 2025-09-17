@@ -58,14 +58,14 @@ export default function PanelContainer({
         ref={setNodeRef}
         className={`panel-${side} sticky top-0 flex flex-col item-${
           side === "left" ? "sta jus-end" : "end"
-        } overflow-y-auto pd-10 gap-20`}
+        } overflow-y-auto pd-20 gap-20 h-full`}
         background={isDropTarget && "white-8"}
         style={{
           width:
             layoutMode === "desktop"
               ? "calc((100vw - 800px) / 2)"
               : "calc(100vw - 800px)",
-          maxWidth: "100%"
+          maxWidth: "350px"
         }}
       >
         {widgets.map((widgetId) => (

@@ -10,7 +10,7 @@ export default function WidgetCard({
   const Icon = icon;
   return (
     <Card
-      className="hover-shadow-7"
+      className="hover-shadow-6"
       size="sm"
       width={"100%"}
       border={false}
