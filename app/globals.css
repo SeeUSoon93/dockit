@@ -43,6 +43,16 @@ body {
   min-width: 10px;
 }
 
+/* 페이지 구분용 HorizontalRule 숨김 */
+.tiptap hr[class="page-break"] {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  height: 0 !important;
+  visibility: hidden !important;
+}
+
 .tiptap p.is-editor-empty::before {
   content: attr(data-placeholder);
   color: #aaa;

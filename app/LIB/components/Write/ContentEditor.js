@@ -35,6 +35,7 @@ import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import Indent from "./indent-extension";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
 
 // styleValueMap: ul 심볼과 ol 접미사를 실제 CSS content 값으로 변환
 const styleValueMap = {
@@ -118,6 +119,7 @@ export default function ContentEditor({
       OrderedList,
       ListItem,
       TaskList,
+      HorizontalRule,
       TaskItem.configure({
         nested: true
       }),

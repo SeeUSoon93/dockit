@@ -32,10 +32,10 @@ export default function WritePage() {
     if (!editor) return;
 
     let pageCount = 1; // 첫 번째 페이지
-
+    
     // HorizontalRule 개수 세기
     editor.state.doc.descendants((node) => {
-      if (node.type.name === "horizontalRule") {
+      if (node.type.name === 'horizontalRule') {
         pageCount++;
       }
     });
@@ -47,7 +47,7 @@ export default function WritePage() {
   // 컨텐츠 변경시 페이지 수 재계산
   useEffect(() => {
     if (!editor) return;
-
+    
     const timer = setTimeout(calculatePages, 100);
     return () => clearTimeout(timer);
   }, [content, editor, calculatePages]);
@@ -69,7 +69,7 @@ export default function WritePage() {
     }
 
     // HorizontalRule을 기준으로 페이지 나누기
-    let css = "";
+    let css = '';
 
     if (currentPage === 1) {
       // 첫 번째 페이지: 첫 번째 HR까지만 표시
@@ -85,7 +85,7 @@ export default function WritePage() {
       // 다른 페이지들: n번째 HR부터 (n+1)번째 HR까지 표시
       const prevHR = currentPage - 1;
       const nextHR = currentPage;
-
+      
       css = `
         .ProseMirror > * {
           display: none !important;
