@@ -44,13 +44,59 @@ export default function WritePage() {
     setTotalPages(pageCount);
   }, [editor]);
 
-  // 컨텐츠 변경시 페이지 수 재계산
+  // 🤖 자동 페이지 나누기: 페이지 높이 초과시 HorizontalRule 삽입
+  const autoPageBreak = useCallback(() => {
+    if (!editor || !document?.docSetting) return;
+
+    const widthRatio = 800 / document.docSetting.pageWidth;
+    const paddingTop = document.docSetting.paddingTop * widthRatio;
+    const paddingBottom = document.docSetting.paddingBottom * widthRatio;
+    const pageHeight = document.docSetting.pageHeight * widthRatio;
+    const contentHeight = pageHeight - paddingTop - paddingBottom;
+
+    const editorElement = editor.view.dom;
+    let currentHeight = 0;
+    let needsPageBreak = false;
+    let insertPosition = null;
+
+    // DOM 순회하며 페이지 높이 초과 지점 찾기
+    Array.from(editorElement.children).forEach((element) => {
+      if (element.tagName === "HR") {
+        // HorizontalRule을 만나면 높이 리셋
+        currentHeight = 0;
+        return;
+      }
+
+      const elementHeight = element.offsetHeight;
+
+      if (currentHeight + elementHeight > contentHeight && currentHeight > 0) {
+        // 페이지 높이 초과! 이 요소 앞에 페이지 구분선 필요
+        needsPageBreak = true;
+        insertPosition = editor.view.posAtDOM(element, 0);
+        return;
+      }
+
+      currentHeight += elementHeight;
+    });
+
+    // 페이지 구분선 삽입
+    if (needsPageBreak && insertPosition !== null) {
+      editor.chain().insertContentAt(insertPosition, "<hr>").run();
+      console.log(`🔄 자동 페이지 구분선 삽입: 위치 ${insertPosition}`);
+    }
+  }, [editor, document?.docSetting]);
+
+  // 컨텐츠 변경시 페이지 수 재계산 + 자동 페이지 나누기
   useEffect(() => {
     if (!editor) return;
 
-    const timer = setTimeout(calculatePages, 100);
+    const timer = setTimeout(() => {
+      autoPageBreak(); // 먼저 자동 페이지 나누기
+      calculatePages(); // 그 다음 페이지 수 계산
+    }, 200);
+
     return () => clearTimeout(timer);
-  }, [content, editor, calculatePages]);
+  }, [content, editor, calculatePages, autoPageBreak]);
 
   // HorizontalRule 기반 페이지 표시
   useEffect(() => {
