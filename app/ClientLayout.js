@@ -36,6 +36,8 @@ import { SettingProvider } from "./LIB/context/SettingContext";
 import { useZoom } from "./LIB/hook/useZoom";
 import Footer from "./LIB/components/ClientLayout/Footer";
 import { EditorProvider } from "./LIB/context/EditorContext";
+import { MemoProvider } from "./LIB/context/MemoContext";
+import { widgets } from "./LIB/constant/widgets";
 
 function LayoutContent({ children }) {
   const { document, loadDocument, clearDocument, saveDocument, isSaving } =
@@ -83,7 +85,7 @@ function LayoutContent({ children }) {
       >
         <DndContext
           sensors={sensors}
-          onDragStart={(event) => setActiveId(event, setActiveId)}
+          onDragStart={(event) => setActiveId(event.active.id)}
           onDragEnd={(event) =>
             handleDragEnd(
               event,
@@ -141,9 +143,7 @@ function LayoutContent({ children }) {
           {/*■■■■■ 드래그 오버레이 ■■■■■*/}
           <DragOverlay>
             {activeId ? (
-              <div className="w-full max-w-px-350">
-                {/* 복사할 위젯 들어갈 곳 */}
-              </div>
+              <div className="w-100 max-w-px-350">{widgets[activeId]}</div>
             ) : null}
           </DragOverlay>
         </DndContext>
@@ -170,7 +170,9 @@ export default function ClientLayout({ children }) {
             <DocumentProvider>
               <SettingProvider>
                 <EditorProvider>
-                  <LayoutContent>{children}</LayoutContent>
+                  <MemoProvider>
+                    <LayoutContent>{children}</LayoutContent>
+                  </MemoProvider>
                 </EditorProvider>
               </SettingProvider>
             </DocumentProvider>

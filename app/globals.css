@@ -24,6 +24,15 @@ body {
   color: var(--foreground);
 }
 
+/* 스크롤바 숨기기 */
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
+.overflow-y-auto {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 /* 
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■
 ■■■■■■ tiptap css ■■■■■■

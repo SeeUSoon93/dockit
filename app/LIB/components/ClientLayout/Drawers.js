@@ -1,4 +1,5 @@
 import SettingDrawer from "./Drawer/SettingDrawer";
+import WidgetDrawer from "./Drawer/WidgetDrawer";
 
 export default function Drawers({
   openLeftDrawer,
@@ -13,6 +14,10 @@ export default function Drawers({
       <SettingDrawer
         openSettingsDrawer={openSettingsDrawer}
         setOpenSettingsDrawer={setOpenSettingsDrawer}
+      />
+      <WidgetDrawer
+        openWidgetDrawer={openWidgetDrawer}
+        setOpenWidgetDrawer={setOpenWidgetDrawer}
       />
     </>
   );
