@@ -8,8 +8,14 @@ import {
   uploadString,
   getDownloadURL
 } from "firebase/storage";
-
-import { createContext, useContext, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect
+} from "react";
 import { fetchData, updateData } from "../utils/dataUtils"; // 데이터 관련 API 함수
 import { auth } from "../config/firebaseConfig";
 
@@ -21,14 +27,55 @@ export function DocumentProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // ID로 문서를 불러오는 함수
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [docSetting, setDocSetting] = useState(null);
+  const [bulletStyle, setBulletStyle] = useState(null);
+  const [contentURL, setContentURL] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
+
+  const latestStateRef = useRef();
+
+  useEffect(() => {
+    latestStateRef.current = {
+      title,
+      content,
+      docSetting,
+      bulletStyle
+    };
+  }, [title, content, docSetting, bulletStyle]);
+
+  const generateThumbnail = useCallback(async (htmlContent, docSettings) => {
+    try {
+      const response = await fetch("/api/generate-thumbnail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          html: htmlContent,
+          settings: docSettings
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("썸네일 생성 실패");
+      }
+
+      const data = await response.json();
+      return data.thumbnail;
+    } catch (error) {
+      console.error("썸네일 생성 오류:", error);
+      return null;
+    }
+  }, []);
+
   const loadDocument = useCallback(async (id) => {
     setLoading(true);
     try {
       const data = await fetchData("documents", id);
       let fetchedDoc = data.content;
 
-      // docSetting이 없으면 기본값을 설정하고 DB에 저장하는 로직
       if (!fetchedDoc.docSetting) {
         const defaultSettings = {
           pageWidth: 210,
@@ -39,10 +86,8 @@ export function DocumentProvider({ children }) {
           paddingRight: 25.4
         };
 
-        // 불러온 문서 객체에 기본 설정 추가
         fetchedDoc = { ...fetchedDoc, docSetting: defaultSettings };
 
-        // 이 문서를 위해 기본 설정을 DB에 저장 (다음 로드부터는 이 값 사용)
         await updateData("documents", id, { docSetting: defaultSettings });
       }
 
@@ -50,9 +95,16 @@ export function DocumentProvider({ children }) {
         const response = await fetch(fetchedDoc.contentURL);
         const content = await response.text();
         setDocument({ ...fetchedDoc, content });
+        setContent(content);
       } else {
         setDocument(fetchedDoc);
       }
+      setTitle(fetchedDoc.title || "");
+      setContent(fetchedDoc.content || "");
+      setDocSetting(fetchedDoc.docSetting || null);
+      setBulletStyle(fetchedDoc.bulletStyle || null);
+      setContentURL(fetchedDoc.contentURL || "");
+      setThumbnail(fetchedDoc.thumbnail || null);
     } catch (error) {
       console.error("문서 로드 실패:", error);
       setDocument(null);
@@ -61,66 +113,59 @@ export function DocumentProvider({ children }) {
     }
   }, []);
 
-  // 문서를 저장하는 함수
-  const saveDocument = useCallback(async (id, docData) => {
-    const user = auth.currentUser;
-    if (!user || !id || !docData) return;
+  const saveDocument = useCallback(
+    async (id, payload = {}) => {
+      const user = auth.currentUser;
+      if (!user || !id) return;
 
-    setIsSaving(true);
-    // 1. 저장할 데이터를 명확하게 분리합니다.
-    const titleToSave = docData.title;
-    const contentToSave = docData.content;
-    const settingsToSave = docData.docSetting;
-    const bulletStyleToSave = docData.bulletStyle;
+      setIsSaving(true);
 
-    // DB에 업데이트할 최종 데이터 객체
-    const dataForDB = {};
+      const latestState = latestStateRef.current;
 
-    // 2. 제목이 있으면 DB에 업데이트할 내용에 추가
-    if (typeof titleToSave !== "undefined") {
-      dataForDB.title = titleToSave;
-    }
-    // [추가] docSetting이 있으면 DB에 업데이트할 내용에 추가
-    if (typeof settingsToSave !== "undefined") {
-      dataForDB.docSetting = settingsToSave;
-    }
-    // [추가] bulletStyle이 있으면 DB에 업데이트할 내용에 추가
-    if (typeof bulletStyleToSave !== "undefined") {
-      dataForDB.bulletStyle = bulletStyleToSave;
-    }
+      const dataToSave = {
+        ...latestState,
+        ...payload
+      };
 
-    try {
-      // 3. 콘텐츠가 있으면 Storage에 업로드하고 DB 업데이트 내용에 URL 추가
-      if (typeof contentToSave !== "undefined") {
-        const storageRef = ref(storage, `documents/${user.uid}/${id}.html`);
-        await uploadString(storageRef, contentToSave, "raw", {
-          /*...*/
-        });
-        const downloadURL = await getDownloadURL(storageRef);
-        dataForDB.contentURL = downloadURL;
+      const dataForDB = {
+        title: dataToSave.title,
+        docSetting: dataToSave.docSetting,
+        bulletStyle: dataToSave.bulletStyle
+      };
+
+      try {
+        if (dataToSave.content) {
+          const storageRef = ref(storage, `documents/${user.uid}/${id}.html`);
+          await uploadString(storageRef, dataToSave.content, "raw", {});
+          const downloadURL = await getDownloadURL(storageRef);
+          dataForDB.contentURL = downloadURL;
+
+          const thumbnailBase64 = await generateThumbnail(
+            dataToSave.content,
+            dataToSave.docSetting
+          );
+          if (thumbnailBase64) {
+            dataForDB.thumbnail = thumbnailBase64;
+          }
+        }
+
+        if (Object.keys(dataForDB).length > 0) {
+          await updateData("documents", id, dataForDB);
+
+          setDocument((prev) => ({
+            ...prev,
+            ...dataForDB,
+            content: dataToSave.content
+          }));
+        }
+      } catch (error) {
+        console.error("문서 저장 실패:", error);
       }
+      setIsSaving(false);
+    },
+    [generateThumbnail]
+  );
 
-      // 4. DB에 한 번만 업데이트 요청
-      if (Object.keys(dataForDB).length > 0) {
-        await updateData("documents", id, dataForDB);
-
-        // 5. React 상태도 업데이트
-        setDocument((prev) => ({
-          ...prev,
-          title: titleToSave ?? prev.title, // 새로 저장한 title 우선 적용
-          content: contentToSave ?? prev.content, // 새로 저장한 content 우선 적용
-          docSetting: settingsToSave ?? prev.docSetting,
-          bulletStyle: bulletStyleToSave ?? prev.bulletStyle,
-          contentURL: dataForDB.contentURL ?? prev.contentURL
-        }));
-      }
-    } catch (error) {
-      console.error("문서 저장 실패:", error);
-    }
-    setIsSaving(false);
-  }, []);
-
-  // 현재 문서를 비우는 함수
   const clearDocument = useCallback(() => {
     setDocument(null);
   }, []);
@@ -129,6 +174,18 @@ export function DocumentProvider({ children }) {
     document,
     loading,
     isSaving,
+    title,
+    setTitle,
+    content,
+    setContent,
+    docSetting,
+    setDocSetting,
+    bulletStyle,
+    setBulletStyle,
+    contentURL,
+    setContentURL,
+    thumbnail,
+    setThumbnail,
     loadDocument,
     clearDocument,
     saveDocument
@@ -136,12 +193,11 @@ export function DocumentProvider({ children }) {
 
   return (
     <DocumentContext.Provider value={value}>
-      {children}
+            {children}   {" "}
     </DocumentContext.Provider>
   );
 }
 
-// Custom Hook
 export function useDocument() {
   return useContext(DocumentContext);
 }

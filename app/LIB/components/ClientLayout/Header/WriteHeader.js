@@ -9,7 +9,7 @@ export default function WriteHeader() {
     return (
       <Button
         colorType="text"
-        onClick={action}
+        onClick={editor ? action : undefined}
         className={`cursor-pointer ${extraClass}`}
         icon={<Icon size={16} />}
         style={{ padding: "4px" }}
@@ -18,8 +18,10 @@ export default function WriteHeader() {
   };
 
   return (
-    <div className="pd-10 overflow-x-auto">
-      <HomeChildren renderBtn={renderBtn} editor={editor} />
-    </div>
+    editor && (
+      <div className="pd-10 overflow-x-auto">
+        <HomeChildren renderBtn={renderBtn} />
+      </div>
+    )
   );
 }

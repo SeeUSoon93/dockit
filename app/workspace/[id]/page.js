@@ -10,16 +10,21 @@ import { useEditorContext } from "@/app/LIB/context/EditorContext";
 import { useSetting } from "@/app/LIB/context/SettingContext";
 
 export default function WritePage() {
-  const { document, saveDocument, loading } = useDocument();
-  const { editor, setEditor, setSaveAction, setDownloadPDFAction } =
-    useEditorContext();
+  const {
+    document,
+    saveDocument,
+    docSetting,
+    loading,
+    content,
+    bulletStyle,
+    setContent
+  } = useDocument();
+  const { setEditor, setSaveAction, setDownloadPDFAction } = useEditorContext();
 
   const { setting } = useSetting();
-
-  const [content, setContent] = useState(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const debouncedContent = useDebounce(content, setting.autoSaveDelay);
-
-  const editorRef = useRef(null);
 
   // 자동 저장
   useEffect(() => {
@@ -35,15 +40,6 @@ export default function WritePage() {
       }
     }
   }, [debouncedContent, document, saveDocument, loading, setting.autoSave]);
-
-  // 문서 로딩 로직
-  useEffect(() => {
-    if (document?.content) {
-      setContent(document.content);
-    } else if (document) {
-      setContent("");
-    }
-  }, [document]);
 
   const handleSave = useCallback(() => {
     // 즉시 저장 로직
@@ -81,16 +77,16 @@ export default function WritePage() {
   }, [handleSave]);
 
   const divStyle = () => {
-    if (!document?.docSetting) return {}; // docSetting이 없을 경우 대비
+    if (!docSetting) return {}; // docSetting이 없을 경우 대비
 
-    const widthRatio = 800 / document.docSetting.pageWidth;
-    const paddingTop = document.docSetting.paddingTop * widthRatio;
-    const paddingBottom = document.docSetting.paddingBottom * widthRatio;
-    const paddingLeft = document.docSetting.paddingLeft * widthRatio;
-    const paddingRight = document.docSetting.paddingRight * widthRatio;
+    const widthRatio = 800 / docSetting.pageWidth;
+    const paddingTop = docSetting.paddingTop * widthRatio;
+    const paddingBottom = docSetting.paddingBottom * widthRatio;
+    const paddingLeft = docSetting.paddingLeft * widthRatio;
+    const paddingRight = docSetting.paddingRight * widthRatio;
 
     // 실제 용지 높이 계산
-    const pageHeight = document.docSetting.pageHeight * widthRatio;
+    const pageHeight = docSetting.pageHeight * widthRatio;
 
     return {
       paddingTop: `${paddingTop}px`,
@@ -109,7 +105,9 @@ export default function WritePage() {
     },
     [setEditor]
   );
-
+  if (!mounted) {
+    return;
+  }
   return (
     <div className="flex flex-col items-center justify-center gap-10 pd-y-10">
       {loading || content === null ? (
@@ -127,7 +125,7 @@ export default function WritePage() {
               onChange={setContent}
               autoFocus={true}
               onEditorCreated={handleEditorCreated}
-              bulletStyle={document?.bulletStyle}
+              bulletStyle={bulletStyle}
             />
           </Div>
         </div>

@@ -32,7 +32,9 @@ export default function Content({
       )}
       {/* 본문 */}
       <div
-        className="pd-10 w-100 overflow-y-auto"
+        className={`pd-10 w-100 overflow-y-auto ${
+          isDocument ? "" : "flex justify-center"
+        }`}
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "top center"

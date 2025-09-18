@@ -5,7 +5,7 @@ import { useDocument } from "../../context/DocumentContext";
 export default function Footer({ scale }) {
   const zoomPercentage = Math.round(scale * 100);
 
-  const { document } = useDocument();
+  const { content } = useDocument();
 
   const getStoryLength = (html) => {
     if (!html) return 0;
@@ -14,7 +14,7 @@ export default function Footer({ scale }) {
     return text.replace(/\s+/g, "").length;
   };
 
-  const currentLength = getStoryLength(document?.content || "");
+  const currentLength = getStoryLength(content || "");
 
   return (
     <Div className="flex justify-end pd-x-10 items-center">

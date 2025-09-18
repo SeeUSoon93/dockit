@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card, Divider, Typography } from "sud-ui";
+import { Card, Divider, Image, Typography } from "sud-ui";
 import { createData, fetchDataList } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
@@ -25,34 +25,41 @@ export default function WorkspacePage() {
     }
   }, [router, user, userLoading]);
 
+  const handleClickNew = async () => {
+    const newDoc = await createData("documents");
+    router.push(`/workspace/${newDoc.content._id}`);
+  };
+
   const cardRender = (item) => (
     <Card
-      key={item._id}
+      key={item._id || "new-doc"}
       shadow="none"
-      width={200}
+      width={"100%"}
       onMouseEnter={() => setHoverCardId(item._id)}
       onMouseLeave={() => setHoverCardId(null)}
       background={hoverCardId === item._id ? "white-8" : "transparent"}
       border={false}
       className="cursor-pointer"
-      onClick={() => router.push(`/workspace/${item._id}`)}
+      onClick={() => {
+        if (!item._id) {
+          handleClickNew();
+        } else {
+          router.push(`/workspace/${item._id}`);
+        }
+      }}
     >
       <div className="flex flex-col items-center justify-center gap-10">
-        <Card width={100} height={150} />
-        <Typography pretendard="B">{item.title}</Typography>
+        <Card width={130} height={180} thumb={item.thumbnail || null} />
+        <Typography pretendard="B">{item.title || "이름 없음"}</Typography>
       </div>
     </Card>
   );
-
+  console.log("Document List:", docList);
   return (
-    <div>
-      {/* 새 문서 및 양식 */}
-      <div className="flex flex-wrap gap-10">
-        {cardRender({ title: "새 문서", _id: "new" })}
-      </div>
-      <Divider />
-      {/* 최근 문서 */}
-      <div className="flex flex-wrap gap-10">
+    <div className="flex flex-col w-50 items-">
+      <div className="grid col-3 gap-10">
+        {" "}
+        {cardRender({ title: "새 문서" })}
         {docList.map((item) => cardRender(item))}
       </div>
     </div>

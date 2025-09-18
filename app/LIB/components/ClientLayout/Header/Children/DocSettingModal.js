@@ -7,7 +7,14 @@ export default function DocSettingModal({
   setDocSettingModalOpen,
   docSettingModalOpen
 }) {
-  const { document, saveDocument } = useDocument();
+  const {
+    document,
+    saveDocument,
+    docSetting,
+    setDocSetting,
+    bulletStyle,
+    setBulletStyle
+  } = useDocument();
 
   const inputProps = {
     size: "sm",
@@ -15,32 +22,26 @@ export default function DocSettingModal({
     style: { width: "100%" }
   };
 
-  const [documentSetting, setDocumentSetting] = useState(null);
-  const [bulletStyle, setBulletStyle] = useState(null);
-
   useEffect(() => {
-    if (document) {
-      setDocumentSetting(document.docSetting);
-      setBulletStyle(
-        document.bulletStyle || {
-          h1: "decimal",
-          h2: "decimal",
-          h3: "decimal",
-          "list-1": "disc",
-          "list-2": "disc",
-          "list-3": "disc",
-          "list-4": "disc",
-          "order-list-1": "decimal-dot",
-          "order-list-2": "decimal-dot",
-          "order-list-3": "decimal-dot",
-          "order-list-4": "decimal-dot"
-        }
-      );
+    if (!bulletStyle) {
+      setBulletStyle({
+        h1: "decimal",
+        h2: "decimal",
+        h3: "decimal",
+        "list-1": "disc",
+        "list-2": "disc",
+        "list-3": "disc",
+        "list-4": "disc",
+        "order-list-1": "decimal-dot",
+        "order-list-2": "decimal-dot",
+        "order-list-3": "decimal-dot",
+        "order-list-4": "decimal-dot"
+      });
     }
-  }, [document]);
+  }, [bulletStyle]);
 
   const handleChange = (name, value) => {
-    setDocumentSetting({ ...documentSetting, [name]: value });
+    setDocSetting({ ...docSetting, [name]: value });
   };
 
   const handleBulletStyleChange = (level, value) => {
@@ -89,7 +90,7 @@ export default function DocSettingModal({
       open={docSettingModalOpen}
       onClose={() => setDocSettingModalOpen(false)}
     >
-      {documentSetting && bulletStyle && (
+      {docSetting && bulletStyle && (
         <div className="flex flex-col gap-20">
           <div className="flex items-center gap-5">
             <SettingOutline size={25} />
@@ -109,14 +110,14 @@ export default function DocSettingModal({
               <Input
                 label="문서 가로"
                 {...inputProps}
-                value={documentSetting.pageWidth}
+                value={docSetting.pageWidth}
                 onChange={(e) => handleChange("pageWidth", e.target.value)}
               />
               <Input
                 label="문서 세로"
                 {...inputProps}
                 name="pageHeight"
-                value={documentSetting.pageHeight}
+                value={docSetting.pageHeight}
                 onChange={(e) => handleChange("pageHeight", e.target.value)}
               />
             </div>
@@ -126,28 +127,28 @@ export default function DocSettingModal({
                 label="상단 여백"
                 {...inputProps}
                 name="paddingTop"
-                value={documentSetting.paddingTop}
+                value={docSetting.paddingTop}
                 onChange={(e) => handleChange("paddingTop", e.target.value)}
               />
               <Input
                 label="하단 여백"
                 {...inputProps}
                 name="paddingBottom"
-                value={documentSetting.paddingBottom}
+                value={docSetting.paddingBottom}
                 onChange={(e) => handleChange("paddingBottom", e.target.value)}
               />
               <Input
                 label="왼쪽 여백"
                 {...inputProps}
                 name="paddingLeft"
-                value={documentSetting.paddingLeft}
+                value={docSetting.paddingLeft}
                 onChange={(e) => handleChange("paddingLeft", e.target.value)}
               />
               <Input
                 label="오른쪽 여백"
                 {...inputProps}
                 name="paddingRight"
-                value={documentSetting.paddingRight}
+                value={docSetting.paddingRight}
                 onChange={(e) => handleChange("paddingRight", e.target.value)}
               />
             </div>
@@ -258,10 +259,7 @@ export default function DocSettingModal({
               background="mint"
               color="mint-1"
               onClick={() => {
-                saveDocument(document._id, {
-                  docSetting: documentSetting,
-                  bulletStyle: bulletStyle
-                });
+                saveDocument(document._id);
                 setDocSettingModalOpen(false);
               }}
             >
@@ -270,7 +268,6 @@ export default function DocSettingModal({
             <Button
               onClick={() => {
                 setDocSettingModalOpen(false);
-                setDocumentSetting(document.docSetting);
               }}
             >
               취소

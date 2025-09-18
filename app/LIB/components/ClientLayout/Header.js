@@ -17,6 +17,7 @@ import { useDebounce } from "../../utils/useDebounce";
 import WriteHeader from "./Header/WriteHeader";
 import { MdSync } from "react-icons/md";
 import { useSetting } from "../../context/SettingContext";
+import { useDocument } from "../../context/DocumentContext";
 export default function Header({
   user,
   userLoading,
@@ -32,25 +33,20 @@ export default function Header({
 }) {
   const router = useRouter();
   const { setting } = useSetting();
+  const { title, setTitle } = useDocument();
 
   // ■■■■■■■■■ 제목 ■■■■■■■■■■■■■■■■
-  const [title, setTitle] = useState("");
   const debouncedTitle = useDebounce(title, setting.autoSaveDelay);
 
-  useEffect(() => {
-    if (document) {
-      setTitle(document.title);
-    }
-  }, [document]);
   // 제목이 바뀔 때마다 저장
-
   useEffect(() => {
-    if (document && debouncedTitle !== document.title) {
-      saveDocument(document._id, { ...document, title: debouncedTitle });
+    if (title && debouncedTitle !== document.title) {
+      setTitle(debouncedTitle);
+      saveDocument(document._id, { title: debouncedTitle });
     }
-  }, [debouncedTitle, document, saveDocument]);
+  }, [title, debouncedTitle, saveDocument, document, setTitle]);
 
-  //■■■■■■■■■■ 아이콘 렌더링 ■■■■■■■■■■■■■■■■
+  //■■■■■■■■■■ 아이콘 렌더링 ■■■■■■■■■■■■■■
   // 왼쪽 아이콘
   const leftIcons = [
     {

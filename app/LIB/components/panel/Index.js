@@ -101,14 +101,14 @@ const toRoman = (num) => {
 };
 
 export default function Index({ dragHandleProps }) {
-  const { document } = useDocument();
+  const { content, bulletStyle } = useDocument();
 
   const headings = useMemo(() => {
-    if (!document?.content) return [];
+    if (!content) return [];
 
     try {
       const parser = new DOMParser();
-      const doc = parser.parseFromString(document.content, "text/html");
+      const doc = parser.parseFromString(content, "text/html");
       const nodes = Array.from(doc.querySelectorAll("h1, h2, h3"));
 
       const counters = { h1: 0, h2: 0, h3: 0 };
@@ -131,7 +131,6 @@ export default function Index({ dragHandleProps }) {
         }
 
         // bulletStyle에서 해당 레벨의 스타일 가져오기
-        const bulletStyle = document?.bulletStyle;
         const styleKey = bulletStyle?.[levelKey];
         const cssStyle = counterStyleMap[styleKey] || "decimal";
 
@@ -164,7 +163,7 @@ export default function Index({ dragHandleProps }) {
       console.error("목차 파싱 실패:", err);
       return [];
     }
-  }, [document?.content, document?.bulletStyle]);
+  }, [content, bulletStyle]);
 
   return (
     <WidgetCard
