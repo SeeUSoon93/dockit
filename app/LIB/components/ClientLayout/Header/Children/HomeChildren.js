@@ -90,7 +90,7 @@ export default function HomeChildren({ renderBtn }) {
     if (!editor) return;
 
     const updateFontSize = () => {
-      const size = editor.getAttributes("textStyle").fontSize;
+      const size = editor.getAttributes("textStyle")?.fontSize;
       if (size) {
         // 'px' 단위를 제거하고 숫자로 변환
         setCurrentFontSize(parseInt(size, 10));
@@ -115,7 +115,7 @@ export default function HomeChildren({ renderBtn }) {
       // setFontSize 대신 setMark를 사용하고, px 단위를 붙여줍니다.
       editor
         .chain()
-        .focus()
+        .focus()?
         .setMark("textStyle", { fontSize: `${size}px` })
         .run();
     }
@@ -124,10 +124,10 @@ export default function HomeChildren({ renderBtn }) {
   return (
     <div className="flex gap-5 items-center">
       {/* 취소 & 재실행 */}
-      {renderBtn(TbArrowBackUp, () => editor?.chain().focus().undo().run(), "")}
+      {renderBtn(TbArrowBackUp, () => editor?.chain()?.focus()?.undo()?.run(), "")}
       {renderBtn(
         TbArrowForwardUp,
-        () => editor?.chain().focus().redo().run(),
+        () => editor?.chain()?.focus()?.redo()?.run(),
         ""
       )}
       {/* 인쇄 & 저장 */}
@@ -151,7 +151,7 @@ export default function HomeChildren({ renderBtn }) {
             console.log(value);
             setFont(value);
             // 2. 에디터에 즉시 폰트 변경 명령 실행
-            editor?.chain().focus().setFontFamily(value).run();
+            editor?.chain()?.focus()?.setFontFamily(value)?.run();
           }}
         />
       </div>
@@ -209,23 +209,23 @@ export default function HomeChildren({ renderBtn }) {
       <>
         {renderBtn(
           PiTextBBold,
-          () => editor.chain().focus().toggleBold().run(),
+          () => editor.chain()?.focus()?.toggleBold()?.run(),
           ""
         )}
         {renderBtn(
           PiTextItalicBold,
-          () => editor.chain().focus().toggleItalic().run(),
+          () => editor.chain()?.focus()?.toggleItalic()?.run(),
           ""
         )}
         {renderBtn(
           PiTextStrikethroughBold,
-          () => editor.chain().focus().toggleStrike().run(),
+          () => editor.chain()?.focus()?.toggleStrike()?.run(),
 
           ""
         )}
         {renderBtn(
           PiTextUnderlineBold,
-          () => editor.chain().focus().toggleUnderline().run(),
+          () => editor.chain()?.focus()?.toggleUnderline()?.run(),
           ""
         )}
       </>
@@ -239,7 +239,7 @@ export default function HomeChildren({ renderBtn }) {
             color={fontColor}
             onChange={(color) => {
               setFontColor(color.hex);
-              editor?.chain().focus().setColor(color.hex).run();
+              editor?.chain()?.focus()?.setColor(color.hex)?.run();
             }}
           >
             {renderBtn(MdFormatColorText, () => {}, "")}
@@ -253,7 +253,7 @@ export default function HomeChildren({ renderBtn }) {
             color={bgColor}
             onChange={(color) => {
               setBgColor(color.hex);
-              editor?.chain().focus().setBackgroundColor(color.hex).run();
+              editor?.chain()?.focus()?.setBackgroundColor(color.hex)?.run();
             }}
           >
             {renderBtn(MdOutlineFormatColorFill, () => {}, "")}
@@ -269,28 +269,28 @@ export default function HomeChildren({ renderBtn }) {
       <>
         {renderBtn(
           PiTextAlignLeftBold,
-          () => editor?.chain().focus().setTextAlign("left").run(),
+          () => editor?.chain()?.focus()?.setTextAlign("left")?.run(),
           ""
         )}
         {renderBtn(
           PiTextAlignCenterBold,
-          () => editor?.chain().focus().setTextAlign("center").run(),
+          () => editor?.chain()?.focus()?.setTextAlign("center")?.run(),
           ""
         )}
         {renderBtn(
           PiTextAlignRightBold,
-          () => editor?.chain().focus().setTextAlign("right").run(),
+          () => editor?.chain()?.focus()?.setTextAlign("right")?.run(),
           ""
         )}
         {/* [추가] 들여쓰기 & 내어쓰기 버튼 */}
         {renderBtn(
           PiTextOutdentFill,
-          () => editor?.chain().focus().outdent().run(),
+          () => editor?.chain()?.focus()?.outdent()?.run(),
           ""
         )}
         {renderBtn(
           PiTextIndentFill,
-          () => editor?.chain().focus().indent().run(),
+          () => editor?.chain()?.focus()?.indent()?.run(),
           ""
         )}
       </>
@@ -303,7 +303,7 @@ export default function HomeChildren({ renderBtn }) {
       <>
         {renderBtn(
           PiHighlighterFill,
-          () => editor?.chain().focus().toggleHighlight().run(),
+          () => editor?.chain()?.focus()?.toggleHighlight()?.run(),
           ""
         )}
       </>
@@ -316,17 +316,17 @@ export default function HomeChildren({ renderBtn }) {
       <>
         {renderBtn(
           PiListBulletsBold,
-          () => editor?.chain().focus().toggleBulletList().run(),
+          () => editor?.chain()?.focus()?.toggleBulletList()?.run(),
           ""
         )}
         {renderBtn(
           PiListNumbersBold,
-          () => editor?.chain().focus().toggleOrderedList().run(),
+          () => editor?.chain()?.focus()?.toggleOrderedList()?.run(),
           ""
         )}
         {renderBtn(
           PiListChecksBold,
-          () => editor?.chain().focus().toggleTaskList().run(),
+          () => editor?.chain()?.focus()?.toggleTaskList()?.run(),
           ""
         )}
       </>
@@ -339,12 +339,12 @@ export default function HomeChildren({ renderBtn }) {
       <>
         {renderBtn(
           TbBlockquote,
-          () => editor?.chain().focus().toggleBlockquote().run(),
+          () => editor?.chain()?.focus()?.toggleBlockquote()?.run(),
           ""
         )}
         {renderBtn(
           Code,
-          () => editor?.chain().focus().toggleCodeBlock().run(),
+          () => editor?.chain()?.focus()?.toggleCodeBlock()?.run(),
           ""
         )}
         {renderBtn(
@@ -352,7 +352,7 @@ export default function HomeChildren({ renderBtn }) {
           () =>
             editor
               ?.chain()
-              .focus()
+              .focus()?
               .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
               .run(),
           ""

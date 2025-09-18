@@ -1,8 +1,11 @@
 import { Button } from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { MdKeyboardCommandKey } from "react-icons/md";
+import { useEditorContext } from "@/app/LIB/context/EditorContext";
 
 export default function SpecialChar({ dragHandleProps }) {
+  const { editor } = useEditorContext();
+
   const keyMap = [
     { key: "·", char: "·" },
     { key: "「", char: "「" },
@@ -13,6 +16,12 @@ export default function SpecialChar({ dragHandleProps }) {
     { key: "》", char: "》" }
   ];
 
+  const insertSpecialChar = (char) => {
+    if (editor) {
+      editor.chain().focus().insertContent(char).run();
+    }
+  };
+
   return (
     <WidgetCard
       icon={MdKeyboardCommandKey}
@@ -22,7 +31,12 @@ export default function SpecialChar({ dragHandleProps }) {
       <div className="w-100 flex flex-col gap-10">
         <div className="grid col-7 gap-5">
           {keyMap.map(({ key, char }) => (
-            <Button key={key} onClick={() => {}} shadow="none">
+            <Button
+              key={key}
+              size="sm"
+              onClick={() => insertSpecialChar(char)}
+              shadow="none"
+            >
               {char}
             </Button>
           ))}
