@@ -220,7 +220,7 @@ export function DocumentProvider({ children }) {
 
   return (
     <DocumentContext.Provider value={value}>
-            {children}   {" "}
+      {children}
     </DocumentContext.Provider>
   );
 }
