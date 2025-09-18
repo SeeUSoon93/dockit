@@ -7,8 +7,6 @@ import ContentEditor from "@/app/LIB/components/Write/ContentEditor";
 import { useDebounce } from "@/app/LIB/utils/useDebounce";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { useSetting } from "@/app/LIB/context/SettingContext";
 
 export default function WritePage() {

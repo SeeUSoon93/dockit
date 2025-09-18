@@ -19,7 +19,7 @@ import {
   TextStyle
 } from "@tiptap/extension-text-style";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import TypeBubble from "./TypeBubble";
 import Blockquote from "@tiptap/extension-blockquote";
 import CodeBlock from "@tiptap/extension-code-block";
@@ -36,6 +36,8 @@ import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import Indent from "./indent-extension";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import Image from "@tiptap/extension-image";
+import { useEditorContext } from "../../context/EditorContext";
 
 // styleValueMap: ul 심볼과 ol 접미사를 실제 CSS content 값으로 변환
 const styleValueMap = {
@@ -108,11 +110,15 @@ export default function ContentEditor({
   onEditorCreated,
   bulletStyle
 }) {
+  const { selectedObject, setSelectedObject } = useEditorContext();
   const editor = useEditor({
     extensions: [
       // 2. StarterKit을 제거하고, 필요한 기능들을 직접 배열에 추가합니다.
       Document,
       Paragraph,
+      Image.configure({
+        allowBase64: true
+      }),
       Blockquote,
       CodeBlock,
       BulletList,
@@ -180,12 +186,67 @@ export default function ContentEditor({
     () => generateCssVariables(bulletStyle),
     [bulletStyle]
   );
+
+  // 이미지 및 테이블 선택 상태 감지
+  const checkObjectSelection = useCallback(() => {
+    if (!editor) return;
+    const { selection } = editor.state;
+
+    // 현재 선택된 노드가 이미지인지 확인
+    if (selection.node && selection.node.type.name === "image") {
+      setSelectedObject(selection);
+    }
+    // 테이블 셀이 선택되었는지 확인
+    else if (
+      selection.$from.parent.type.name === "tableCell" ||
+      selection.$from.parent.type.name === "tableHeader"
+    ) {
+      // 테이블 전체를 찾기 위해 상위로 올라감
+      let tableNode = null;
+      let tablePos = null;
+
+      editor.state.doc.descendants((node, pos) => {
+        if (
+          node.type.name === "table" &&
+          pos <= selection.from &&
+          pos + node.nodeSize >= selection.to
+        ) {
+          tableNode = node;
+          tablePos = pos;
+          return false;
+        }
+      });
+
+      if (tableNode && tablePos !== null) {
+        setSelectedObject({
+          node: tableNode,
+          from: tablePos,
+          to: tablePos + tableNode.nodeSize
+        });
+      }
+    } else {
+      setSelectedObject(null);
+    }
+  }, [editor, setSelectedObject]);
+  // 이미지 및 테이블 선택 상태 감지를 위한 이벤트 리스너
+  useEffect(() => {
+    if (editor) {
+      editor.on("selectionUpdate", checkObjectSelection);
+      editor.on("transaction", checkObjectSelection);
+
+      // 초기 체크
+      checkObjectSelection();
+
+      return () => {
+        editor.off("selectionUpdate", checkObjectSelection);
+        editor.off("transaction", checkObjectSelection);
+      };
+    }
+  }, [editor, checkObjectSelection]);
+
   // 헤딩과 리스트 스타일 동기화 함수 - 성공했던 방식으로 개별 처리
   const syncHeadingStyles = useCallback(() => {
-    console.log("🔧 syncHeadingStyles 함수 실행됨");
-
     if (!editor) {
-      console.log("❌ editor가 없음");
       return;
     }
 
@@ -203,7 +264,6 @@ export default function ContentEditor({
 
     // 1. 헤딩 개별 처리 - 성공했던 방식 사용
     const headings = editorElement.querySelectorAll("h1, h2, h3");
-    console.log(`📝 찾은 헤딩 개수: ${headings.length}`);
 
     headings.forEach((heading, index) => {
       const span = heading.querySelector("span");
@@ -221,14 +281,6 @@ export default function ContentEditor({
   color: ${computedStyle.color} !important;
 }
         `;
-
-        console.log(
-          `✅ 헤딩 ${heading.tagName} (${index + 1}번째) 스타일 적용:`,
-          {
-            fontSize: computedStyle.fontSize,
-            fontFamily: computedStyle.fontFamily
-          }
-        );
       }
     });
 
@@ -236,7 +288,6 @@ export default function ContentEditor({
     const listItems = editorElement.querySelectorAll(
       "ul:not([data-type='taskList']) li, ol li"
     );
-    console.log(`📝 찾은 리스트 아이템 개수: ${listItems.length}`);
 
     listItems.forEach((li, index) => {
       const span = li.querySelector("span");
@@ -252,17 +303,11 @@ export default function ContentEditor({
   color: ${computedStyle.color} !important;
 }
         `;
-
-        console.log(`✅ 리스트 아이템 (${index + 1}번째) 스타일 적용:`, {
-          fontSize: computedStyle.fontSize,
-          fontFamily: computedStyle.fontFamily
-        });
       }
     });
 
     // 스타일 적용 (성공했던 방식 그대로)
     styleElement.textContent = allStyles;
-    console.log("✨ 모든 개별 스타일 적용 완료");
   }, [editor]);
   useEffect(() => {
     if (editor) {
@@ -306,7 +351,8 @@ export default function ContentEditor({
       className="relative w-full tiptap-container prose prose-sm sm:prose-base"
       style={editorStyleVariables}
     >
-      {editor && <TypeBubble editor={editor} />}
+      {editor && !selectedObject && <TypeBubble editor={editor} />}
+
       {editor && <EditorContent editor={editor} />}
     </div>
   );

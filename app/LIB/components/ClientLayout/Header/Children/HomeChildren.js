@@ -1,8 +1,8 @@
 import { TbArrowBackUp, TbArrowForwardUp, TbBlockquote } from "react-icons/tb";
-import { Code, Print } from "sud-icons";
+import { Code, PhotoOutline, Print } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
-import { ColorPicker, Divider, Select } from "sud-ui";
+import { ColorPicker, Divider, Select, Upload } from "sud-ui";
 import { useEffect, useState } from "react";
 import { HiMinus, HiPlus } from "react-icons/hi";
 import { GrDocumentConfig } from "react-icons/gr";
@@ -114,17 +114,32 @@ export default function HomeChildren({ renderBtn }) {
     if (editor) {
       // setFontSize 대신 setMark를 사용하고, px 단위를 붙여줍니다.
       editor
-        .chain()
-        .focus()?
-        .setMark("textStyle", { fontSize: `${size}px` })
+        ?.chain()
+        ?.focus()
+        ?.setMark("textStyle", { fontSize: `${size}px` })
         .run();
     }
+  };
+
+  const handleUploadImg = (file) => {
+    if (!file) return;
+    console.log(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = reader.result;
+      editor?.chain()?.focus()?.setImage({ src: img, width: "100%" }).run();
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
     <div className="flex gap-5 items-center">
       {/* 취소 & 재실행 */}
-      {renderBtn(TbArrowBackUp, () => editor?.chain()?.focus()?.undo()?.run(), "")}
+      {renderBtn(
+        TbArrowBackUp,
+        () => editor?.chain()?.focus()?.undo()?.run(),
+        ""
+      )}
       {renderBtn(
         TbArrowForwardUp,
         () => editor?.chain()?.focus()?.redo()?.run(),
@@ -352,11 +367,19 @@ export default function HomeChildren({ renderBtn }) {
           () =>
             editor
               ?.chain()
-              .focus()?
-              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+              ?.focus()
+              ?.insertTable({ rows: 3, cols: 3, withHeaderRow: true })
               .run(),
           ""
         )}
+        <Upload
+          listType="none"
+          onChange={(img) => {
+            handleUploadImg(img);
+          }}
+        >
+          {renderBtn(PhotoOutline, () => {}, "")}
+        </Upload>
       </>
       <Divider
         vertical

@@ -1,10 +1,10 @@
 import Template from "./Template";
 import { Button, Div, Drawer, Typography } from "sud-ui";
 
-import { GoNumber } from "react-icons/go";
 import { FaBookBookmark, FaCalculator, FaNoteSticky } from "react-icons/fa6";
 import { MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
+import { TbEdit } from "react-icons/tb";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
@@ -44,7 +44,7 @@ export default function WidgetDrawer({
         title="위젯"
         content={
           <div className="grid col-3 w-100 gap-20">
-            {renderWidgetItem(GoNumber, "글자 수", "charCount")}
+            {renderWidgetItem(TbEdit, "편집기", "objectEditor")}
             {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
             {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
             {renderWidgetItem(FaCalculator, "계산기", "calculator")}
