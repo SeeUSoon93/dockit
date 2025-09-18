@@ -76,7 +76,7 @@ export default function Dictionary({ dragHandleProps }) {
                 </Typography>
                 <div className="flex flex-col gap-30">
                   {/* 검색결과 */}
-                  {result.item.slice(0, visibleCount).map((i, idx) => (
+                  {result.item?.slice(0, visibleCount).map((i, idx) => (
                     <div key={idx} className="flex flex-col gap-5">
                       <Typography pretendard="SB" size="lg">
                         {i.word}
