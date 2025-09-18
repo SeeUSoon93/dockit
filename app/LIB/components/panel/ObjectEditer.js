@@ -5,6 +5,7 @@ import { Typography } from "sud-ui";
 
 import React from "react";
 import ImageEditor from "./EditorComponent/ImageEditor";
+import TableEditor from "./EditorComponent/TableEditor";
 
 export default function ObjectEditer({ dragHandleProps }) {
   const { selectedObject, editor } = useEditorContext();
@@ -70,18 +71,22 @@ export default function ObjectEditer({ dragHandleProps }) {
         <div className="flex jus-bet">
           {selectedObject ? (
             <div className="flex flex-col gap-10 items-center w-100">
-              <Typography>선택된 객체</Typography>
               {selectedObject.node.type.name === "image" && (
-                <ImageEditor
-                  updateImageAttr={updateImageAttr}
-                  width={width}
-                  height={height}
-                  setWidth={setWidth}
-                  setHeight={setHeight}
-                  selectedObject={selectedObject}
-                />
+                <>
+                  <Typography>선택된 이미지</Typography>
+                  <ImageEditor
+                    updateImageAttr={updateImageAttr}
+                    width={width}
+                    height={height}
+                    setWidth={setWidth}
+                    setHeight={setHeight}
+                    selectedObject={selectedObject}
+                  />
+                </>
               )}
-              {selectedObject.node.type.name === "table" && <></>}
+              {selectedObject.node.type.name === "table" && (
+                <TableEditor editor={editor} selectedObject={selectedObject} />
+              )}
             </div>
           ) : (
             <Typography color={"cool-gray-7"}>

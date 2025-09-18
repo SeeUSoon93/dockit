@@ -27,8 +27,7 @@ export default function SpecialChar({ dragHandleProps }) {
     { key: "→", char: "→" },
     { key: "←", char: "←" },
     { key: "↑", char: "↑" },
-    { key: "↓", char: "↓" },
-    { key: "※", char: "※" }
+    { key: "↓", char: "↓" }
   ];
 
   const insertSpecialChar = (char) => {

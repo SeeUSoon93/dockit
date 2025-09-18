@@ -38,6 +38,7 @@ import Indent from "./indent-extension";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Image from "@tiptap/extension-image";
 import { useEditorContext } from "../../context/EditorContext";
+import CustomTable from "./CustomTable";
 
 // styleValueMap: ul 심볼과 ol 접미사를 실제 CSS content 값으로 변환
 const styleValueMap = {
@@ -152,6 +153,7 @@ export default function ContentEditor({
       Italic,
       Strike,
       Indent,
+      CustomTable,
       Underline,
       Placeholder.configure({
         placeholder: "내용을 입력하세요...",
@@ -196,36 +198,33 @@ export default function ContentEditor({
     if (selection.node && selection.node.type.name === "image") {
       setSelectedObject(selection);
     }
-    // 테이블 셀이 선택되었는지 확인
-    else if (
-      selection.$from.parent.type.name === "tableCell" ||
-      selection.$from.parent.type.name === "tableHeader"
-    ) {
-      // 테이블 전체를 찾기 위해 상위로 올라감
-      let tableNode = null;
-      let tablePos = null;
+    // 테이블 내부에 있는지 확인 - 더 간단한 방법
+    else {
+      // 현재 위치에서 상위로 올라가면서 테이블을 찾음
+      let isInTable = false;
+      let tableInfo = null;
 
-      editor.state.doc.descendants((node, pos) => {
-        if (
-          node.type.name === "table" &&
-          pos <= selection.from &&
-          pos + node.nodeSize >= selection.to
-        ) {
-          tableNode = node;
-          tablePos = pos;
-          return false;
+      // selection.$from에서 상위 노드들을 확인
+      for (let depth = selection.$from.depth; depth > 0; depth--) {
+        const node = selection.$from.node(depth);
+        if (node.type.name === "table") {
+          isInTable = true;
+          const pos = selection.$from.before(depth);
+          tableInfo = {
+            node: node,
+            from: pos,
+            to: pos + node.nodeSize,
+            type: "table"
+          };
+          break;
         }
-      });
-
-      if (tableNode && tablePos !== null) {
-        setSelectedObject({
-          node: tableNode,
-          from: tablePos,
-          to: tablePos + tableNode.nodeSize
-        });
       }
-    } else {
-      setSelectedObject(null);
+
+      if (isInTable && tableInfo) {
+        setSelectedObject(tableInfo);
+      } else {
+        setSelectedObject(null);
+      }
     }
   }, [editor, setSelectedObject]);
   // 이미지 및 테이블 선택 상태 감지를 위한 이벤트 리스너

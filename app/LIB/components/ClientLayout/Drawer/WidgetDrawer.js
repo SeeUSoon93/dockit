@@ -4,7 +4,7 @@ import { Button, Div, Drawer, Typography } from "sud-ui";
 import { FaBookBookmark, FaCalculator, FaNoteSticky } from "react-icons/fa6";
 import { MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
-import { TbEdit } from "react-icons/tb";
+import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
@@ -49,6 +49,7 @@ export default function WidgetDrawer({
             {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
             {renderWidgetItem(FaCalculator, "계산기", "calculator")}
             {renderWidgetItem(MdKeyboardCommandKey, "특수문자", "specialChar")}
+            {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}
           </div>
         }
       />

@@ -261,7 +261,7 @@ export default function HomeChildren({ renderBtn }) {
           </ColorPicker>
         </div>
         {/* 글자 배경색 */}
-        <div onMouseDown={(event) => event.preventDefault()}>
+        {/* <div onMouseDown={(event) => event.preventDefault()}>
           <ColorPicker
             open={bgColorPickerOpen}
             setOpen={setBgColorPickerOpen}
@@ -273,7 +273,7 @@ export default function HomeChildren({ renderBtn }) {
           >
             {renderBtn(MdOutlineFormatColorFill, () => {}, "")}
           </ColorPicker>
-        </div>
+        </div> */}
       </>
       <Divider
         vertical

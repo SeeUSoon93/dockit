@@ -62,10 +62,8 @@ const Indent = Extension.create({
       indent:
         () =>
         ({ tr, dispatch }) => {
-          console.log("=== INDENT 명령 실행됨 ===");
           const { selection } = tr;
           const { from, to } = selection;
-          console.log("Selection:", from, to);
 
           tr.doc.nodesBetween(from, to, (node, pos) => {
             console.log(

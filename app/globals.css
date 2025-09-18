@@ -344,17 +344,47 @@ u {
 }
 
 .tiptap-container table {
-  /* 테이블 선을 한 줄로 합쳐줍니다. */
   border-collapse: collapse;
-  width: 100%;
+  width: 100% !important;
   margin: 1rem 0;
 }
 
-.tiptap-container table th,
-.tiptap-container table td {
-  border: 1px solid #ccc; /* 기본 선 색상 */
+.tiptap-container table th {
+  background: #5cdbd3;
+  border-left: 1px solid #006d75;
+  border-right: 1px solid #006d75;
+  border-bottom: 2px solid #006d75;
   padding: 8px 12px;
   vertical-align: top;
+}
+.tiptap-container table td {
+  border: 1px solid #006d75;
+  padding: 8px 12px;
+  vertical-align: top;
+}
+
+/* 테이블 가장 왼쪽 셀의 왼쪽 선 제거 */
+.tiptap-container table th:first-child,
+.tiptap-container table td:first-child {
+  border-left: none;
+}
+
+/* 테이블 가장 오른쪽 셀의 오른쪽 선 제거 */
+.tiptap-container table th:last-child,
+.tiptap-container table td:last-child {
+  border-right: none;
+}
+
+/* 테이블 첫 번째 행의 상단 선을 두껍게 */
+.tiptap-container table tr:first-child th,
+.tiptap-container table tr:first-child td {
+  border-top: 2px solid #006d75;
+}
+
+/* 테이블 마지막 행의 하단 선을 두껍게 */
+.tiptap-container table tr:last-child th,
+.tiptap-container table tr:last-child td {
+  border-bottom: 2px solid #006d75;
 }
 
 .sud-select,
