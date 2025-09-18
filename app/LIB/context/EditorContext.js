@@ -11,7 +11,6 @@ export function EditorProvider({ children }) {
   const [downloadPDFAction, setDownloadPDFAction] = useState(null);
   const [downloadDocxAction, setDownloadDocxAction] = useState(null);
   const [selectedObject, setSelectedObject] = useState(null);
-
   const value = {
     editor,
     setEditor,

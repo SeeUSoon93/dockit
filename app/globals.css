@@ -354,12 +354,12 @@ u {
   border-left: 1px solid #006d75;
   border-right: 1px solid #006d75;
   border-bottom: 2px solid #006d75;
-  padding: 8px 12px;
+  padding: 4px 8px;
   vertical-align: top;
 }
 .tiptap-container table td {
   border: 1px solid #006d75;
-  padding: 8px 12px;
+  padding: 4px 8px;
   vertical-align: top;
 }
 

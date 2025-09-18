@@ -231,9 +231,9 @@ export default function MadeChart({ dragHandleProps }) {
       dragHandleProps={dragHandleProps}
     >
       <div className="w-100 flex flex-col gap-10">
-        <div className="flex jus-bet">
+        <div className="flex justify-center">
           {selectedObject && selectedObject.node.type.name === "table" ? (
-            <div className="flex flex-col gap-10 items-center w-100">
+            <div className="flex flex-col gap-10 items-center w-100 ">
               <Segmented
                 options={chartOptions}
                 value={chartType}

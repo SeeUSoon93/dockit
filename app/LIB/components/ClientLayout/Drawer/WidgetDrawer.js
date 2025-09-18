@@ -5,6 +5,7 @@ import { FaBookBookmark, FaCalculator, FaNoteSticky } from "react-icons/fa6";
 import { MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
+import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
@@ -50,6 +51,7 @@ export default function WidgetDrawer({
             {renderWidgetItem(FaCalculator, "계산기", "calculator")}
             {renderWidgetItem(MdKeyboardCommandKey, "특수문자", "specialChar")}
             {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}
+            {renderWidgetItem(PiListNumbersFill, "목차", "index")}
           </div>
         }
       />

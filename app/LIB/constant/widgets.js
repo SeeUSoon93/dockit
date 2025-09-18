@@ -4,6 +4,7 @@ import Memo from "../components/panel/Memo";
 import SpecialChar from "../components/panel/SpecialChar";
 import ObjectEditer from "../components/panel/ObjectEditer";
 import MadeChart from "../components/panel/MadeChart";
+import Index from "../components/panel/Index";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -11,5 +12,6 @@ export const widgets = {
   dictionary: <Dictionary />, // 사전
   memo: <Memo />, // 메모
   specialChar: <SpecialChar />, // 특수 문자
-  madeChart: <MadeChart /> // 차트
+  madeChart: <MadeChart />, // 차트
+  index: <Index /> // 목차
 };

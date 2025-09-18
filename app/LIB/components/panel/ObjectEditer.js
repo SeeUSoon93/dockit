@@ -68,7 +68,7 @@ export default function ObjectEditer({ dragHandleProps }) {
   return (
     <WidgetCard icon={TbEdit} title="편집기" dragHandleProps={dragHandleProps}>
       <div className="w-100 flex flex-col gap-10">
-        <div className="flex jus-bet">
+        <div className="flex justify-center">
           {selectedObject ? (
             <div className="flex flex-col gap-10 items-center w-100">
               {selectedObject.node.type.name === "image" && (
