@@ -36,6 +36,10 @@ export function DocumentProvider({ children }) {
 
   const latestStateRef = useRef();
 
+  // ❗ 1. 저장 로직을 위한 ref들을 추가합니다.
+  const isSavingRef = useRef(false); // 실제 저장 진행 상태 (Lock)
+  const pendingPayloadRef = useRef(null); // 저장 중에 들어온 추가 요청 보관함
+
   useEffect(() => {
     latestStateRef.current = {
       title,
@@ -118,15 +122,25 @@ export function DocumentProvider({ children }) {
       const user = auth.currentUser;
       if (!user || !id) return;
 
+      // A. 만약 이미 다른 저장이 진행 중이라면...
+      if (isSavingRef.current) {
+        // ...새로 들어온 변경사항을 '보관함'에 합쳐두고 함수를 즉시 종료합니다.
+        pendingPayloadRef.current = {
+          ...pendingPayloadRef.current,
+          ...payload
+        };
+        return;
+      }
+
+      // B. 저장을 시작합니다. '문 잠금' 상태로 만들고 UI에 표시합니다.
+      isSavingRef.current = true;
       setIsSaving(true);
 
       const latestState = latestStateRef.current;
-
       const dataToSave = {
         ...latestState,
         ...payload
       };
-
       const dataForDB = {
         title: dataToSave.title,
         docSetting: dataToSave.docSetting,
@@ -160,8 +174,21 @@ export function DocumentProvider({ children }) {
         }
       } catch (error) {
         console.error("문서 저장 실패:", error);
+      } finally {
+        // C. 저장이 끝나면...
+        const pendingPayload = pendingPayloadRef.current;
+        pendingPayloadRef.current = null; // 일단 보관함은 비웁니다.
+
+        // D. 만약 보관함에 다음 저장할 내용이 있다면...
+        if (pendingPayload) {
+          // ...'문 잠금'을 풀지 않고, 바로 다음 저장을 이어서 실행합니다.
+          saveDocument(id, pendingPayload);
+        } else {
+          // ...보관함이 비어있다면, '문 잠금'을 풀고 UI 상태도 업데이트합니다.
+          isSavingRef.current = false;
+          setIsSaving(false);
+        }
       }
-      setIsSaving(false);
     },
     [generateThumbnail]
   );
