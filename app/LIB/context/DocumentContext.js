@@ -102,9 +102,9 @@ export function DocumentProvider({ children }) {
         setContent(content);
       } else {
         setDocument(fetchedDoc);
+        setContent("");
       }
       setTitle(fetchedDoc.title || "");
-      setContent(fetchedDoc.content || "");
       setDocSetting(fetchedDoc.docSetting || null);
       setBulletStyle(fetchedDoc.bulletStyle || null);
       setContentURL(fetchedDoc.contentURL || "");

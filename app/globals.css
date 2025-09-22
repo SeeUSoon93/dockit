@@ -76,6 +76,10 @@ u {
   font-family: inherit;
 }
 
+.tiptap-container br {
+  display: initial !important;
+  content: initial !important;
+}
 /* ■■■■■■■■■■■■■■■■■■■■■■■■■■■
    최종 동적 글머리 기호 스타일 (prose 호환)
    ■■■■■■■■■■■■■■■■■■■■■■■■■■■ */
@@ -400,15 +404,18 @@ u {
 /* GmarketSans */
 @font-face {
   font-family: "GmarketSansTTFBold";
-  src: url("/fonts/GmarketSansTTFBold.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff")
+    format("woff");
 }
 @font-face {
   font-family: "GmarketSansTTFLight";
-  src: url("/fonts/GmarketSansTTFLight.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff")
+    format("woff");
 }
 @font-face {
   font-family: "GmarketSansTTFMedium";
-  src: url("/fonts/GmarketSansTTFMedium.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff")
+    format("woff");
 }
 
 /* KoPubWorld */

@@ -38,13 +38,12 @@ export default function Header({
   // ■■■■■■■■■ 제목 ■■■■■■■■■■■■■■■■
   const debouncedTitle = useDebounce(title, setting.autoSaveDelay);
 
-  // 제목이 바뀔 때마다 저장
   useEffect(() => {
-    if (title && debouncedTitle !== document.title) {
-      setTitle(debouncedTitle);
+    if (document && debouncedTitle !== document.title) {
       saveDocument(document._id, { title: debouncedTitle });
     }
-  }, [title, debouncedTitle, saveDocument, document, setTitle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTitle]);
 
   //■■■■■■■■■■ 아이콘 렌더링 ■■■■■■■■■■■■■■
   // 왼쪽 아이콘

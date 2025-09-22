@@ -251,7 +251,6 @@ export default function ContentEditor({
 
     const editorElement = editor.view.dom;
 
-    // 동적 CSS 생성
     let styleElement = document.getElementById("dynamic-heading-styles");
     if (!styleElement) {
       styleElement = document.createElement("style");
@@ -261,19 +260,20 @@ export default function ContentEditor({
 
     let allStyles = "";
 
-    // 1. 헤딩 개별 처리 - 성공했던 방식 사용
+    // 1. 헤딩 처리: 고유 ID 부여 및 타겟팅
     const headings = editorElement.querySelectorAll("h1, h2, h3");
-
     headings.forEach((heading, index) => {
+      // ✅ 고유 ID (data-sync-id)를 엘리먼트에 직접 추가
+      const syncId = `heading-${index}`;
+      heading.dataset.syncId = syncId;
+
       const span = heading.querySelector("span");
       if (span) {
         const computedStyle = window.getComputedStyle(span);
 
-        // 각 헤딩별로 전역 스타일 생성 (성공했던 방식)
+        // ✅ :nth-of-type 대신 고유 ID로 CSS 규칙 생성
         allStyles += `
-.tiptap-container ${heading.tagName.toLowerCase()}:nth-of-type(${
-          index + 1
-        })::before {
+.tiptap-container [data-sync-id="${syncId}"]::before {
   font-family: ${computedStyle.fontFamily} !important;
   font-size: ${computedStyle.fontSize} !important;
   font-weight: ${computedStyle.fontWeight} !important;
@@ -283,19 +283,22 @@ export default function ContentEditor({
       }
     });
 
-    // 2. 리스트 아이템 개별 처리
+    // 2. 리스트 아이템 처리: 고유 ID 부여 및 타겟팅
     const listItems = editorElement.querySelectorAll(
       "ul:not([data-type='taskList']) li, ol li"
     );
-
     listItems.forEach((li, index) => {
+      // ✅ 고유 ID (data-sync-id)를 엘리먼트에 직접 추가
+      const syncId = `li-${index}`;
+      li.dataset.syncId = syncId;
+
       const span = li.querySelector("span");
       if (span) {
         const computedStyle = window.getComputedStyle(span);
 
-        // 각 리스트별로 전역 스타일 생성
+        // ✅ :nth-of-type 대신 고유 ID로 CSS 규칙 생성
         allStyles += `
-.tiptap-container li:nth-of-type(${index + 1})::before {
+.tiptap-container [data-sync-id="${syncId}"]::before {
   font-family: ${computedStyle.fontFamily} !important;
   font-size: ${computedStyle.fontSize} !important;
   font-weight: ${computedStyle.fontWeight} !important;
@@ -305,9 +308,9 @@ export default function ContentEditor({
       }
     });
 
-    // 스타일 적용 (성공했던 방식 그대로)
     styleElement.textContent = allStyles;
   }, [editor]);
+
   useEffect(() => {
     if (editor) {
       editor.on("update", syncHeadingStyles);

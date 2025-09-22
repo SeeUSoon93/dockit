@@ -24,7 +24,7 @@ import {
   PiTextStrikethroughBold,
   PiTextUnderlineBold
 } from "react-icons/pi";
-import { MdFormatColorText, MdOutlineFormatColorFill } from "react-icons/md";
+import { MdFormatColorText } from "react-icons/md";
 import DocSettingModal from "./DocSettingModal";
 export default function HomeChildren({ renderBtn }) {
   const { editor, printAction, saveAction, downloadPDFAction } =
@@ -34,9 +34,6 @@ export default function HomeChildren({ renderBtn }) {
 
   const [fontColorPickerOpen, setFontColorPickerOpen] = useState(false);
   const [fontColor, setFontColor] = useState("#000000");
-
-  const [bgColorPickerOpen, setBgColorPickerOpen] = useState(false);
-  const [bgColor, setBgColor] = useState("#ffffff");
 
   const [docSettingModalOpen, setDocSettingModalOpen] = useState(false);
 
@@ -92,10 +89,8 @@ export default function HomeChildren({ renderBtn }) {
     const updateFontSize = () => {
       const size = editor.getAttributes("textStyle")?.fontSize;
       if (size) {
-        // 'px' 단위를 제거하고 숫자로 변환
         setCurrentFontSize(parseInt(size, 10));
       } else {
-        // 기본 폰트 크기 (또는 원하는 값)
         setCurrentFontSize(16);
       }
     };
@@ -192,20 +187,6 @@ export default function HomeChildren({ renderBtn }) {
           !editor,
           ""
         )}
-        {/* <Input
-          value={currentFontSize}
-          size="sm"
-          style={{ width: "30px" }}
-          border={false}
-          shadow="none"
-          onChange={(e) => {
-            const newSize = parseInt(e.target.value, 10);
-            if (!isNaN(newSize) && newSize > 0) {
-              setCurrentFontSize(newSize);
-              handleFontSize(newSize);
-            }
-          }}
-        /> */}
         <span>{currentFontSize}px</span>
         {renderBtn(
           HiPlus,
@@ -260,20 +241,6 @@ export default function HomeChildren({ renderBtn }) {
             {renderBtn(MdFormatColorText, () => {}, "")}
           </ColorPicker>
         </div>
-        {/* 글자 배경색 */}
-        {/* <div onMouseDown={(event) => event.preventDefault()}>
-          <ColorPicker
-            open={bgColorPickerOpen}
-            setOpen={setBgColorPickerOpen}
-            color={bgColor}
-            onChange={(color) => {
-              setBgColor(color.hex);
-              editor?.chain()?.focus()?.setBackgroundColor(color.hex)?.run();
-            }}
-          >
-            {renderBtn(MdOutlineFormatColorFill, () => {}, "")}
-          </ColorPicker>
-        </div> */}
       </>
       <Divider
         vertical
