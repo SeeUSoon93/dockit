@@ -49,6 +49,8 @@ export function DocumentProvider({ children }) {
     };
   }, [title, content, docSetting, bulletStyle]);
 
+  console.log(isSaving, title);
+
   const generateThumbnail = useCallback(async (htmlContent, docSettings) => {
     try {
       const response = await fetch("/api/generate-thumbnail", {

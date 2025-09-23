@@ -27,13 +27,11 @@ export default function Header({
   setOpenWidgetDrawer,
   setOpenSettingsDrawer,
   isEditPage,
-  document,
-  saveDocument,
-  isSaving
+  document
 }) {
   const router = useRouter();
   const { setting } = useSetting();
-  const { title, setTitle } = useDocument();
+  const { title, setTitle, isSaving, saveDocument } = useDocument();
 
   // ■■■■■■■■■ 제목 ■■■■■■■■■■■■■■■■
   const debouncedTitle = useDebounce(title, setting.autoSaveDelay);

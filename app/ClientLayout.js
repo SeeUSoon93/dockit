@@ -40,8 +40,7 @@ import { MemoProvider } from "./LIB/context/MemoContext";
 import { widgets } from "./LIB/constant/widgets";
 
 function LayoutContent({ children }) {
-  const { document, loadDocument, clearDocument, saveDocument, isSaving } =
-    useDocument();
+  const { document, loadDocument, clearDocument } = useDocument();
   const { user, userLoading } = useUser();
   const { isDarkMode, setIsDarkMode } = useDarkMode();
   const { left, right, setLeft, setRight } = usePanels();
@@ -119,8 +118,6 @@ function LayoutContent({ children }) {
               setOpenSettingsDrawer={setOpenSettingsDrawer}
               isEditPage={isEditPage}
               document={document}
-              saveDocument={saveDocument}
-              isSaving={isSaving}
             />
           </Div>
           {/*■■■■■ 본문 ■■■■■*/}

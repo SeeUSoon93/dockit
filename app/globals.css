@@ -426,6 +426,7 @@ u {
     padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
+    max-width: 100% !important;
     width: 100% !important;
   }
   /* 4. 인쇄할 영역과 그 자식들만 다시 보이게 함 */
