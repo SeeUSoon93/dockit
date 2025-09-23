@@ -86,23 +86,41 @@ export default function HomeChildren({ renderBtn }) {
   useEffect(() => {
     if (!editor) return;
 
-    const updateFontSize = () => {
-      const size = editor.getAttributes("textStyle")?.fontSize;
-      if (size) {
-        setCurrentFontSize(parseInt(size, 10));
+    // ✨ 툴바의 상태(폰트 크기, 글꼴)를 한번에 업데이트하는 함수
+    const updateToolbarState = () => {
+      // 1. 현재 커서의 textStyle 속성을 한번에 가져옵니다.
+      const attrs = editor.getAttributes("textStyle");
+
+      // 2. 폰트 크기 상태를 업데이트합니다.
+      const fontSize = attrs?.fontSize;
+      if (fontSize) {
+        setCurrentFontSize(parseInt(fontSize, 10));
       } else {
-        setCurrentFontSize(16);
+        setCurrentFontSize(16); // 기본값
+      }
+
+      // 3. 폰트 패밀리(글꼴) 상태를 업데이트합니다.
+      const fontFamily = attrs?.fontFamily;
+      if (fontFamily) {
+        setFont(fontFamily);
+      } else {
+        setFont("Pretendard-Medium"); // 기본값
       }
     };
 
-    editor.on("transaction", updateFontSize);
-    editor.on("selectionUpdate", updateFontSize);
+    // 4. 에디터의 내용이나 선택 영역이 변경될 때마다 툴바 상태를 업데이트합니다.
+    editor.on("transaction", updateToolbarState);
+    editor.on("selectionUpdate", updateToolbarState);
 
+    // 5. 컴포넌트가 처음 로드될 때 초기 상태를 설정합니다.
+    updateToolbarState();
+
+    // 6. 컴포넌트가 사라질 때 이벤트 리스너를 정리합니다.
     return () => {
-      editor.off("transaction", updateFontSize);
-      editor.off("selectionUpdate", updateFontSize);
+      editor.off("transaction", updateToolbarState);
+      editor.off("selectionUpdate", updateToolbarState);
     };
-  }, [editor]);
+  }, [editor]); // 의존성 배열은 그대로 [editor] 입니다.
 
   // [추가] 폰트 크기 변경 로직을 처리하는 함수
   const handleFontSize = (size) => {

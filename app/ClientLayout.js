@@ -82,6 +82,7 @@ function LayoutContent({ children }) {
         className="flex flex-col w-screen overflow-hidden h-dvh"
         color="mint-10"
         background={"white-9"}
+        id="main-layout"
       >
         <DndContext
           sensors={sensors}
@@ -106,6 +107,7 @@ function LayoutContent({ children }) {
           <Div
             className="z-10 rounded-t-none shadow-sm rounded-b-2xl"
             background="mint-1"
+            id="header"
           >
             <Header
               user={user}

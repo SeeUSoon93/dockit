@@ -17,6 +17,7 @@ export async function POST(request) {
 
     const page = await browser.newPage();
 
+    await page.emulateMediaType("screen");
     // 3. 받은 HTML을 페이지의 콘텐츠로 설정합니다.
     // networkidle0 옵션은 모든 네트워크 연결이 500ms 이상 없을 때까지 기다립니다.
     // (이미지 로딩 등을 기다리기 위함)

@@ -53,7 +53,8 @@ export default function WritePage() {
     setContent,
     title
   } = useDocument();
-  const { setEditor, setSaveAction, setDownloadPDFAction } = useEditorContext();
+  const { setSaveAction, setDownloadPDFAction, editor, setPrintAction } =
+    useEditorContext();
 
   const { setting } = useSetting();
   const [mounted, setMounted] = useState(false);
@@ -82,16 +83,12 @@ export default function WritePage() {
   const handleDownloadPDF = useCallback(async () => {
     toast.info("PDF 생성 중입니다. 잠시만 기다려주세요...");
     try {
-      // --- ⬇️ PDF 생성을 위한 HTML 준비 과정 (추가된 부분) ⬇️ ---
-
-      // 1. 현재 페이지에 적용된 모든 <style>과 <link rel="stylesheet"> 태그를 가져옵니다.
       const styleTags = Array.from(
         window.document.querySelectorAll('style, link[rel="stylesheet"]')
       )
         .map((tag) => tag.outerHTML)
         .join("");
 
-      // 2. body에 들어갈 내용(content)과 위에서 찾은 스타일을 합쳐 완전한 HTML 문서를 만듭니다.
       const combinedHtml = `
       <!DOCTYPE html>
       <html>
@@ -110,8 +107,6 @@ export default function WritePage() {
       // 3. <link> 태그로 연결된 외부 CSS 내용을 <style> 태그 안으로 모두 넣어줍니다.
       const finalHtml = await inlineCssStyles(combinedHtml);
 
-      // --- ⬆️ HTML 준비 과정 끝 ⬆️ ---
-
       // 4. 준비된 HTML을 API로 전송하여 PDF를 생성합니다.
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
@@ -121,12 +116,12 @@ export default function WritePage() {
         body: JSON.stringify({
           html: finalHtml, // 스타일이 모두 포함된 최종 HTML 전달
           settings: {
-            pageWidth: 210,
-            pageHeight: 297,
-            paddingTop: 25.4,
-            paddingBottom: 25.4,
-            paddingLeft: 25.4,
-            paddingRight: 25.4
+            pageWidth: docSetting?.pageWidth || 210,
+            pageHeight: docSetting?.pageHeight || 297,
+            paddingTop: docSetting?.paddingTop || 25.4,
+            paddingBottom: docSetting?.paddingBottom || 25.4,
+            paddingLeft: docSetting?.paddingLeft || 25.4,
+            paddingRight: docSetting?.paddingRight || 25.4
           }
         })
       });
@@ -149,26 +144,57 @@ export default function WritePage() {
       console.error(error);
       toast.danger("PDF를 다운로드하는 중 오류가 발생했습니다.");
     }
-  }, [content, title]);
+  }, [content, title, docSetting]);
+
+  const handlePrint = useCallback(() => {
+    window.print();
+  }, []);
 
   useEffect(() => {
     setSaveAction(() => handleSave);
     setDownloadPDFAction(() => handleDownloadPDF);
+    setPrintAction(() => handlePrint);
 
     return () => {
       setSaveAction(null);
       setDownloadPDFAction(null);
+      setPrintAction(null);
     };
-  }, [handleSave, setSaveAction, setDownloadPDFAction, handleDownloadPDF]);
+  }, [
+    handleSave,
+    setSaveAction,
+    setDownloadPDFAction,
+    handleDownloadPDF,
+    setPrintAction,
+    handlePrint
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       const isCtrlOrCmd = event.metaKey || event.ctrlKey;
 
-      // Ctrl+S 저장
       if (isCtrlOrCmd && event.key === "s") {
         event.preventDefault(); // 브라우저 기본 저장 동작 방지
         handleSave(); // 저장 함수 호출
+      }
+
+      // ✨ [수정] 서식 복사/붙여넣기 단축키
+      if (isCtrlOrCmd && event.shiftKey) {
+        // 서식 복사: Ctrl + Shift + C
+        if (event.key.toLowerCase() === "c") {
+          event.preventDefault();
+          editor?.commands.copyFormat();
+          toast.info("서식이 복사되었습니다.");
+        }
+        // 서식 붙여넣기: Ctrl + Shift + V
+        if (event.key.toLowerCase() === "v") {
+          event.preventDefault();
+          editor?.commands.pasteFormat();
+        }
+      } // ✨ [추가] Ctrl+P 인쇄 단축키
+      if (isCtrlOrCmd && event.key.toLowerCase() === "p") {
+        event.preventDefault(); // 브라우저의 기본 인쇄 동작을 막습니다.
+        handlePrint();
       }
     };
 
@@ -176,7 +202,40 @@ export default function WritePage() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleSave]);
+  }, [handleSave, editor, handlePrint]);
+
+  useEffect(() => {
+    // docSetting이 없으면 아무것도 하지 않음
+    if (!docSetting) return;
+
+    // 1. 동적으로 생성할 CSS 규칙을 문자열로 만듭니다.
+    const pageStyle = `
+      @media print {
+        @page {
+          /* 용지 크기를 설정합니다. */
+          size: ${docSetting.pageWidth}mm ${docSetting.pageHeight}mm;
+          /* 용지 여백을 설정합니다. */
+          margin: ${docSetting.paddingTop}mm ${docSetting.paddingRight}mm ${docSetting.paddingBottom}mm ${docSetting.paddingLeft}mm;
+        }
+      }
+    `;
+
+    // 2. 이 스타일을 담을 <style> 태그를 찾거나 새로 만듭니다.
+    let styleTag = window.document.getElementById("dynamic-page-style");
+    if (!styleTag) {
+      styleTag = window.document.createElement("style");
+      styleTag.id = "dynamic-page-style";
+      window.document.head.appendChild(styleTag);
+    }
+
+    // 3. <style> 태그의 내용으로 우리가 만든 CSS 규칙을 넣어줍니다.
+    styleTag.textContent = pageStyle;
+
+    // 4. 컴포넌트가 사라질 때 생성했던 <style> 태그를 정리합니다.
+    return () => {
+      styleTag.remove();
+    };
+  }, [docSetting]);
 
   const divStyle = () => {
     if (!docSetting) return {}; // docSetting이 없을 경우 대비
@@ -199,16 +258,8 @@ export default function WritePage() {
     };
   };
 
-  const handleEditorCreated = useCallback(
-    (editor) => {
-      if (editor && editor.view) {
-        setEditor(editor);
-      }
-    },
-    [setEditor]
-  );
   if (!mounted) {
-    return;
+    return null;
   }
 
   return (
@@ -221,13 +272,13 @@ export default function WritePage() {
           <Div
             background="white-10"
             className="shadow-sm w-[800px]"
+            id="paper-wrapper"
             style={{ ...divStyle() }}
           >
             <ContentEditor
               value={content}
               onChange={setContent}
               autoFocus={true}
-              onEditorCreated={handleEditorCreated}
               bulletStyle={bulletStyle}
             />
           </Div>

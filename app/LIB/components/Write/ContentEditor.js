@@ -1,28 +1,24 @@
 "use client";
 
 import { EditorContent, useEditor } from "@tiptap/react";
+import { useEditorContext } from "../../context/EditorContext";
+import { generateCssVariables } from "../../utils/tiptapUtils";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+// Tiptap extensions (Document, Paragraph, etc.)
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import Bold from "@tiptap/extension-bold";
 import Italic from "@tiptap/extension-italic";
 import Strike from "@tiptap/extension-strike";
-import { UndoRedo } from "@tiptap/extensions";
 import Underline from "@tiptap/extension-underline";
-import Placeholder from "@tiptap/extension-placeholder";
-import Heading from "@tiptap/extension-heading";
-import {
-  BackgroundColor,
-  Color,
-  FontFamily,
-  FontSize,
-  TextStyle
-} from "@tiptap/extension-text-style";
-
-import { useCallback, useEffect, useMemo, useState } from "react";
-import TypeBubble from "./TypeBubble";
+import Highlight from "@tiptap/extension-highlight";
 import Blockquote from "@tiptap/extension-blockquote";
 import CodeBlock from "@tiptap/extension-code-block";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import Image from "@tiptap/extension-image";
+import Heading from "@tiptap/extension-heading";
 import {
   BulletList,
   ListItem,
@@ -30,96 +26,37 @@ import {
   TaskItem,
   TaskList
 } from "@tiptap/extension-list";
-import Highlight from "@tiptap/extension-highlight";
-
-import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
-import Indent from "./indent-extension";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import Image from "@tiptap/extension-image";
-import { useEditorContext } from "../../context/EditorContext";
-import CustomTable from "./CustomTable";
+import CustomTable from "./CustomTable"; // Assuming CustomTable is correctly defined
+import TextAlign from "@tiptap/extension-text-align";
+import Indent from "./indent-extension"; // Assuming Indent is correctly defined
+import {
+  TextStyle,
+  Color,
+  FontFamily,
+  FontSize,
+  BackgroundColor
+} from "@tiptap/extension-text-style";
+import Placeholder from "@tiptap/extension-placeholder";
+import { UndoRedo } from "@tiptap/extensions";
+import TypeBubble from "./TypeBubble";
+import { FormatPainter } from "../../extensions/FormatPainter";
 
-// styleValueMap: ul 심볼과 ol 접미사를 실제 CSS content 값으로 변환
-const styleValueMap = {
-  disc: '"•"',
-  dash: '"-"',
-  "circle-outline": '"○"',
-  "circle-filled": '"●"',
-  "square-outline": '"□"',
-  "square-filled": '"■"',
-  "diamond-outline": '"◇"',
-  "diamond-filled": '"◆"',
-  dot: '". "',
-  paren: '") "'
-};
-
-// [추가] counterStyleMap: 사용자가 정한 value를 실제 CSS counter 타입으로 변환
-const counterStyleMap = {
-  decimal: "decimal",
-  "upper-roman": "upper-roman",
-  "lower-roman": "lower-roman",
-  "upper-alpha": "upper-alpha",
-  "lower-alpha": "lower-alpha",
-  korean: "hangul-consonant", // "ㄱ" -> CSS 'hangul-consonant'
-  "korean-2": "hangul" // "가" -> CSS 'hangul'
-};
-
-const generateCssVariables = (bulletStyle) => {
-  const variables = {};
-
-  if (bulletStyle) {
-    // [수정] h1, h2, h3 값을 counterStyleMap으로 변환
-    variables["--h1-style"] = counterStyleMap[bulletStyle.h1] || "decimal";
-    variables["--h2-style"] = counterStyleMap[bulletStyle.h2] || "decimal";
-    variables["--h3-style"] = counterStyleMap[bulletStyle.h3] || "decimal";
-
-    // 뎁스별 리스트 스타일 처리 (뎁스 4 이상은 4와 같은 스타일)
-    for (let i = 1; i <= 4; i++) {
-      const listStyle = bulletStyle[`list-${i}`] || "disc";
-      variables[`--list-${i}-content`] = styleValueMap[listStyle] || '"•"';
-    }
-
-    // 뎁스별 순서 리스트 스타일 처리 (뎁스 4 이상은 4와 같은 스타일)
-    for (let i = 1; i <= 4; i++) {
-      const orderListStyle = bulletStyle[`order-list-${i}`] || "decimal-dot";
-
-      const lastDashIndex = orderListStyle.lastIndexOf("-");
-      if (lastDashIndex !== -1) {
-        const type = orderListStyle.substring(0, lastDashIndex);
-        const suffixKey = orderListStyle.substring(lastDashIndex + 1);
-
-        variables[`--order-list-${i}-type`] =
-          counterStyleMap[type] || "decimal";
-        variables[`--order-list-${i}-suffix`] =
-          styleValueMap[suffixKey] || '". "';
-      } else {
-        variables[`--order-list-${i}-type`] =
-          counterStyleMap[orderListStyle] || "decimal";
-        variables[`--order-list-${i}-suffix`] = '". "';
-      }
-    }
-  }
-
-  return variables;
-};
-
+// ✨ props에서 onEditorCreated, editorRef 등 콜백/ref 관련 항목 모두 제거
 export default function ContentEditor({
   value,
   onChange,
   autoFocus = true,
-  onEditorCreated,
   bulletStyle
 }) {
-  const { selectedObject, setSelectedObject } = useEditorContext();
+  const [isEditable, setIsEditable] = useState(true);
+  const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
+
   const editor = useEditor({
     extensions: [
-      // 2. StarterKit을 제거하고, 필요한 기능들을 직접 배열에 추가합니다.
       Document,
       Paragraph,
-      Image.configure({
-        allowBase64: true
-      }),
+      Image.configure({ allowBase64: true }),
       Blockquote,
       CodeBlock,
       BulletList,
@@ -127,9 +64,7 @@ export default function ContentEditor({
       ListItem,
       TaskList,
       HorizontalRule,
-      TaskItem.configure({
-        nested: true
-      }),
+      TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
       Heading.configure({ levels: [1, 2, 3] }),
       Text,
@@ -138,17 +73,11 @@ export default function ContentEditor({
         types: ["heading", "paragraph"],
         defaultAlignment: "left"
       }),
-      TableKit.configure({
-        table: { resizable: true }
-      }),
+      TableKit.configure({ table: { resizable: true } }),
       Color.configure({ types: ["textStyle"] }),
-      FontFamily.configure({
-        types: ["textStyle"]
-      }),
+      FontFamily.configure({ types: ["textStyle"] }),
       BackgroundColor.configure({ types: ["textStyle"] }),
-      FontSize.configure({
-        types: ["textStyle"]
-      }),
+      FontSize.configure({ types: ["textStyle"] }),
       Bold,
       Italic,
       Strike,
@@ -160,27 +89,21 @@ export default function ContentEditor({
         emptyEditorClass: "is-editor-empty"
       }),
       UndoRedo.configure({
-        depth: 100, // 원하는 만큼의 undo/redo 깊이 설정
-        newGroupDelay: 100 // 100ms 동안의 입력은 같은 그룹으로 간주
-      })
+        depth: 100,
+        newGroupDelay: 100
+      }),
+      FormatPainter
     ],
     content: value,
     autofocus: autoFocus ? "end" : false,
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        // 에디터 영역 기본 스타일
-        class: "prose prose-sm sm:prose-base focus:outline-none w-full"
+        class: "prose prose-sm sm:prose-base focus:outline-none w-full "
       }
     },
     onUpdate: ({ editor }) => {
-      // 2. 변경된 내용을 HTML이 아닌 JSON으로 부모에게 전달합니다.
       onChange(editor.getHTML());
-    },
-    onCreate: ({ editor }) => {
-      if (onEditorCreated) {
-        onEditorCreated(editor);
-      }
     }
   });
 
@@ -189,22 +112,14 @@ export default function ContentEditor({
     [bulletStyle]
   );
 
-  // 이미지 및 테이블 선택 상태 감지
   const checkObjectSelection = useCallback(() => {
     if (!editor) return;
     const { selection } = editor.state;
-
-    // 현재 선택된 노드가 이미지인지 확인
     if (selection.node && selection.node.type.name === "image") {
       setSelectedObject(selection);
-    }
-    // 테이블 내부에 있는지 확인 - 더 간단한 방법
-    else {
-      // 현재 위치에서 상위로 올라가면서 테이블을 찾음
+    } else {
       let isInTable = false;
       let tableInfo = null;
-
-      // selection.$from에서 상위 노드들을 확인
       for (let depth = selection.$from.depth; depth > 0; depth--) {
         const node = selection.$from.node(depth);
         if (node.type.name === "table") {
@@ -219,7 +134,6 @@ export default function ContentEditor({
           break;
         }
       }
-
       if (isInTable && tableInfo) {
         setSelectedObject(tableInfo);
       } else {
@@ -227,28 +141,11 @@ export default function ContentEditor({
       }
     }
   }, [editor, setSelectedObject]);
-  // 이미지 및 테이블 선택 상태 감지를 위한 이벤트 리스너
-  useEffect(() => {
-    if (editor) {
-      editor.on("selectionUpdate", checkObjectSelection);
-      editor.on("transaction", checkObjectSelection);
 
-      // 초기 체크
-      checkObjectSelection();
-
-      return () => {
-        editor.off("selectionUpdate", checkObjectSelection);
-        editor.off("transaction", checkObjectSelection);
-      };
-    }
-  }, [editor, checkObjectSelection]);
-
-  // 헤딩과 리스트 스타일 동기화 함수 - 성공했던 방식으로 개별 처리
   const syncHeadingStyles = useCallback(() => {
     if (!editor) {
       return;
     }
-
     const editorElement = editor.view.dom;
 
     let styleElement = document.getElementById("dynamic-heading-styles");
@@ -260,20 +157,19 @@ export default function ContentEditor({
 
     let allStyles = "";
 
-    // 1. 헤딩 처리: 고유 ID 부여 및 타겟팅
+    // 1. 헤딩 개별 처리 - 성공했던 방식 사용
     const headings = editorElement.querySelectorAll("h1, h2, h3");
-    headings.forEach((heading, index) => {
-      // ✅ 고유 ID (data-sync-id)를 엘리먼트에 직접 추가
-      const syncId = `heading-${index}`;
-      heading.dataset.syncId = syncId;
 
+    headings.forEach((heading, index) => {
       const span = heading.querySelector("span");
       if (span) {
         const computedStyle = window.getComputedStyle(span);
 
-        // ✅ :nth-of-type 대신 고유 ID로 CSS 규칙 생성
+        // 각 헤딩별로 전역 스타일 생성 (성공했던 방식)
         allStyles += `
-.tiptap-container [data-sync-id="${syncId}"]::before {
+.tiptap-container ${heading.tagName.toLowerCase()}:nth-of-type(${
+          index + 1
+        })::before {
   font-family: ${computedStyle.fontFamily} !important;
   font-size: ${computedStyle.fontSize} !important;
   font-weight: ${computedStyle.fontWeight} !important;
@@ -283,22 +179,17 @@ export default function ContentEditor({
       }
     });
 
-    // 2. 리스트 아이템 처리: 고유 ID 부여 및 타겟팅
     const listItems = editorElement.querySelectorAll(
       "ul:not([data-type='taskList']) li, ol li"
     );
-    listItems.forEach((li, index) => {
-      // ✅ 고유 ID (data-sync-id)를 엘리먼트에 직접 추가
-      const syncId = `li-${index}`;
-      li.dataset.syncId = syncId;
 
+    listItems.forEach((li, index) => {
       const span = li.querySelector("span");
       if (span) {
         const computedStyle = window.getComputedStyle(span);
 
-        // ✅ :nth-of-type 대신 고유 ID로 CSS 규칙 생성
         allStyles += `
-.tiptap-container [data-sync-id="${syncId}"]::before {
+.tiptap-container li:nth-of-type(${index + 1})::before {
   font-family: ${computedStyle.fontFamily} !important;
   font-size: ${computedStyle.fontSize} !important;
   font-weight: ${computedStyle.fontWeight} !important;
@@ -311,35 +202,49 @@ export default function ContentEditor({
     styleElement.textContent = allStyles;
   }, [editor]);
 
+  // ✨ [핵심] 여러 useEffect를 하나로 통합하여 에디터의 생명주기 관리
   useEffect(() => {
     if (editor) {
+      // 1. Context에 에디터 인스턴스 등록
+      setEditor(editor);
+
+      // 2. 이벤트 리스너 등록
       editor.on("update", syncHeadingStyles);
       editor.on("selectionUpdate", syncHeadingStyles);
+      editor.on("selectionUpdate", checkObjectSelection);
+      editor.on("transaction", checkObjectSelection);
 
-      // 초기 동기화
+      // 3. 초기 상태 동기화
       syncHeadingStyles();
+      checkObjectSelection();
 
+      // 4. Cleanup: 컴포넌트가 사라질 때 모든 리스너를 제거하고 Context를 비움
       return () => {
+        setEditor(null);
         editor.off("update", syncHeadingStyles);
         editor.off("selectionUpdate", syncHeadingStyles);
+        editor.off("selectionUpdate", checkObjectSelection);
+        editor.off("transaction", checkObjectSelection);
       };
     }
-  }, [editor, syncHeadingStyles]);
+  }, [editor, setEditor, syncHeadingStyles, checkObjectSelection]);
 
-  // 3. 외부 value(JSON)와 에디터 내부 content(JSON)를 비교하고 동기화합니다.
+  // [유지] isEditable 상태는 독립적으로 관리
+  useEffect(() => {
+    if (editor) editor.setEditable(isEditable);
+  }, [isEditable, editor]);
+
+  // [유지] 외부 value와 내부 콘텐츠 동기화는 독립적으로 관리
   useEffect(() => {
     if (editor && !editor.isDestroyed) {
-      // JSON.stringify를 사용해 두 객체를 비교하는 것이 가장 확실합니다.
       const editorHTML = editor.getHTML();
-      const valueHTML = value;
-
-      if (valueHTML !== editorHTML) {
-        editor.commands.setContent(valueHTML, false);
+      if (value !== editorHTML) {
+        editor.commands.setContent(value, false);
       }
     }
   }, [value, editor]);
 
-  // 에디터 인스턴스 제거 (메모리 누수 방지, 변경 없음)
+  // [유지] 에디터 인스턴스 파괴 로직은 가장 마지막에 독립적으로 관리
   useEffect(() => {
     return () => {
       if (editor && !editor.isDestroyed) {
@@ -350,11 +255,10 @@ export default function ContentEditor({
 
   return (
     <div
-      className="relative w-full tiptap-container prose prose-sm sm:prose-base"
+      className="relative w-full tiptap-container prose prose-sm sm:prose-base printable-area"
       style={editorStyleVariables}
     >
       {editor && !selectedObject && <TypeBubble editor={editor} />}
-
       {editor && <EditorContent editor={editor} />}
     </div>
   );
