@@ -26,6 +26,7 @@ import {
 } from "react-icons/pi";
 import { MdFormatColorText } from "react-icons/md";
 import DocSettingModal from "./DocSettingModal";
+import { fontOptions } from "@/app/LIB/constant/fontOptions";
 export default function HomeChildren({ renderBtn }) {
   const { editor, printAction, saveAction, downloadPDFAction } =
     useEditorContext();
@@ -36,52 +37,6 @@ export default function HomeChildren({ renderBtn }) {
   const [fontColor, setFontColor] = useState("#000000");
 
   const [docSettingModalOpen, setDocSettingModalOpen] = useState(false);
-
-  const options = [
-    // Pretendard
-    { value: "Pretendard-Black", label: "프리텐다드 Black" },
-    { value: "Pretendard-Bold", label: "프리텐다드 Bold" },
-    { value: "Pretendard-ExtraBold", label: "프리텐다드 ExtraBold" },
-    { value: "Pretendard-ExtraLight", label: "프리텐다드 ExtraLight" },
-    { value: "Pretendard-Light", label: "프리텐다드 Light" },
-    { value: "Pretendard-Medium", label: "프리텐다드 Medium" },
-    { value: "Pretendard-Regular", label: "프리텐다드 Regular" },
-    { value: "Pretendard-SemiBold", label: "프리텐다드 SemiBold" },
-    { value: "Pretendard-Thin", label: "프리텐다드 Thin" },
-
-    // NotoSansKR
-    { value: "NotoSansKR-Black", label: "노토산스 Black" },
-    { value: "NotoSansKR-Bold", label: "노토산스 Bold" },
-    { value: "NotoSansKR-ExtraBold", label: "노토산스 ExtraBold" },
-    { value: "NotoSansKR-ExtraLight", label: "노토산스 ExtraLight" },
-    { value: "NotoSansKR-Light", label: "노토산스 Light" },
-    { value: "NotoSansKR-Medium", label: "노토산스 Medium" },
-    { value: "NotoSansKR-Regular", label: "노토산스 Regular" },
-    { value: "NotoSansKR-SemiBold", label: "노토산스 SemiBold" },
-    { value: "NotoSansKR-Thin", label: "노토산스 Thin" },
-
-    // NotoSerifKR
-    { value: "NotoSerifKR-Black", label: "노토세리프 Black" },
-    { value: "NotoSerifKR-Bold", label: "노토세리프 Bold" },
-    { value: "NotoSerifKR-ExtraLight", label: "노토세리프 ExtraLight" },
-    { value: "NotoSerifKR-Light", label: "노토세리프 Light" },
-    { value: "NotoSerifKR-Medium", label: "노토세리프 Medium" },
-    { value: "NotoSerifKR-Regular", label: "노토세리프 Regular" },
-    { value: "NotoSerifKR-SemiBold", label: "노토세리프 SemiBold" },
-
-    // GmarketSans
-    { value: "GmarketSansTTFBold", label: "지마켓산스 Bold" },
-    { value: "GmarketSansTTFLight", label: "지마켓산스 Light" },
-    { value: "GmarketSansTTFMedium", label: "지마켓산스 Medium" },
-
-    // KoPubWorld
-    { value: "KoPubWorld Batang Bold", label: "Kopub 바탕 Bold" },
-    { value: "KoPubWorld Batang Light", label: "Kopub 바탕 Light" },
-    { value: "KoPubWorld Batang Medium", label: "Kopub 바탕 Medium" },
-    { value: "KoPubWorld Dotum Bold", label: "Kopub 돋움 Bold" },
-    { value: "KoPubWorld Dotum Light", label: "Kopub 돋움 Light" },
-    { value: "KoPubWorld Dotum Medium", label: "Kopub 돋움 Medium" }
-  ];
 
   useEffect(() => {
     if (!editor) return;
@@ -172,7 +127,7 @@ export default function HomeChildren({ renderBtn }) {
           colorType="text"
           size="sm"
           shadow="none"
-          options={options}
+          options={fontOptions}
           border={false}
           value={font}
           onChange={(value) => {
