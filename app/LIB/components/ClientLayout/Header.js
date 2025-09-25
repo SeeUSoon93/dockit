@@ -18,20 +18,23 @@ import WriteHeader from "./header/WriteHeader";
 import { MdSync } from "react-icons/md";
 import { useSetting } from "../../context/SettingContext";
 import { useDocument } from "../../context/DocumentContext";
+import { useDrawerContext } from "../../context/DrawerContext";
+
 export default function Header({
   user,
   userLoading,
   isDarkMode,
   setIsDarkMode,
-  setOpenLeftDrawer,
-  setOpenWidgetDrawer,
-  setOpenSettingsDrawer,
   isEditPage,
   document,
 }) {
   const router = useRouter();
   const { setting } = useSetting();
   const { title, setTitle, isSaving, saveDocument } = useDocument();
+
+  // 드로어 상태 관리
+  const { setOpenLeftDrawer, setOpenWidgetDrawer, setOpenSettingsDrawer } =
+    useDrawerContext();
 
   // ■■■■■■■■■ 제목 ■■■■■■■■■■■■■■■■
   const debouncedTitle = useDebounce(title, setting.autoSaveDelay);

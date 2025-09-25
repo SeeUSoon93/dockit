@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 // context
 import { PanelProvider, usePanels } from "./LIB/context/PanelContext";
 import { DarkModeProvider, useDarkMode } from "./LIB/context/DarkModeContext";
@@ -14,8 +14,6 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
-
 // sud-ui
 import { Div, SoonUIDesign } from "sud-ui";
 import "sud-ui/dist/index.css";
@@ -23,15 +21,11 @@ import "sud-ui/dist/index.css";
 // theme
 import { darkTheme } from "./LIB/config/darkTheme";
 
-// utils
-import { handleDragEnd, handleDragOver } from "./LIB/utils/layoutUtils";
-
 // components
 import Header from "./LIB/components/clientLayout/Header";
 import Content from "./LIB/components/clientLayout/Content";
 import Drawers from "./LIB/components/clientLayout/Drawers";
-import { usePathname } from "next/navigation";
-import { DocumentProvider, useDocument } from "./LIB/context/DocumentContext";
+import { DocumentProvider } from "./LIB/context/DocumentContext";
 import { SettingProvider } from "./LIB/context/SettingContext";
 import { useZoom } from "./LIB/hook/useZoom";
 import Footer from "./LIB/components/clientLayout/Footer";
@@ -39,33 +33,29 @@ import { EditorProvider } from "./LIB/context/EditorContext";
 import { MemoProvider } from "./LIB/context/MemoContext";
 import { widgets } from "./LIB/constant/widgets";
 
+// 커스텀 훅들
+import { useDocumentManager } from "./LIB/hook/useDocumentManager";
+import { useDragState } from "./LIB/hook/useDragState";
+import { DrawerProvider } from "./LIB/context/DrawerContext";
+
 function LayoutContent({ children }) {
-  const { document, loadDocument, clearDocument } = useDocument();
+  // 커스텀 훅들 사용
+  const { document, isEditPage } = useDocumentManager();
   const { user, userLoading } = useUser();
   const { isDarkMode, setIsDarkMode } = useDarkMode();
   const { left, right, setLeft, setRight } = usePanels();
-
   const { containerRef, scale } = useZoom();
-  // 현재
-  const pathname = usePathname();
-  const isEditPage = pathname.split("/")[1] === "workspace";
-  const id = pathname.split("/")[2];
 
-  useEffect(() => {
-    if (isEditPage && id) {
-      loadDocument(id); // Context의 함수 호출
-    } else {
-      clearDocument(); // 다른 페이지로 이동 시 데이터 비우기
-    }
-  }, [isEditPage, id, loadDocument, clearDocument]);
-  //■■■■■■■■■■■■ 위젯 관련 상태 ■■■■■■■■■■■■■■■■■■■■■■
-  const [activeId, setActiveId] = useState(null); // 현재 드래그 중인 아이템의 ID
-  const [overContainerId, setOverContainerId] = useState(null);
+  // 드래그 상태 관리
+  const {
+    activeId,
+    overContainerId,
+    handleDragStart,
+    handleDragEnd,
+    handleDragOver,
+  } = useDragState();
 
-  //■■■■■■■■■■■■ Drawer 관련 상태 ■■■■■■■■■■■■■■■■■
-  const [openLeftDrawer, setOpenLeftDrawer] = useState(false);
-  const [openWidgetDrawer, setOpenWidgetDrawer] = useState(false);
-  const [openSettingsDrawer, setOpenSettingsDrawer] = useState(false);
+  // 드로어 상태는 Context로 관리됨
 
   //■■■■■■■■■■■■ dnd-kit 센서 설정 ■■■■■■■■■■■■■■■■■■
   //  (PointerSensor 사용, 8px 이동 시 드래그 시작)
@@ -85,22 +75,11 @@ function LayoutContent({ children }) {
       >
         <DndContext
           sensors={sensors}
-          onDragStart={(event) => setActiveId(event.active.id)}
+          onDragStart={handleDragStart}
           onDragEnd={(event) =>
-            handleDragEnd(
-              event,
-              setActiveId,
-              left,
-              right,
-              setLeft,
-              setRight,
-              arrayMove,
-              setOverContainerId
-            )
+            handleDragEnd(event, left, right, setLeft, setRight)
           }
-          onDragOver={(event) =>
-            handleDragOver(event, setOverContainerId, left, right)
-          }
+          onDragOver={(event) => handleDragOver(event, left, right)}
         >
           {/*■■■■■ 헤더 ■■■■■*/}
           <Div
@@ -113,9 +92,6 @@ function LayoutContent({ children }) {
               userLoading={userLoading}
               isDarkMode={isDarkMode}
               setIsDarkMode={setIsDarkMode}
-              setOpenLeftDrawer={setOpenLeftDrawer}
-              setOpenWidgetDrawer={setOpenWidgetDrawer}
-              setOpenSettingsDrawer={setOpenSettingsDrawer}
               isEditPage={isEditPage}
               document={document}
             />
@@ -147,14 +123,7 @@ function LayoutContent({ children }) {
           </DragOverlay>
         </DndContext>
         {/*■■■■■ 드로어 ■■■■■*/}
-        <Drawers
-          openLeftDrawer={openLeftDrawer}
-          setOpenLeftDrawer={setOpenLeftDrawer}
-          openWidgetDrawer={openWidgetDrawer}
-          setOpenWidgetDrawer={setOpenWidgetDrawer}
-          openSettingsDrawer={openSettingsDrawer}
-          setOpenSettingsDrawer={setOpenSettingsDrawer}
-        />
+        <Drawers />
       </Div>
     </SoonUIDesign>
   );
@@ -170,7 +139,9 @@ export default function ClientLayout({ children }) {
               <SettingProvider>
                 <EditorProvider>
                   <MemoProvider>
-                    <LayoutContent>{children}</LayoutContent>
+                    <DrawerProvider>
+                      <LayoutContent>{children}</LayoutContent>
+                    </DrawerProvider>
                   </MemoProvider>
                 </EditorProvider>
               </SettingProvider>

@@ -1,14 +1,17 @@
 import SettingDrawer from "./drawer/SettingDrawer";
 import WidgetDrawer from "./drawer/WidgetDrawer";
+import { useDrawerContext } from "../../context/DrawerContext";
 
-export default function Drawers({
-  openLeftDrawer,
-  setOpenLeftDrawer,
-  openWidgetDrawer,
-  setOpenWidgetDrawer,
-  openSettingsDrawer,
-  setOpenSettingsDrawer,
-}) {
+export default function Drawers() {
+  const {
+    openLeftDrawer,
+    openWidgetDrawer,
+    openSettingsDrawer,
+    setOpenLeftDrawer,
+    setOpenWidgetDrawer,
+    setOpenSettingsDrawer,
+  } = useDrawerContext();
+
   return (
     <>
       <SettingDrawer
