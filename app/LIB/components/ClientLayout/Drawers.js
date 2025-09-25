@@ -1,5 +1,5 @@
-import SettingDrawer from "./Drawer/SettingDrawer";
-import WidgetDrawer from "./Drawer/WidgetDrawer";
+import SettingDrawer from "./drawer/SettingDrawer";
+import WidgetDrawer from "./drawer/WidgetDrawer";
 
 export default function Drawers({
   openLeftDrawer,
@@ -7,7 +7,7 @@ export default function Drawers({
   openWidgetDrawer,
   setOpenWidgetDrawer,
   openSettingsDrawer,
-  setOpenSettingsDrawer
+  setOpenSettingsDrawer,
 }) {
   return (
     <>

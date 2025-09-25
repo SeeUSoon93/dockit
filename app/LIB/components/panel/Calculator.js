@@ -142,12 +142,14 @@ export default function Calculator({ dragHandleProps }) {
       }
     };
 
-    // 이벤트 리스너 등록
-    window.addEventListener("keydown", handleKeyDown);
+    // 포커스가 있을 때만 이벤트 리스너 등록
+    if (isFocused) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
 
     // 컴포넌트 언마운트시 이벤트 리스너 제거
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [
     inputDigit,
@@ -156,10 +158,33 @@ export default function Calculator({ dragHandleProps }) {
     performCalculation,
     clearDisplay,
     handleBackspace,
-    isFocused
+    isFocused,
   ]);
 
   const renderButton = (label, onClick, style = {}) => {
+    const getAriaLabel = (label) => {
+      const labels = {
+        C: "계산기 클리어",
+        "÷": "나누기",
+        "×": "곱하기",
+        "-": "빼기",
+        "+": "더하기",
+        "=": "계산 실행",
+        ".": "소수점",
+        0: "숫자 0",
+        1: "숫자 1",
+        2: "숫자 2",
+        3: "숫자 3",
+        4: "숫자 4",
+        5: "숫자 5",
+        6: "숫자 6",
+        7: "숫자 7",
+        8: "숫자 8",
+        9: "숫자 9",
+      };
+      return labels[label] || `버튼 ${label}`;
+    };
+
     return (
       <Button
         key={label}
@@ -167,6 +192,9 @@ export default function Calculator({ dragHandleProps }) {
         onClick={onClick}
         style={style}
         size="sm"
+        aria-label={getAriaLabel(label)}
+        role="button"
+        tabIndex={0}
       >
         {label}
       </Button>
@@ -188,7 +216,7 @@ export default function Calculator({ dragHandleProps }) {
     {
       label: "=",
       onClick: () => performCalculation(),
-      style: { gridRow: "span 2" }
+      style: { gridRow: "span 2" },
     },
     { label: "1", onClick: () => inputDigit(1) },
     { label: "2", onClick: () => inputDigit(2) },
@@ -197,8 +225,8 @@ export default function Calculator({ dragHandleProps }) {
     {
       label: "0",
       onClick: () => inputDigit(0),
-      style: { gridColumn: "span 2" }
-    }
+      style: { gridColumn: "span 2" },
+    },
   ];
 
   return (
@@ -216,6 +244,8 @@ export default function Calculator({ dragHandleProps }) {
         onMouseEnter={() => setIsFocused(true)}
         onMouseLeave={() => setIsFocused(false)}
         style={{ outline: "none" }}
+        role="application"
+        aria-label="계산기"
       >
         <Card shadow="none" width="100%" className="mb-2">
           <Typography
@@ -223,6 +253,9 @@ export default function Calculator({ dragHandleProps }) {
             size="xl"
             pretendard="B"
             className="flex jus-end h-10 items-center px-2"
+            role="status"
+            aria-live="polite"
+            aria-label={`계산 결과: ${display}`}
           >
             {display}
           </Typography>

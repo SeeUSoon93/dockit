@@ -24,36 +24,36 @@ import {
   ListItem,
   OrderedList,
   TaskItem,
-  TaskList
+  TaskList,
 } from "@tiptap/extension-list";
 import { TableKit } from "@tiptap/extension-table";
-import CustomTable from "./CustomTable"; // Assuming CustomTable is correctly defined
+import CustomTable from "../../extensions/CustomTable"; // Assuming CustomTable is correctly defined
 import TextAlign from "@tiptap/extension-text-align";
-import Indent from "./indent-extension"; // Assuming Indent is correctly defined
 import {
   TextStyle,
   Color,
   FontFamily,
   FontSize,
-  BackgroundColor
+  BackgroundColor,
 } from "@tiptap/extension-text-style";
 import Placeholder from "@tiptap/extension-placeholder";
 import { UndoRedo } from "@tiptap/extensions";
 import TypeBubble from "./TypeBubble";
 import { FormatPainter } from "../../extensions/FormatPainter";
+import Indent from "../../extensions/Indent";
 
 // ✨ props에서 onEditorCreated, editorRef 등 콜백/ref 관련 항목 모두 제거
 export default function ContentEditor({
   value,
   onChange,
   autoFocus = true,
-  bulletStyle
+  bulletStyle,
 }) {
   const [isEditable, setIsEditable] = useState(true);
   const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
 
-  const editor = useEditor({
-    extensions: [
+  const editorExtensions = useMemo(
+    () => [
       Document,
       Paragraph,
       Image.configure({ allowBase64: true }),
@@ -71,7 +71,7 @@ export default function ContentEditor({
       TextStyle,
       TextAlign.configure({
         types: ["heading", "paragraph"],
-        defaultAlignment: "left"
+        defaultAlignment: "left",
       }),
       TableKit.configure({ table: { resizable: true } }),
       Color.configure({ types: ["textStyle"] }),
@@ -86,25 +86,34 @@ export default function ContentEditor({
       Underline,
       Placeholder.configure({
         placeholder: "내용을 입력하세요...",
-        emptyEditorClass: "is-editor-empty"
+        emptyEditorClass: "is-editor-empty",
       }),
       UndoRedo.configure({
         depth: 100,
-        newGroupDelay: 100
+        newGroupDelay: 100,
       }),
-      FormatPainter
+      FormatPainter,
     ],
+    []
+  );
+
+  const editor = useEditor({
+    extensions: editorExtensions,
     content: value,
     autofocus: autoFocus ? "end" : false,
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose-base focus:outline-none w-full "
-      }
+        class: "prose prose-sm sm:prose-base focus:outline-none w-full ",
+      },
     },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    }
+      try {
+        onChange(editor.getHTML());
+      } catch (error) {
+        console.error("ContentEditor onUpdate error:", error);
+      }
+    },
   });
 
   const editorStyleVariables = useMemo(
@@ -129,7 +138,7 @@ export default function ContentEditor({
             node: node,
             from: pos,
             to: pos + node.nodeSize,
-            type: "table"
+            type: "table",
           };
           break;
         }
@@ -202,39 +211,45 @@ export default function ContentEditor({
     styleElement.textContent = allStyles;
   }, [editor]);
 
-  // ✨ [핵심] 여러 useEffect를 하나로 통합하여 에디터의 생명주기 관리
+  // ✨ 통합된 에디터 생명주기 관리
   useEffect(() => {
-    if (editor) {
-      // 1. Context에 에디터 인스턴스 등록
-      setEditor(editor);
+    if (!editor) return;
 
-      // 2. 이벤트 리스너 등록
-      editor.on("update", syncHeadingStyles);
-      editor.on("selectionUpdate", syncHeadingStyles);
-      editor.on("selectionUpdate", checkObjectSelection);
-      editor.on("transaction", checkObjectSelection);
+    // 1. Context에 에디터 인스턴스 등록
+    setEditor(editor);
 
-      // 3. 초기 상태 동기화
-      syncHeadingStyles();
-      checkObjectSelection();
+    // 2. 이벤트 리스너 등록
+    editor.on("update", syncHeadingStyles);
+    editor.on("selectionUpdate", syncHeadingStyles);
+    editor.on("selectionUpdate", checkObjectSelection);
+    editor.on("transaction", checkObjectSelection);
 
-      // 4. Cleanup: 컴포넌트가 사라질 때 모든 리스너를 제거하고 Context를 비움
-      return () => {
-        setEditor(null);
-        editor.off("update", syncHeadingStyles);
-        editor.off("selectionUpdate", syncHeadingStyles);
-        editor.off("selectionUpdate", checkObjectSelection);
-        editor.off("transaction", checkObjectSelection);
-      };
-    }
+    // 3. 초기 상태 동기화
+    syncHeadingStyles();
+    checkObjectSelection();
+
+    // 4. Cleanup: 모든 리스너 제거 및 에디터 파괴
+    return () => {
+      setEditor(null);
+      editor.off("update", syncHeadingStyles);
+      editor.off("selectionUpdate", syncHeadingStyles);
+      editor.off("selectionUpdate", checkObjectSelection);
+      editor.off("transaction", checkObjectSelection);
+
+      if (!editor.isDestroyed) {
+        editor.destroy();
+      }
+    };
   }, [editor, setEditor, syncHeadingStyles, checkObjectSelection]);
 
-  // [유지] isEditable 상태는 독립적으로 관리
+  // ✨ isEditable 상태 변경 시 즉시 반영
   useEffect(() => {
-    if (editor) editor.setEditable(isEditable);
+    if (editor && !editor.isDestroyed) {
+      editor.setEditable(isEditable);
+    }
   }, [isEditable, editor]);
 
-  // [유지] 외부 value와 내부 콘텐츠 동기화는 독립적으로 관리
+  // ✨ 외부 value 변경 시 즉시 동기화
   useEffect(() => {
     if (editor && !editor.isDestroyed) {
       const editorHTML = editor.getHTML();
@@ -243,15 +258,6 @@ export default function ContentEditor({
       }
     }
   }, [value, editor]);
-
-  // [유지] 에디터 인스턴스 파괴 로직은 가장 마지막에 독립적으로 관리
-  useEffect(() => {
-    return () => {
-      if (editor && !editor.isDestroyed) {
-        editor.destroy();
-      }
-    };
-  }, [editor]);
 
   return (
     <div

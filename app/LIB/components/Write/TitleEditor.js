@@ -9,7 +9,7 @@ export default function TitleEditor({
   value,
   onChange,
   placeholder,
-  className
+  className,
 }) {
   const editor = useEditor({
     extensions: [
@@ -19,18 +19,22 @@ export default function TitleEditor({
         blockquote: false,
         bulletList: false,
         orderedList: false,
-        codeBlock: false
+        codeBlock: false,
       }),
       Placeholder.configure({
         placeholder: placeholder || "제목을 입력하세요.",
-        emptyEditorClass: "is-editor-empty"
-      })
+        emptyEditorClass: "is-editor-empty",
+      }),
     ],
     content: value || "",
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      onChange(editor.getText());
-    }
+      try {
+        onChange(editor.getText());
+      } catch (error) {
+        console.error("TitleEditor onUpdate error:", error);
+      }
+    },
   });
 
   // 외부 값 ↔ 에디터 내용 동기화

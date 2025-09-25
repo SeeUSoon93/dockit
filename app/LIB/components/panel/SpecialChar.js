@@ -27,7 +27,7 @@ export default function SpecialChar({ dragHandleProps }) {
     { key: "→", char: "→" },
     { key: "←", char: "←" },
     { key: "↑", char: "↑" },
-    { key: "↓", char: "↓" }
+    { key: "↓", char: "↓" },
   ];
 
   const insertSpecialChar = (char) => {
@@ -50,6 +50,9 @@ export default function SpecialChar({ dragHandleProps }) {
               size="sm"
               onClick={() => insertSpecialChar(char)}
               shadow="none"
+              aria-label={`특수문자 ${char} 삽입`}
+              role="button"
+              tabIndex={0}
             >
               {char}
             </Button>

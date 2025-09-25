@@ -6,7 +6,7 @@ import {
   getStorage,
   ref,
   uploadString,
-  getDownloadURL
+  getDownloadURL,
 } from "firebase/storage";
 import {
   createContext,
@@ -14,7 +14,7 @@ import {
   useState,
   useCallback,
   useRef,
-  useEffect
+  useEffect,
 } from "react";
 import { fetchData, updateData } from "../utils/dataUtils"; // 데이터 관련 API 함수
 import { auth } from "../config/firebaseConfig";
@@ -36,16 +36,16 @@ export function DocumentProvider({ children }) {
 
   const latestStateRef = useRef();
 
-  // ❗ 1. 저장 로직을 위한 ref들을 추가합니다.
-  const isSavingRef = useRef(false); // 실제 저장 진행 상태 (Lock)
-  const pendingPayloadRef = useRef(null); // 저장 중에 들어온 추가 요청 보관함
+  // 저장 큐 시스템
+  const saveQueue = useRef([]);
+  const isProcessingQueue = useRef(false);
 
   useEffect(() => {
     latestStateRef.current = {
       title,
       content,
       docSetting,
-      bulletStyle
+      bulletStyle,
     };
   }, [title, content, docSetting, bulletStyle]);
 
@@ -54,12 +54,12 @@ export function DocumentProvider({ children }) {
       const response = await fetch("/api/generate-thumbnail", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           html: htmlContent,
-          settings: docSettings
-        })
+          settings: docSettings,
+        }),
       });
 
       if (!response.ok) {
@@ -87,7 +87,7 @@ export function DocumentProvider({ children }) {
           paddingTop: 25.4,
           paddingBottom: 25.4,
           paddingLeft: 25.4,
-          paddingRight: 25.4
+          paddingRight: 25.4,
         };
 
         fetchedDoc = { ...fetchedDoc, docSetting: defaultSettings };
@@ -117,37 +117,39 @@ export function DocumentProvider({ children }) {
     }
   }, []);
 
-  const saveDocument = useCallback(
-    async (id, payload = {}) => {
-      const user = auth.currentUser;
-      if (!user || !id) return;
+  // 큐 처리 함수
+  const processSaveQueue = useCallback(
+    async (id) => {
+      if (isProcessingQueue.current || saveQueue.current.length === 0) return;
 
-      // A. 만약 이미 다른 저장이 진행 중이라면...
-      if (isSavingRef.current) {
-        // ...새로 들어온 변경사항을 '보관함'에 합쳐두고 함수를 즉시 종료합니다.
-        pendingPayloadRef.current = {
-          ...pendingPayloadRef.current,
-          ...payload
-        };
-        return;
-      }
-
-      // B. 저장을 시작합니다. '문 잠금' 상태로 만들고 UI에 표시합니다.
-      isSavingRef.current = true;
+      isProcessingQueue.current = true;
       setIsSaving(true);
 
-      const latestState = latestStateRef.current;
-      const dataToSave = {
-        ...latestState,
-        ...payload
-      };
-      const dataForDB = {
-        title: dataToSave.title,
-        docSetting: dataToSave.docSetting,
-        bulletStyle: dataToSave.bulletStyle
-      };
-
       try {
+        // 큐의 모든 변경사항을 하나로 합침
+        const mergedPayload = saveQueue.current.reduce(
+          (acc, payload) => ({
+            ...acc,
+            ...payload,
+          }),
+          {}
+        );
+
+        const latestState = latestStateRef.current;
+        const dataToSave = {
+          ...latestState,
+          ...mergedPayload,
+        };
+
+        const dataForDB = {
+          title: dataToSave.title,
+          docSetting: dataToSave.docSetting,
+          bulletStyle: dataToSave.bulletStyle,
+        };
+
+        const user = auth.currentUser;
+        if (!user) return;
+
         if (dataToSave.content) {
           const storageRef = ref(storage, `documents/${user.uid}/${id}.html`);
           await uploadString(storageRef, dataToSave.content, "raw", {});
@@ -169,28 +171,34 @@ export function DocumentProvider({ children }) {
           setDocument((prev) => ({
             ...prev,
             ...dataForDB,
-            content: dataToSave.content
+            content: dataToSave.content,
           }));
         }
       } catch (error) {
         console.error("문서 저장 실패:", error);
       } finally {
-        // C. 저장이 끝나면...
-        const pendingPayload = pendingPayloadRef.current;
-        pendingPayloadRef.current = null; // 일단 보관함은 비웁니다.
-
-        // D. 만약 보관함에 다음 저장할 내용이 있다면...
-        if (pendingPayload) {
-          // ...'문 잠금'을 풀지 않고, 바로 다음 저장을 이어서 실행합니다.
-          saveDocument(id, pendingPayload);
-        } else {
-          // ...보관함이 비어있다면, '문 잠금'을 풀고 UI 상태도 업데이트합니다.
-          isSavingRef.current = false;
-          setIsSaving(false);
-        }
+        // 큐 비우기
+        saveQueue.current = [];
+        isProcessingQueue.current = false;
+        setIsSaving(false);
       }
     },
     [generateThumbnail]
+  );
+
+  const saveDocument = useCallback(
+    async (id, payload = {}) => {
+      if (!id) return;
+
+      // 큐에 추가
+      saveQueue.current.push(payload);
+
+      // 디바운스로 큐 처리
+      setTimeout(() => {
+        processSaveQueue(id);
+      }, 1000); // 1초 후 저장
+    },
+    [processSaveQueue]
   );
 
   const clearDocument = useCallback(() => {
@@ -215,7 +223,7 @@ export function DocumentProvider({ children }) {
     setThumbnail,
     loadDocument,
     clearDocument,
-    saveDocument
+    saveDocument,
   };
   // 주석
   return (

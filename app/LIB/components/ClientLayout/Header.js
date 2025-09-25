@@ -6,15 +6,15 @@ import {
   MenuHamburger,
   MoonOutline,
   SettingOutline,
-  SunOutline
+  SunOutline,
 } from "sud-icons";
 import { Button, Div, Tooltip, Typography } from "sud-ui";
 import { logoutUser } from "../../utils/authUtils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import TitleEditor from "../Write/TitleEditor";
-import { useDebounce } from "../../utils/useDebounce";
-import WriteHeader from "./Header/WriteHeader";
+import TitleEditor from "../write/TitleEditor";
+import { useDebounce } from "../../hook/useDebounce";
+import WriteHeader from "./header/WriteHeader";
 import { MdSync } from "react-icons/md";
 import { useSetting } from "../../context/SettingContext";
 import { useDocument } from "../../context/DocumentContext";
@@ -27,7 +27,7 @@ export default function Header({
   setOpenWidgetDrawer,
   setOpenSettingsDrawer,
   isEditPage,
-  document
+  document,
 }) {
   const router = useRouter();
   const { setting } = useSetting();
@@ -49,41 +49,41 @@ export default function Header({
     {
       tooltip: "뒤로가기",
       onClick: () => router.back(),
-      icon: AngleLeft
+      icon: AngleLeft,
     },
     {
       tooltip: "워크스페이스 홈",
       onClick: () => router.push("/workspace"),
-      icon: HomeOutline
+      icon: HomeOutline,
     },
     {
       tooltip: "메뉴",
       onClick: () => setOpenLeftDrawer(true),
-      icon: MenuHamburger
-    }
+      icon: MenuHamburger,
+    },
   ];
   // 오른쪽 아이콘
   const rightIcons = [
     {
       tooltip: "위젯 설정",
       onClick: () => setOpenWidgetDrawer(true),
-      icon: GridFourDiaOutline
+      icon: GridFourDiaOutline,
     },
     {
       tooltip: "설정",
       onClick: () => setOpenSettingsDrawer(true),
-      icon: SettingOutline
+      icon: SettingOutline,
     },
     {
       tooltip: "테마 변경",
       onClick: () => setIsDarkMode(!isDarkMode),
-      icon: isDarkMode ? SunOutline : MoonOutline
+      icon: isDarkMode ? SunOutline : MoonOutline,
     },
     {
       tooltip: "로그아웃",
       onClick: async () => await logoutUser(),
-      icon: LogoutCircle
-    }
+      icon: LogoutCircle,
+    },
   ];
   //   아이콘 렌더링
   const renderBtn = (data) => {

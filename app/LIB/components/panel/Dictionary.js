@@ -10,6 +10,7 @@ export default function Dictionary({ dragHandleProps }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
@@ -18,10 +19,15 @@ export default function Dictionary({ dragHandleProps }) {
       const q = searchTerm;
       if (!q) return; // 검색어가 없으면 요청하지 않음
       setLoading(true);
+      setError(null);
       setVisibleCount(ITEMS_PER_PAGE);
 
       try {
         const res = await fetch(`/api/dictionary?q=${q}`);
+
+        if (!res.ok) {
+          throw new Error(`API 오류: ${res.status}`);
+        }
 
         const data = await res.json();
 
@@ -32,6 +38,8 @@ export default function Dictionary({ dragHandleProps }) {
         setLoading(false);
       } catch (error) {
         console.error("API 호출 중 오류 발생:", error);
+        setError(error.message);
+        setLoading(false);
       }
     }
   };
@@ -60,6 +68,19 @@ export default function Dictionary({ dragHandleProps }) {
           <div className="flex jus-cen item-cen w-100">
             {loading ? (
               <DotSpinner text="검색 중입니다..." />
+            ) : error ? (
+              <div className="flex flex-col gap-10 items-center">
+                <Typography color="red" size="sm">
+                  오류: {error}
+                </Typography>
+                <Button
+                  size="sm"
+                  onClick={() => setError(null)}
+                  aria-label="에러 상태 초기화"
+                >
+                  다시 시도
+                </Button>
+              </div>
             ) : !result ? (
               <Typography color={"cool-gray-7"}>
                 검색결과가 없습니다.

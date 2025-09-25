@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 // context
 import { PanelProvider, usePanels } from "./LIB/context/PanelContext";
 import { DarkModeProvider, useDarkMode } from "./LIB/context/DarkModeContext";
@@ -12,7 +12,7 @@ import {
   DragOverlay,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
@@ -27,14 +27,14 @@ import { darkTheme } from "./LIB/config/darkTheme";
 import { handleDragEnd, handleDragOver } from "./LIB/utils/layoutUtils";
 
 // components
-import Header from "./LIB/components/ClientLayout/Header";
-import Content from "./LIB/components/ClientLayout/Content";
-import Drawers from "./LIB/components/ClientLayout/Drawers";
+import Header from "./LIB/components/clientLayout/Header";
+import Content from "./LIB/components/clientLayout/Content";
+import Drawers from "./LIB/components/clientLayout/Drawers";
 import { usePathname } from "next/navigation";
 import { DocumentProvider, useDocument } from "./LIB/context/DocumentContext";
 import { SettingProvider } from "./LIB/context/SettingContext";
 import { useZoom } from "./LIB/hook/useZoom";
-import Footer from "./LIB/components/ClientLayout/Footer";
+import Footer from "./LIB/components/clientLayout/Footer";
 import { EditorProvider } from "./LIB/context/EditorContext";
 import { MemoProvider } from "./LIB/context/MemoContext";
 import { widgets } from "./LIB/constant/widgets";
@@ -71,7 +71,7 @@ function LayoutContent({ children }) {
   //  (PointerSensor 사용, 8px 이동 시 드래그 시작)
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 }
+      activationConstraint: { distance: 8 },
     })
   );
 

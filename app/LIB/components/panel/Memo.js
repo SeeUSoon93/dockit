@@ -16,7 +16,7 @@ import {
   Color,
   FontFamily,
   FontSize,
-  TextStyle
+  TextStyle,
 } from "@tiptap/extension-text-style";
 import Blockquote from "@tiptap/extension-blockquote";
 import CodeBlock from "@tiptap/extension-code-block";
@@ -25,14 +25,14 @@ import {
   ListItem,
   OrderedList,
   TaskItem,
-  TaskList
+  TaskList,
 } from "@tiptap/extension-list";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import Indent from "../Write/indent-extension";
-import TypeBubble from "../Write/TypeBubble";
+import Indent from "../../extensions/Indent";
+import TypeBubble from "../write/TypeBubble";
 import { FaNoteSticky } from "react-icons/fa6";
 
 export default function Memo({ dragHandleProps }) {
@@ -55,7 +55,7 @@ export default function Memo({ dragHandleProps }) {
       TaskList,
       HorizontalRule,
       TaskItem.configure({
-        nested: true
+        nested: true,
       }),
       Highlight.configure({ multicolor: true }),
       Heading.configure({ levels: [1, 2, 3] }),
@@ -63,18 +63,18 @@ export default function Memo({ dragHandleProps }) {
       TextStyle,
       TextAlign.configure({
         types: ["heading", "paragraph"],
-        defaultAlignment: "left"
+        defaultAlignment: "left",
       }),
       TableKit.configure({
-        table: { resizable: true }
+        table: { resizable: true },
       }),
       Color.configure({ types: ["textStyle"] }),
       FontFamily.configure({
-        types: ["textStyle"]
+        types: ["textStyle"],
       }),
       BackgroundColor.configure({ types: ["textStyle"] }),
       FontSize.configure({
-        types: ["textStyle"]
+        types: ["textStyle"],
       }),
       Bold,
       Italic,
@@ -83,8 +83,8 @@ export default function Memo({ dragHandleProps }) {
       Underline,
       Placeholder.configure({
         placeholder: "메모를 남겨보세요.",
-        emptyEditorClass: "is-editor-empty"
-      })
+        emptyEditorClass: "is-editor-empty",
+      }),
     ],
     content: memo?.memo || "",
     immediatelyRender: false,
@@ -92,7 +92,7 @@ export default function Memo({ dragHandleProps }) {
       const currentHtml = editor.getHTML();
       // MemoContext의 setMemo로 상태 업데이트 (자동저장 포함)
       setMemo({ memo: currentHtml });
-    }
+    },
   });
 
   // MemoContext에서 memo가 변경되었을 때 에디터에 반영
@@ -101,6 +101,15 @@ export default function Memo({ dragHandleProps }) {
       editor.commands.setContent(memo.memo);
     }
   }, [memo?.memo, editor]);
+
+  // 에디터 인스턴스 파괴 로직
+  useEffect(() => {
+    return () => {
+      if (editor && !editor.isDestroyed) {
+        editor.destroy();
+      }
+    };
+  }, [editor]);
 
   if (!mounted || memoLoading) {
     return (
