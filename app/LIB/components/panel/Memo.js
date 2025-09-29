@@ -32,7 +32,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Indent from "../../extensions/Indent";
-import TypeBubble from "../write_com/TypeBubble";
+import TypeBubble from "../write/TypeBubble";
 import { FaNoteSticky } from "react-icons/fa6";
 
 export default function Memo({ dragHandleProps }) {
