@@ -1,16 +1,17 @@
 import ClientLayout from "./ClientLayout";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: "no"
+  userScalable: "no",
 };
 
 export const metadata = {
   title: "DocKit",
   icons: {
-    icon: "/logo/logo.svg"
+    icon: "/logo/logo.svg",
   },
   openGraph: {
     title: "DocKit",
@@ -22,10 +23,10 @@ export const metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "DocKit"
-      }
-    ]
-  }
+        alt: "DocKit",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -42,7 +43,11 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
       <body>
-        <ClientLayout>{children}</ClientLayout>
+        <ClientLayout>
+          {children}
+
+          <Analytics />
+        </ClientLayout>
       </body>
     </html>
   );
