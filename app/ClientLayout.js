@@ -70,7 +70,7 @@ function LayoutContent({ children }) {
       <Div
         className="flex flex-col w-screen overflow-hidden h-dvh"
         color="mint-10"
-        background={"white-9"}
+        background={"white-10"}
         id="main-layout"
       >
         <DndContext
@@ -83,7 +83,7 @@ function LayoutContent({ children }) {
         >
           {/*■■■■■ 헤더 ■■■■■*/}
           <Div
-            className="z-10 rounded-t-none shadow-sm rounded-b-2xl"
+            className="z-10 rounded-t-none shadow-md rounded-b-2xl"
             background="mint-1"
             id="header"
           >

@@ -3,7 +3,7 @@
 import {
   SortableContext,
   useSortable,
-  verticalListSortingStrategy
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
@@ -19,14 +19,14 @@ function SortableWidget({ id }) {
     setNodeRef,
     transform,
     transition,
-    isDragging
+    isDragging,
   } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 999 : "auto",
-    opacity: isDragging ? 0 : 1
+    opacity: isDragging ? 0 : 1,
   };
   const WidgetComponent = widgets[id];
 
@@ -42,10 +42,10 @@ export default function PanelContainer({
   side,
   widgets,
   layoutMode,
-  isDropTarget
+  isDropTarget,
 }) {
   const { setNodeRef } = useDroppable({
-    id: side
+    id: side,
   });
 
   return (
@@ -65,7 +65,7 @@ export default function PanelContainer({
             layoutMode === "desktop"
               ? "calc((100vw - 800px) / 2)"
               : "calc(100vw - 800px)",
-          maxWidth: "350px"
+          maxWidth: "350px",
         }}
       >
         {widgets.map((widgetId) => (

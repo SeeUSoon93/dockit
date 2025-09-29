@@ -9,7 +9,7 @@ export default function Content({
   children,
   overContainerId,
   containerRef,
-  scale
+  scale,
 }) {
   const { layoutMode, showLeftPanel, showRightPanel } = useLayout();
   const { document } = useDocument();
@@ -18,7 +18,7 @@ export default function Content({
   return (
     <Div
       className="flex w-full h-full"
-      background={"white-9"}
+      background={"white-10"}
       ref={containerRef}
     >
       {/* 왼쪽패널 */}
@@ -32,12 +32,12 @@ export default function Content({
       )}
       {/* 본문 */}
       <div
-        className={`pd-10 w-100 overflow-y-auto ${
+        className={`w-100 overflow-y-auto ${
           isDocument ? "" : "flex justify-center"
         }`}
         style={{
           transform: `scale(${scale})`,
-          transformOrigin: "top center"
+          transformOrigin: "top center",
         }}
       >
         {children}
