@@ -22,13 +22,13 @@ import "sud-ui/dist/index.css";
 import { darkTheme } from "./LIB/config/darkTheme";
 
 // components
-import Header from "./LIB/components/clientLayout/Header";
-import Content from "./LIB/components/clientLayout/Content";
-import Drawers from "./LIB/components/clientLayout/Drawers";
+import Header from "./LIB/components/clientLayout_com/Header";
+import Content from "./LIB/components/clientLayout_com/Content";
+import Drawers from "./LIB/components/clientLayout_com/Drawers";
 import { DocumentProvider } from "./LIB/context/DocumentContext";
 import { SettingProvider } from "./LIB/context/SettingContext";
 import { useZoom } from "./LIB/hook/useZoom";
-import Footer from "./LIB/components/clientLayout/Footer";
+import Footer from "./LIB/components/clientLayout_com/Footer";
 import { EditorProvider } from "./LIB/context/EditorContext";
 import { MemoProvider } from "./LIB/context/MemoContext";
 import { widgets } from "./LIB/constant/widgets";

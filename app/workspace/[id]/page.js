@@ -3,7 +3,7 @@
 import { useDocument } from "@/app/LIB/context/DocumentContext";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Div, DotSpinner, toast } from "sud-ui";
-import ContentEditor from "@/app/LIB/components/write/ContentEditor";
+import ContentEditor from "@/app/LIB/components/write_com/ContentEditor";
 import { useDebounce } from "@/app/LIB/hook/useDebounce";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 

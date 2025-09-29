@@ -12,7 +12,7 @@ import { Button, Div, Tooltip, Typography } from "sud-ui";
 import { logoutUser } from "../../utils/authUtils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import TitleEditor from "../write/TitleEditor";
+import TitleEditor from "../write_com/TitleEditor";
 import { useDebounce } from "../../hook/useDebounce";
 import WriteHeader from "./header/WriteHeader";
 import { MdSync } from "react-icons/md";
