@@ -8,6 +8,7 @@ import Index from "../components/panel/Index";
 import CalendarWidget from "../components/panel/CalendarWidget";
 import Timer from "../components/panel/Timer";
 import Translate from "../components/panel/Translate";
+import ImageSearch from "../components/panel/ImageSearch";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -20,4 +21,5 @@ export const widgets = {
   calendar: <CalendarWidget />, // 달력
   timer: <Timer />, // 타이머
   translate: <Translate />, // 번역기
+  imageSearch: <ImageSearch /> // 이미지 검색
 };

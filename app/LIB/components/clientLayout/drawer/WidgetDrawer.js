@@ -2,7 +2,7 @@ import Template from "./Template";
 import { Button, Div, Drawer, Tag, Typography } from "sud-ui";
 
 import { FaBookBookmark, FaCalculator, FaNoteSticky } from "react-icons/fa6";
-import { MdKeyboardCommandKey } from "react-icons/md";
+import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
@@ -11,7 +11,7 @@ import { BsTranslate } from "react-icons/bs";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer,
+  setOpenWidgetDrawer
 }) {
   const { left, right, toggle } = usePanels();
 
@@ -65,6 +65,7 @@ export default function WidgetDrawer({
             <Typography pretendard="SB">자료 탐색</Typography>
             <div className="grid col-5 w-100 gap-20">
               {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
+              {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
             </div>
             <Typography pretendard="SB">기타 도구</Typography>
             <div className="grid col-5 w-100 gap-20">
