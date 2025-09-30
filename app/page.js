@@ -11,9 +11,10 @@ import { AiOutlineCloudSync } from "react-icons/ai";
 import { LuTableOfContents } from "react-icons/lu";
 import { PiProjectorScreenChartBold } from "react-icons/pi";
 import { useLayout } from "./LIB/context/LayoutContext";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { user } = useUser();
+  const { user, userLoading } = useUser();
   const router = useRouter();
   const { layoutMode } = useLayout();
 
@@ -25,9 +26,12 @@ export default function Home() {
       console.error("로그인 중 오류 발생:", error);
     }
   };
-  if (user) {
-    router.push("/workspace");
-  }
+
+  useEffect(() => {
+    if (user && !userLoading) {
+      router.push("/workspace");
+    }
+  }, [user, userLoading, router]);
 
   const cardRender = (item, index) => {
     const Icon = item.icon;
