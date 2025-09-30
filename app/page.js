@@ -124,7 +124,9 @@ export default function Home() {
                 mask={null}
               />
               <Tag shadow="sm" colorType="mint">
-                Beta 0.1.0
+                <Typography size="xs" pretendard="SB">
+                  Beta 0.1.0
+                </Typography>
               </Tag>
             </div>
             <Typography
