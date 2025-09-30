@@ -1,6 +1,6 @@
 "use client";
 import { LogoGoogle } from "sud-icons";
-import { Button, Card, Div, Divider, Image, Typography } from "sud-ui";
+import { Button, Card, Div, Divider, Image, Tag, Typography } from "sud-ui";
 import { handleGoogleAuth } from "./LIB/utils/authUtils";
 import { useUser } from "./LIB/context/UserContext";
 import { useRouter } from "next/navigation";
@@ -114,14 +114,19 @@ export default function Home() {
           } gap-50 justify-center`}
         >
           <div className="flex flex-col items-start gap-10">
-            <Image
-              style={{ cursor: "default" }}
-              src="/logo/logo.svg"
-              alt="Logo"
-              width={120}
-              preview={false}
-              mask={null}
-            />
+            <div className="flex items-end gap-10">
+              <Image
+                style={{ cursor: "default" }}
+                src="/logo/logo.svg"
+                alt="Logo"
+                width={120}
+                preview={false}
+                mask={null}
+              />
+              <Tag shadow="sm" colorType="mint">
+                Beta 0.1.0
+              </Tag>
+            </div>
             <Typography
               as="h1"
               pretendard="B"
@@ -158,7 +163,7 @@ export default function Home() {
         background={"mint-3"}
       >
         <div
-          className={`flex flex-col items-center gap-20 w-${
+          className={`flex flex-col items-center gap-50 w-${
             layoutMode === "desktop" ? "50" : "90"
           }`}
         >
