@@ -64,7 +64,7 @@ export default function PanelContainer({
         ref={setNodeRef}
         className={`panel-${side} sticky top-0 flex flex-col item-${
           side === "left" ? "sta jus-end" : "end"
-        } overflow-y-auto pd-20 gap-20 h-full`}
+        } overflow-y-auto pd-20 gap-20 h-full z-10`}
         background={isDropTarget && "white-8"}
         style={{
           width:

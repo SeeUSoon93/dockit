@@ -31,7 +31,7 @@ export default function Content({
         />
       )}
       {/* 본문 */}
-      <div
+      <Div
         className={`w-100 overflow-y-auto ${
           isDocument ? "" : "flex justify-center"
         }`}
@@ -39,9 +39,10 @@ export default function Content({
           transform: `scale(${scale})`,
           transformOrigin: "top center",
         }}
+        background={isDocument ? "white-9" : "white-10"}
       >
         {children}
-      </div>
+      </Div>
       {/* 오른쪽패널 */}
       {showRightPanel && isDocument && (
         <PanelContainer
