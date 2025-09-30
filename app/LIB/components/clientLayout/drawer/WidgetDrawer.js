@@ -1,5 +1,5 @@
 import Template from "./Template";
-import { Button, Div, Drawer, Typography } from "sud-ui";
+import { Button, Div, Drawer, Tag, Typography } from "sud-ui";
 
 import { FaBookBookmark, FaCalculator, FaNoteSticky } from "react-icons/fa6";
 import { MdKeyboardCommandKey } from "react-icons/md";
@@ -7,6 +7,7 @@ import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
 import { CalendarOutline, TimerOutline } from "sud-icons";
+import { BsTranslate } from "react-icons/bs";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
@@ -40,20 +41,39 @@ export default function WidgetDrawer({
   };
 
   return (
-    <Drawer open={openWidgetDrawer} onClose={() => setOpenWidgetDrawer(false)}>
+    <Drawer
+      open={openWidgetDrawer}
+      onClose={() => setOpenWidgetDrawer(false)}
+      width="400px"
+    >
       <Template
         title="위젯"
         content={
-          <div className="grid col-4 w-100 gap-20">
-            {renderWidgetItem(TbEdit, "편집기", "objectEditor")}
-            {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
-            {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
-            {renderWidgetItem(FaCalculator, "계산기", "calculator")}
-            {renderWidgetItem(MdKeyboardCommandKey, "특수문자", "specialChar")}
-            {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}
-            {renderWidgetItem(PiListNumbersFill, "목차", "index")}
-            {renderWidgetItem(CalendarOutline, "달력", "calendar")}
-            {renderWidgetItem(TimerOutline, "타이머", "timer")}
+          <div className="flex flex-col gap-10">
+            <Typography pretendard="SB">문서 작성</Typography>
+
+            <div className="grid col-5 w-100 gap-20">
+              {renderWidgetItem(
+                MdKeyboardCommandKey,
+                "특수문자",
+                "specialChar"
+              )}
+              {renderWidgetItem(PiListNumbersFill, "목차", "index")}
+              {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}
+              {renderWidgetItem(TbEdit, "편집기", "objectEditor")}
+            </div>
+            <Typography pretendard="SB">자료 탐색</Typography>
+            <div className="grid col-5 w-100 gap-20">
+              {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
+            </div>
+            <Typography pretendard="SB">기타 도구</Typography>
+            <div className="grid col-5 w-100 gap-20">
+              {renderWidgetItem(BsTranslate, "번역기", "translate")}
+              {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
+              {renderWidgetItem(FaCalculator, "계산기", "calculator")}
+              {renderWidgetItem(CalendarOutline, "달력", "calendar")}
+              {renderWidgetItem(TimerOutline, "타이머", "timer")}
+            </div>
           </div>
         }
       />

@@ -7,6 +7,7 @@ import MadeChart from "../components/panel/MadeChart";
 import Index from "../components/panel/Index";
 import CalendarWidget from "../components/panel/CalendarWidget";
 import Timer from "../components/panel/Timer";
+import Translate from "../components/panel/Translate";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -18,4 +19,5 @@ export const widgets = {
   index: <Index />, // 목차
   calendar: <CalendarWidget />, // 달력
   timer: <Timer />, // 타이머
+  translate: <Translate />, // 번역기
 };

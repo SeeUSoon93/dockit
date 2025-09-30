@@ -141,6 +141,7 @@ export default function LeftDrawer({ openLeftDrawer, setOpenLeftDrawer }) {
       open={openLeftDrawer}
       onClose={() => setOpenLeftDrawer(false)}
       placement="left"
+      width="400px"
     >
       <Template
         title="폴더"

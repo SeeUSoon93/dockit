@@ -24,6 +24,7 @@ export default function SettingDrawer({
     <Drawer
       open={openSettingsDrawer}
       onClose={() => setOpenSettingsDrawer(false)}
+      width="400px"
     >
       <Template
         title="설정"
