@@ -53,8 +53,8 @@ export const deleteData = async (contentType, docId) => {
 };
 
 // READ TREE - 사이드바용 전체 트리 구조
-export const fetchDataTree = async (contentType) => {
-  return callApi(`${API_BASE_URL}/${contentType}/tree`, { method: "GET" });
+export const fetchDataTree = async (contentType = "tree") => {
+  return callApi(`${API_BASE_URL}/${contentType}`, { method: "GET" });
 };
 
 // MOVE - 폴더/문서 이동

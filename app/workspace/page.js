@@ -7,6 +7,7 @@ import {
   fetchDataList,
   updateData,
   moveData,
+  fetchDataTree,
 } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
@@ -14,6 +15,7 @@ import { FcDocument, FcFolder } from "react-icons/fc";
 import { getStorage, ref, deleteObject } from "firebase/storage";
 import DeleteModal from "../LIB/components/workspace/DeleteModal";
 import RenameModal from "../LIB/components/workspace/RenameModal";
+import MoveModal from "../LIB/components/workspace/MoveModal";
 import { TriangleLeft } from "sud-icons";
 
 const storage = getStorage();
@@ -31,6 +33,7 @@ export default function WorkspacePage() {
   // 모달 상태
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [renameModalOpen, setRenameModalOpen] = useState(false);
+  const [moveModalOpen, setMoveModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -44,6 +47,9 @@ export default function WorkspacePage() {
   // 드래그앤드롭 상태
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverItem, setDragOverItem] = useState(null);
+
+  // 폴더 트리 상태
+  const [folderTree, setFolderTree] = useState([]);
 
   // 데이터 가져오기
   const fetchContent = async (folderId = null) => {
@@ -63,12 +69,23 @@ export default function WorkspacePage() {
     }
   };
 
+  // 폴더 트리 가져오기
+  const fetchFolderTree = async () => {
+    try {
+      const result = await fetchDataTree("tree"); // 새로운 엔드포인트 사용
+      setFolderTree(result.tree);
+    } catch (error) {
+      console.error("폴더 트리 가져오기 실패:", error);
+    }
+  };
+
   // 초기 로드
   useEffect(() => {
     if (!user && !userLoading) {
       router.push("/");
     } else if (user) {
       fetchContent();
+      fetchFolderTree();
     }
   }, [router, user, userLoading]);
 
@@ -149,6 +166,22 @@ export default function WorkspacePage() {
     } catch (error) {
       console.error("이름 변경 실패:", error);
       toast.danger("이름 변경에 실패했습니다.");
+    }
+  };
+
+  // 폴더 이동
+  const handleMoveContent = async (type, contentId, newParentId) => {
+    if (!user || !contentId) return;
+    try {
+      await moveData(type, contentId, newParentId);
+      await fetchContent(currentFolderId);
+      await fetchFolderTree(); // 폴더 트리도 새로고침
+      toast.success("이동되었습니다.");
+      setMoveModalOpen(false);
+      setSelectedItem(null);
+    } catch (error) {
+      console.error("이동 실패:", error);
+      toast.danger("이동에 실패했습니다.");
     }
   };
 
@@ -351,6 +384,15 @@ export default function WorkspacePage() {
           handleRenameContent={handleRename}
         />
 
+        {/* 폴더 이동 모달 */}
+        <MoveModal
+          modalOpen={moveModalOpen}
+          setModalOpen={setMoveModalOpen}
+          selectedItem={selectedItem}
+          handleMoveContent={handleMoveContent}
+          folderTree={folderTree}
+        />
+
         {/* 컨텍스트 메뉴 */}
         {contextMenu.visible && (
           <Card
@@ -372,6 +414,15 @@ export default function WorkspacePage() {
                   }}
                 >
                   이름 변경
+                </div>
+                <div
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => {
+                    setMoveModalOpen(true);
+                    setContextMenu({ visible: false, x: 0, y: 0 });
+                  }}
+                >
+                  폴더 이동
                 </div>
                 <div
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"

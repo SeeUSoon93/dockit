@@ -18,7 +18,7 @@ export default function Content({
   return (
     <Div
       className="flex w-full h-full"
-      background={"white-10"}
+      background={isDocument ? "white-9" : "white-10"}
       ref={containerRef}
     >
       {/* 왼쪽패널 */}

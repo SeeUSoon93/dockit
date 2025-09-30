@@ -1,6 +1,7 @@
 import SettingDrawer from "./drawer/SettingDrawer";
 import WidgetDrawer from "./drawer/WidgetDrawer";
 import { useDrawerContext } from "../../context/DrawerContext";
+import LeftDrawer from "./drawer/LeftDrawer";
 
 export default function Drawers() {
   const {
@@ -21,6 +22,10 @@ export default function Drawers() {
       <WidgetDrawer
         openWidgetDrawer={openWidgetDrawer}
         setOpenWidgetDrawer={setOpenWidgetDrawer}
+      />
+      <LeftDrawer
+        openLeftDrawer={openLeftDrawer}
+        setOpenLeftDrawer={setOpenLeftDrawer}
       />
     </>
   );

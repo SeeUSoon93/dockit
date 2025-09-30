@@ -9,7 +9,7 @@ import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer
+  setOpenWidgetDrawer,
 }) {
   const { left, right, toggle } = usePanels();
 
@@ -24,17 +24,16 @@ export default function WidgetDrawer({
     const isRegistered = left.includes(key) || right.includes(key);
 
     return (
-      <Div
-        className="flex flex-col item-cen gap-5"
-        color={isRegistered && "mint"}
-      >
+      <Div className="flex flex-col item-cen gap-5">
         <Button
           icon={<Icon size="24" />}
           onClick={() => registerWidget(key)}
-          background={isRegistered && "mint"}
-          color={isRegistered && "mint-1"}
+          background={isRegistered && "mint-7"}
+          color={isRegistered ? "mint-1" : "mint-7"}
         />
-        <Typography pretendard="SB">{title}</Typography>
+        <Typography pretendard="R" size="sm" color={isRegistered && "mint-8"}>
+          {title}
+        </Typography>
       </Div>
     );
   };
@@ -44,7 +43,7 @@ export default function WidgetDrawer({
       <Template
         title="위젯"
         content={
-          <div className="grid col-3 w-100 gap-20">
+          <div className="grid col-4 w-100 gap-20">
             {renderWidgetItem(TbEdit, "편집기", "objectEditor")}
             {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
             {renderWidgetItem(FaNoteSticky, "메모장", "memo")}

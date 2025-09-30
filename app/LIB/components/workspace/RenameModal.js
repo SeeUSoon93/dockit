@@ -35,7 +35,9 @@ export default function RenameModal({
   return (
     <Modal open={modalOpen} onClose={handleCancel}>
       <div className="flex flex-col">
-        <Typography>이름 변경</Typography>
+        <Typography pretendard="SB" size="lg">
+          이름 변경
+        </Typography>
         <Typography size="sm" color="cool-gray-6" className="mg-t-5">
           새로운 이름을 입력해주세요.
         </Typography>

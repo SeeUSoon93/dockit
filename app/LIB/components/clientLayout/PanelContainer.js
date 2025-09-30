@@ -11,6 +11,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { widgets } from "../../constant/widgets";
 import React from "react";
 import { Div } from "sud-ui";
+import { useSetting } from "../../context/SettingContext";
 
 function SortableWidget({ id }) {
   const {
@@ -48,6 +49,11 @@ export default function PanelContainer({
     id: side,
   });
 
+  const { setting } = useSetting();
+
+  const panelWidth = setting.panelWidth || 350;
+  const workspaceWidth = setting.workspaceWidth || 800;
+
   return (
     <SortableContext
       id={side}
@@ -63,9 +69,9 @@ export default function PanelContainer({
         style={{
           width:
             layoutMode === "desktop"
-              ? "calc((100vw - 800px) / 2)"
-              : "calc(100vw - 800px)",
-          maxWidth: "350px",
+              ? `calc((100vw - ${workspaceWidth}px) / 2)`
+              : `calc(100vw - ${workspaceWidth}px)`,
+          maxWidth: `${panelWidth}px`,
         }}
       >
         {widgets.map((widgetId) => (

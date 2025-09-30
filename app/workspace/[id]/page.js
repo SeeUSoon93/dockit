@@ -240,7 +240,7 @@ export default function WritePage() {
   const divStyle = () => {
     if (!docSetting) return {}; // docSetting이 없을 경우 대비
 
-    const widthRatio = 800 / docSetting.pageWidth;
+    const widthRatio = (setting.workspaceWidth || 800) / docSetting.pageWidth;
     const paddingTop = docSetting.paddingTop * widthRatio;
     const paddingBottom = docSetting.paddingBottom * widthRatio;
     const paddingLeft = docSetting.paddingLeft * widthRatio;
@@ -263,7 +263,7 @@ export default function WritePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-10 pd-y-10">
+    <Div className="flex flex-col items-center justify-center gap-10 pd-y-50">
       {loading || content === null ? (
         <DotSpinner />
       ) : (
@@ -271,7 +271,7 @@ export default function WritePage() {
           {/* 외부 Div: 여백(패딩) 표시용 */}
           <Div
             background="white-10"
-            className="shadow-sm w-[800px]"
+            className={`shadow-sm w-[${setting.workspaceWidth || 800}px]`}
             id="paper-wrapper"
             style={{ ...divStyle() }}
           >
@@ -284,6 +284,6 @@ export default function WritePage() {
           </Div>
         </div>
       )}
-    </div>
+    </Div>
   );
 }

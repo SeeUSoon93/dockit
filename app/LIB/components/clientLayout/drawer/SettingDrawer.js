@@ -1,4 +1,4 @@
-import { Drawer, Input, Switch, Typography } from "sud-ui";
+import { Divider, Drawer, Input, Switch, Typography } from "sud-ui";
 import Template from "./Template";
 import { AiFillSave } from "react-icons/ai";
 import { useSetting } from "@/app/LIB/context/SettingContext";
@@ -7,16 +7,20 @@ import { TbClockRecord } from "react-icons/tb";
 
 export default function SettingDrawer({
   openSettingsDrawer,
-  setOpenSettingsDrawer
+  setOpenSettingsDrawer,
 }) {
   const { setting, setSetting, settingLoading } = useSetting();
 
   const [autoSave, setAutoSave] = useState(setting.autoSave);
   const [autoSaveDelay, setAutoSaveDelay] = useState(setting.autoSaveDelay);
+  const [workspaceWidth, setWorkspaceWidth] = useState(setting.workspaceWidth);
+  const [panelWidth, setPanelWidth] = useState(setting.panelWidth);
 
   const handleChange = (key, value) => {
     setSetting({ ...setting, [key]: value });
   };
+
+  console.log(workspaceWidth, panelWidth);
 
   return (
     <Drawer
@@ -74,6 +78,46 @@ export default function SettingDrawer({
                     * 1000ms = 1s
                   </Typography>
                 </div>
+              </div>
+
+              <Divider />
+              {/* 워크스페이스 넓이 */}
+              <div className="flex items-center justify-between">
+                <Typography pretendard="SB" className="flex items-center gap-5">
+                  <AiFillSave size={20} />
+                  워크스페이스 넓이
+                </Typography>
+                <Input
+                  type="number"
+                  value={workspaceWidth}
+                  onChange={(e) => {
+                    handleChange("workspaceWidth", e.target.value);
+                    setWorkspaceWidth(e.target.value);
+                  }}
+                  style={{ width: "100px" }}
+                  shadow="none"
+                  size="sm"
+                  suffix="px"
+                />
+              </div>
+              {/* 패널 넓이 */}
+              <div className="flex items-center justify-between">
+                <Typography pretendard="SB" className="flex items-center gap-5">
+                  <AiFillSave size={20} />
+                  위젯 패널 최대 넓이
+                </Typography>
+                <Input
+                  type="number"
+                  value={panelWidth}
+                  onChange={(e) => {
+                    handleChange("panelWidth", e.target.value);
+                    setPanelWidth(e.target.value);
+                  }}
+                  style={{ width: "100px" }}
+                  shadow="none"
+                  size="sm"
+                  suffix="px"
+                />
               </div>
             </div>
           )
