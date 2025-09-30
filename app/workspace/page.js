@@ -7,7 +7,7 @@ import {
   fetchDataList,
   updateData,
   moveData,
-  fetchDataTree,
+  fetchDataTree
 } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
@@ -41,7 +41,7 @@ export default function WorkspacePage() {
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
-    y: 0,
+    y: 0
   });
 
   // 드래그앤드롭 상태
@@ -91,9 +91,33 @@ export default function WorkspacePage() {
 
   // 새 콘텐츠 생성
   const handleCreateContent = async (type) => {
+    // 문서 개수 제한 체크 (전체 트리에서)
+    if (type === "documents") {
+      const countDocumentsInTree = (items) => {
+        let count = 0;
+        for (const item of items) {
+          if (item.content_type === "documents") {
+            count++;
+          }
+          if (item.children && item.children.length > 0) {
+            count += countDocumentsInTree(item.children);
+          }
+        }
+        return count;
+      };
+
+      const totalDocumentCount = countDocumentsInTree(folderTree);
+
+      if (totalDocumentCount >= 5) {
+        toast.danger("베타버전에서 문서는 최대 5개까지만 생성할 수 있습니다.");
+        return;
+      }
+    }
+
     try {
       await createData(type, currentFolderId);
       await fetchContent(currentFolderId);
+      await fetchFolderTree(); // 폴더 트리도 새로고침
       toast.success(
         `${type === "documents" ? "문서" : "폴더"}가 생성되었습니다.`
       );
@@ -138,12 +162,13 @@ export default function WorkspacePage() {
           );
           await deleteObject(fileRef);
         } catch (storageError) {
-          console.log("Storage 파일이 없거나 이미 삭제됨:", storageError);
+          console.error(storageError);
         }
       }
 
       await deleteData(type, contentId);
       await fetchContent(currentFolderId);
+      await fetchFolderTree(); // 폴더 트리도 새로고침
       toast.success("삭제되었습니다.");
       setDeleteModalOpen(false);
       setDeleteInput("");
@@ -242,6 +267,7 @@ export default function WorkspacePage() {
     try {
       await moveData(draggedItem.content_type, draggedItem._id, targetItem._id);
       await fetchContent(currentFolderId);
+      await fetchFolderTree(); // 폴더 트리도 새로고침
       toast.success(
         `${draggedItem.title}이(가) ${targetItem.title} 폴더로 이동되었습니다.`
       );
@@ -258,7 +284,7 @@ export default function WorkspacePage() {
     setContextMenu({
       visible: true,
       x: e.clientX,
-      y: e.clientY,
+      y: e.clientY
     });
   };
 
@@ -332,7 +358,7 @@ export default function WorkspacePage() {
                     setContextMenu({
                       visible: true,
                       x: e.clientX,
-                      y: e.clientY,
+                      y: e.clientY
                     });
                   }}
                   onDoubleClick={() => {
@@ -399,7 +425,7 @@ export default function WorkspacePage() {
             className="fixed z-50"
             style={{
               left: contextMenu.x,
-              top: contextMenu.y,
+              top: contextMenu.y
             }}
             onClick={(e) => e.stopPropagation()}
           >

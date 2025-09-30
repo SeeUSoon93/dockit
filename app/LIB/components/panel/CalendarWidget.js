@@ -3,7 +3,7 @@ import WidgetCard from "./WidgetCard";
 import { useState, useEffect } from "react";
 import { CalendarOutline, TriangleLeft, TriangleRight } from "sud-icons";
 import dayjs from "dayjs";
-import { locale_ko } from "../../constant/locale";
+import { locale_ko } from "../../constant/widget_constant";
 const API_SUB_URL = process.env.NEXT_PUBLIC_API_SUB_URL;
 
 export default function CalendarWidget({ dragHandleProps }) {
@@ -112,7 +112,7 @@ export default function CalendarWidget({ dragHandleProps }) {
           holidays={holidays}
           holidaysStyle={{
             background: "cool-gray-2",
-            color: "red-7",
+            color: "red-7"
           }}
         />
       </div>

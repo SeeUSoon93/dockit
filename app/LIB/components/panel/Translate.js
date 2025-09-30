@@ -1,50 +1,47 @@
-import { Button, Input, Typography, Select, Card } from "sud-ui";
+import {
+  Button,
+  Input,
+  Typography,
+  Select,
+  Card,
+  Textarea,
+  toast
+} from "sud-ui";
 import WidgetCard from "./WidgetCard";
-import { BsTranslate, BsArrowLeftRight } from "react-icons/bs";
+import { BsTranslate } from "react-icons/bs";
 import { useState } from "react";
+import { API_BASE_URL } from "../../config/config";
+import { languages } from "../../constant/widget_constant";
+import { HiMiniArrowsUpDown } from "react-icons/hi2";
 
 export default function Translate({ dragHandleProps }) {
   const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
-  const [sourceLang, setSourceLang] = useState("auto");
-  const [targetLang, setTargetLang] = useState("ko");
-  const [isTranslating, setIsTranslating] = useState(false);
-
-  const languages = [
-    { value: "auto", label: "자동 감지" },
-    { value: "ko", label: "한국어" },
-    { value: "en", label: "영어" },
-    { value: "ja", label: "일본어" },
-    { value: "zh", label: "중국어" },
-    { value: "es", label: "스페인어" },
-    { value: "fr", label: "프랑스어" },
-    { value: "de", label: "독일어" },
-    { value: "ru", label: "러시아어" },
-    { value: "ar", label: "아랍어" },
-  ];
+  const [sourceLang, setSourceLang] = useState("ko");
+  const [targetLang, setTargetLang] = useState("en");
 
   const translateText = async () => {
     if (!sourceText.trim()) return;
-
-    setIsTranslating(true);
+    setTranslatedText("");
     try {
-      // 간단한 번역 시뮬레이션 (실제로는 API 호출 필요)
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 1초 대기
+      const params = new URLSearchParams({
+        text: sourceText,
+        source_lang: sourceLang,
+        target_lang: targetLang
+      });
 
-      // 실제 번역을 위해서는 다음 중 하나를 사용해야 합니다:
-      // 1. 자체 libretranslate 서버 호스팅
-      // 2. Google Translate API
-      // 3. DeepL API
-      // 4. Azure Translator API
-
-      setTranslatedText(`[번역 결과] ${sourceText} → ${targetLang}로 번역됨`);
-    } catch (error) {
-      console.error("번역 오류:", error);
-      setTranslatedText(
-        "번역 서버가 필요합니다. libretranslate를 직접 호스팅하거나 다른 번역 API를 사용하세요."
+      const response = await fetch(
+        `${API_BASE_URL}/widget/translate?${params}`
       );
-    } finally {
-      setIsTranslating(false);
+      const data = await response.json();
+
+      if (data.error) throw new Error(data.error);
+      if (!data.translated_text)
+        throw new Error("번역 결과를 받을 수 없습니다.");
+
+      setTranslatedText(data.translated_text);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -52,16 +49,17 @@ export default function Translate({ dragHandleProps }) {
     const tempLang = sourceLang;
     setSourceLang(targetLang);
     setTargetLang(tempLang);
-
-    // 텍스트도 교체
-    const tempText = sourceText;
     setSourceText(translatedText);
-    setTranslatedText(tempText);
+    setTranslatedText("");
   };
 
-  const clearText = () => {
-    setSourceText("");
-    setTranslatedText("");
+  const selectProps = {
+    size: "sm",
+    searchable: true,
+    options: languages,
+    shadow: "none",
+    border: false,
+    background: "mint-2"
   };
 
   return (
@@ -71,68 +69,58 @@ export default function Translate({ dragHandleProps }) {
       dragHandleProps={dragHandleProps}
     >
       <div className="w-100 flex flex-col gap-10">
-        {/* 언어 선택 */}
-        <div className="flex gap-5 items-center">
-          <Select
-            value={sourceLang}
-            onChange={setSourceLang}
-            options={languages}
-            size="sm"
-            style={{ flex: 1 }}
-          />
-          <Button
-            onClick={swapLanguages}
-            size="sm"
-            colorType="text"
-            icon={<BsArrowLeftRight size={16} />}
-          />
-          <Select
-            value={targetLang}
-            onChange={setTargetLang}
-            options={languages.filter((lang) => lang.value !== "auto")}
-            size="sm"
-            style={{ flex: 1 }}
-          />
-        </div>
+        <Textarea
+          placeholder="번역할 텍스트를 입력하세요... (Shift+Enter로 번역)"
+          value={sourceText}
+          onChange={(e) => setSourceText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && e.shiftKey) {
+              e.preventDefault();
+              translateText();
+            }
+          }}
+          rows={3}
+          shadow="none"
+          background="mint-1"
+        />
 
-        {/* 입력 텍스트 */}
-        <div className="flex flex-col gap-5">
-          <Input
-            placeholder="번역할 텍스트를 입력하세요..."
-            value={sourceText}
-            onChange={(e) => setSourceText(e.target.value)}
-            multiline
-            rows={4}
-            size="sm"
-          />
-
-          <div className="flex gap-5">
+        <Card width="100%" shadow="none" border={false} background={"mint-2"}>
+          <div className="flex flex-col items-center">
+            <Select
+              value={sourceLang}
+              onChange={setSourceLang}
+              {...selectProps}
+            />
             <Button
-              onClick={translateText}
-              disabled={!sourceText.trim() || isTranslating}
-              size="sm"
-              colorType="primary"
-              loading={isTranslating}
-            >
-              {isTranslating ? "번역 중..." : "번역"}
-            </Button>
-            <Button onClick={clearText} size="sm" colorType="text">
-              지우기
-            </Button>
+              icon={<HiMiniArrowsUpDown />}
+              colorType="text"
+              onClick={swapLanguages}
+            />
+            <Select
+              value={targetLang}
+              onChange={setTargetLang}
+              {...selectProps}
+            />
           </div>
-        </div>
+        </Card>
 
-        {/* 번역 결과 */}
-        {translatedText && (
-          <Card shadow="none" background="cool-gray-1">
-            <Typography size="sm" color="cool-gray-6" className="mg-b-5">
-              번역 결과:
-            </Typography>
-            <Typography size="sm" style={{ whiteSpace: "pre-wrap" }}>
-              {translatedText}
-            </Typography>
-          </Card>
-        )}
+        <Card
+          shadow="none"
+          background="mint-1"
+          width="100%"
+          className="cursor-pointer"
+          onClick={() => {
+            if (translatedText) {
+              navigator.clipboard.writeText(translatedText);
+              toast.success("클립보드에 복사되었습니다.");
+            }
+          }}
+          style={{ maxHeight: "150px", overflowY: "auto" }}
+        >
+          <Typography style={{ whiteSpace: "pre-wrap" }}>
+            {translatedText || ""}
+          </Typography>
+        </Card>
       </div>
     </WidgetCard>
   );

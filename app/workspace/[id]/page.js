@@ -1,7 +1,7 @@
 "use client";
 
 import { useDocument } from "@/app/LIB/context/DocumentContext";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Div, DotSpinner, toast } from "sud-ui";
 import ContentEditor from "@/app/LIB/components/write/ContentEditor";
 import { useDebounce } from "@/app/LIB/hook/useDebounce";
@@ -51,7 +51,7 @@ export default function WritePage() {
     content,
     bulletStyle,
     setContent,
-    title,
+    title
   } = useDocument();
   const { setSaveAction, setDownloadPDFAction, editor, setPrintAction } =
     useEditorContext();
@@ -111,7 +111,7 @@ export default function WritePage() {
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           html: finalHtml, // 스타일이 모두 포함된 최종 HTML 전달
@@ -121,9 +121,9 @@ export default function WritePage() {
             paddingTop: docSetting?.paddingTop || 25.4,
             paddingBottom: docSetting?.paddingBottom || 25.4,
             paddingLeft: docSetting?.paddingLeft || 25.4,
-            paddingRight: docSetting?.paddingRight || 25.4,
-          },
-        }),
+            paddingRight: docSetting?.paddingRight || 25.4
+          }
+        })
       });
 
       if (!response.ok) {
@@ -166,7 +166,7 @@ export default function WritePage() {
     setDownloadPDFAction,
     handleDownloadPDF,
     setPrintAction,
-    handlePrint,
+    handlePrint
   ]);
 
   useEffect(() => {
@@ -255,6 +255,7 @@ export default function WritePage() {
       paddingLeft: `${paddingLeft}px`,
       paddingRight: `${paddingRight}px`,
       minHeight: `${pageHeight}px`,
+      width: `${setting.workspaceWidth || 800}px`
     };
   };
 
@@ -271,7 +272,7 @@ export default function WritePage() {
           {/* 외부 Div: 여백(패딩) 표시용 */}
           <Div
             background="white-10"
-            className={`shadow-sm w-[${setting.workspaceWidth || 800}px]`}
+            className={`shadow-sm`}
             id="paper-wrapper"
             style={{ ...divStyle() }}
           >
