@@ -20,8 +20,6 @@ export default function SettingDrawer({
     setSetting({ ...setting, [key]: value });
   };
 
-  console.log(workspaceWidth, panelWidth);
-
   return (
     <Drawer
       open={openSettingsDrawer}

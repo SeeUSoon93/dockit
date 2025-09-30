@@ -5,6 +5,8 @@ import SpecialChar from "../components/panel/SpecialChar";
 import ObjectEditer from "../components/panel/ObjectEditer";
 import MadeChart from "../components/panel/MadeChart";
 import Index from "../components/panel/Index";
+import CalendarWidget from "../components/panel/CalendarWidget";
+import Timer from "../components/panel/Timer";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -13,5 +15,7 @@ export const widgets = {
   memo: <Memo />, // 메모
   specialChar: <SpecialChar />, // 특수 문자
   madeChart: <MadeChart />, // 차트
-  index: <Index /> // 목차
+  index: <Index />, // 목차
+  calendar: <CalendarWidget />, // 달력
+  timer: <Timer />, // 타이머
 };

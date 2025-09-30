@@ -6,6 +6,7 @@ import { MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
+import { CalendarOutline, TimerOutline } from "sud-icons";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
@@ -51,6 +52,8 @@ export default function WidgetDrawer({
             {renderWidgetItem(MdKeyboardCommandKey, "특수문자", "specialChar")}
             {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}
             {renderWidgetItem(PiListNumbersFill, "목차", "index")}
+            {renderWidgetItem(CalendarOutline, "달력", "calendar")}
+            {renderWidgetItem(TimerOutline, "타이머", "timer")}
           </div>
         }
       />
