@@ -1,17 +1,32 @@
-import { Button, Calendar, Typography } from "sud-ui";
+import {
+  Button,
+  Calendar,
+  DatePicker,
+  Divider,
+  Input,
+  Modal,
+  Tag,
+  toast,
+  Typography,
+} from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { useState, useEffect } from "react";
-import { CalendarOutline, TriangleLeft, TriangleRight } from "sud-icons";
+import { CalendarOutline, Plus, TriangleLeft, TriangleRight } from "sud-icons";
 import dayjs from "dayjs";
 import { locale_ko } from "../../constant/widget_constant";
+import { createData, deleteData, fetchDataList } from "../../utils/dataUtils";
 const API_SUB_URL = process.env.NEXT_PUBLIC_API_SUB_URL;
 
 export default function CalendarWidget({ dragHandleProps }) {
   const [events, setEvents] = useState([]);
+  const [todayEvents, setTodayEvents] = useState([]);
   const [today, setToday] = useState(new Date());
   const [date, setDate] = useState(dayjs(today));
   const [holidays, setHolidays] = useState([]);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [itemContent, setItemContent] = useState("");
+  const [itemDate, setItemDate] = useState(dayjs(today));
 
   // 한국 휴일 가져오기
   useEffect(() => {
@@ -73,16 +88,63 @@ export default function CalendarWidget({ dragHandleProps }) {
   const yearText = locale_ko.yearFormat(date);
   const monthNumber = date.month() + 1;
 
+  const fetchEvents = async () => {
+    const res = await fetchDataList("calendar");
+    setEvents(res.content);
+  };
+
+  const handleAddItem = async () => {
+    if (itemContent === "" || itemDate === "") return;
+
+    await createData("calendar", null, {
+      content: itemContent,
+      date: dayjs(itemDate).format("YYYY-MM-DD"),
+    });
+    setOpenAddModal(false);
+    setItemContent("");
+    setItemDate(dayjs(today));
+    toast.success("일정이 추가되었습니다.");
+
+    fetchEvents();
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    if (events.length === 0) return;
+
+    setTodayEvents(
+      events.filter((event) => dayjs(event.date).isSame(dayjs(date), "day"))
+    );
+  }, [events, date]);
+
+  const handleDeleteEvent = async (id) => {
+    await deleteData("calendar", id);
+    fetchEvents();
+  };
+
   return (
     <WidgetCard
       icon={CalendarOutline}
       title="달력"
       dragHandleProps={dragHandleProps}
+      titleBtn={
+        <Button
+          icon={<Plus size={13} />}
+          colorType="text"
+          size="sm"
+          onClick={() => setOpenAddModal(true)}
+        />
+      }
     >
       <div className="w-100 flex flex-col gap-10">
         <Calendar
           value={date}
           locale="ko"
+          items={events}
+          onChange={(value) => setDate(dayjs(value))}
           headerRender={
             <div className="flex jus-cen item-cen w-100">
               <Button
@@ -112,10 +174,71 @@ export default function CalendarWidget({ dragHandleProps }) {
           holidays={holidays}
           holidaysStyle={{
             background: "cool-gray-2",
-            color: "red-7"
+            color: "red-7",
           }}
         />
+        <Divider />
+        <div className="flex flex-col gap-10 item-center">
+          <Typography gmarket="Medium" className="text-center">
+            {date.format("YYYY/MM/DD")} 일정
+          </Typography>
+          <div className="flex flex-wrap gap-5 overflow-y-auto max-h-[80px]">
+            {todayEvents.map((event, index) => (
+              <div key={event._id}>
+                <Tag
+                  colorType={index % 2 === 0 ? "mint" : "blue"}
+                  closeable
+                  onClose={() => handleDeleteEvent(event._id)}
+                >
+                  <Typography size="sm">● {event.content}</Typography>
+                </Tag>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+      <Modal open={openAddModal} onClose={() => setOpenAddModal(false)}>
+        <div className="flex flex-col gap-10">
+          <Typography pretendard="SB" size="lg">
+            일정추가
+          </Typography>
+          <Input
+            placeholder="내용"
+            shadow="none"
+            size="sm"
+            style={{ width: "100%" }}
+            value={itemContent}
+            onChange={(e) => setItemContent(e.target.value)}
+          />
+          <DatePicker
+            placeholder="날짜"
+            shadow="none"
+            size="sm"
+            style={{ width: "100%" }}
+            locale="ko"
+            value={itemDate}
+            onChange={(value) => setItemDate(value)}
+          />
+          <div className="flex justify-end gap-10">
+            <Button
+              onClick={() => setOpenAddModal(false)}
+              colorType="danger"
+              size="sm"
+            >
+              취소
+            </Button>
+            <Button
+              onClick={handleAddItem}
+              disabled={itemContent === "" || itemDate === ""}
+              colorType="primary"
+              size="sm"
+            >
+              추가
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </WidgetCard>
   );
 }

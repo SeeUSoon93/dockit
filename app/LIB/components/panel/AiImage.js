@@ -32,9 +32,9 @@ export default function AiImage({ dragHandleProps }) {
       if (inlineDataParts?.[0]) {
         const imageData = inlineDataParts[0].inlineData;
         setImgUrl(`data:${imageData.mimeType};base64,${imageData.data}`);
-        await createData("image", null, {
-          input: input,
-          image: imgUrl,
+        await createData("ai-image", null, {
+          title: input,
+          content: imgUrl,
         });
       }
     } catch (err) {
