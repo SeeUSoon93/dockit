@@ -37,6 +37,7 @@ import { widgets } from "./LIB/constant/widgets";
 import { useDocumentManager } from "./LIB/hook/useDocumentManager";
 import { useDragState } from "./LIB/hook/useDragState";
 import { DrawerProvider } from "./LIB/context/DrawerContext";
+import { usePathname } from "next/navigation";
 
 function LayoutContent({ children }) {
   // 커스텀 훅들 사용
@@ -65,6 +66,8 @@ function LayoutContent({ children }) {
     })
   );
 
+  const isShare = usePathname().includes("share");
+
   return (
     <SoonUIDesign isDarkMode={isDarkMode} darkTheme={darkTheme}>
       <Div
@@ -82,20 +85,24 @@ function LayoutContent({ children }) {
           onDragOver={(event) => handleDragOver(event, left, right)}
         >
           {/*■■■■■ 헤더 ■■■■■*/}
-          <Div
-            className="z-10 rounded-t-none shadow-md rounded-b-2xl"
-            background="mint-1"
-            id="header"
-          >
-            <Header
-              user={user}
-              userLoading={userLoading}
-              isDarkMode={isDarkMode}
-              setIsDarkMode={setIsDarkMode}
-              isEditPage={isEditPage}
-              document={document}
-            />
-          </Div>
+
+          {!isShare && (
+            <Div
+              className="z-10 rounded-t-none shadow-md rounded-b-2xl"
+              background="mint-1"
+              id="header"
+            >
+              <Header
+                user={user}
+                userLoading={userLoading}
+                isDarkMode={isDarkMode}
+                setIsDarkMode={setIsDarkMode}
+                isEditPage={isEditPage}
+                document={document}
+              />
+            </Div>
+          )}
+
           {/*■■■■■ 본문 ■■■■■*/}
           <main className="relative z-0 flex-grow overflow-auto">
             <Content

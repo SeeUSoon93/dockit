@@ -2,6 +2,7 @@ import { Div } from "sud-ui";
 import { useLayout } from "../../context/LayoutContext";
 import PanelContainer from "./PanelContainer";
 import { useDocument } from "../../context/DocumentContext";
+import { usePathname } from "next/navigation";
 
 export default function Content({
   left,
@@ -14,11 +15,12 @@ export default function Content({
   const { layoutMode, showLeftPanel, showRightPanel } = useLayout();
   const { document } = useDocument();
   const isDocument = document !== null;
+  const isShare = usePathname().includes("share");
 
   return (
     <Div
       className="flex w-full h-full"
-      background={isDocument ? "white-9" : "white-10"}
+      background={isDocument || isShare ? "white-9" : "white-10"}
       ref={containerRef}
     >
       {/* 왼쪽패널 */}
@@ -33,13 +35,13 @@ export default function Content({
       {/* 본문 */}
       <Div
         className={`w-100 overflow-y-auto ${
-          isDocument ? "" : "flex justify-center"
+          isDocument || isShare ? "" : "flex justify-center"
         }`}
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "top center",
         }}
-        background={isDocument ? "white-9" : "white-10"}
+        background={isDocument || isShare ? "white-9" : "white-10"}
       >
         {children}
       </Div>

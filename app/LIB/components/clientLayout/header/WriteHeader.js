@@ -1,11 +1,12 @@
 import { TbArrowBackUp, TbArrowForwardUp, TbBlockquote } from "react-icons/tb";
-import { Code, PhotoOutline, Print } from "sud-icons";
+import { Code, PhotoOutline, Print, ShareFill } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
-import { Button, ColorPicker, Divider, Select, Upload } from "sud-ui";
+import { Button, ColorPicker, Divider, Select, Upload, toast } from "sud-ui";
 import { useEffect, useState } from "react";
 import { HiMinus, HiPlus } from "react-icons/hi";
 import { GrDocumentConfig } from "react-icons/gr";
+import { useParams } from "next/navigation";
 
 import {
   PiFilePdfBold,
@@ -30,6 +31,7 @@ import { fontOptions } from "@/app/LIB/constant/fontOptions";
 export default function WriteHeader() {
   const { editor, printAction, saveAction, downloadPDFAction } =
     useEditorContext();
+  const params = useParams();
   const [font, setFont] = useState("Pretendard-Medium");
   const [currentFontSize, setCurrentFontSize] = useState(16);
 
@@ -348,6 +350,20 @@ export default function WriteHeader() {
         {renderBtn(GrDocumentConfig, () => setDocSettingModalOpen(true), "")}
         {renderBtn(PiFilePdfBold, () => downloadPDFAction?.(), "")}
       </>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {renderBtn(
+        ShareFill,
+        () => {
+          const shareUrl = `${window.location.origin}/share/${params.id}`;
+          navigator.clipboard.writeText(shareUrl);
+          toast.success("공유 링크가 복사되었습니다!");
+        },
+        ""
+      )}
 
       <DocSettingModal
         setDocSettingModalOpen={setDocSettingModalOpen}
