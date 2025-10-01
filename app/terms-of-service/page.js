@@ -17,9 +17,9 @@ export default function TermsOfServicePage() {
                 제1조 (목적)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
-                본 약관은 Dockit(이하 "서비스")이 제공하는 문서 작성 및 관리
-                서비스의 이용과 관련하여 회사와 이용자 간의 권리, 의무 및
-                책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
+                본 약관은 Dockit(이하 &quot;서비스&quot;)이 제공하는 문서 작성
+                및 관리 서비스의 이용과 관련하여 회사와 이용자 간의 권리, 의무
+                및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
               </Typography>
             </div>
 
@@ -33,20 +33,21 @@ export default function TermsOfServicePage() {
               <ul className="mg-t-10 mg-l-20">
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • "서비스"란 Dockit이 제공하는 문서 작성, 편집, 저장 및 관리
-                    서비스를 의미합니다.
+                    • &quot;서비스&quot;란 Dockit이 제공하는 문서 작성, 편집,
+                    저장 및 관리 서비스를 의미합니다.
                   </Typography>
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • "이용자"란 본 약관에 따라 회사가 제공하는 서비스를
-                    이용하는 회원 및 비회원을 말합니다.
+                    • &quot;이용자&quot;란 본 약관에 따라 회사가 제공하는
+                    서비스를 이용하는 회원 및 비회원을 말합니다.
                   </Typography>
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • "회원"이란 서비스에 접속하여 본 약관에 따라 회사와
-                    이용계약을 체결하고 서비스를 이용하는 자를 의미합니다.
+                    • &quot;회원&quot;이란 서비스에 접속하여 본 약관에 따라
+                    회사와 이용계약을 체결하고 서비스를 이용하는 자를
+                    의미합니다.
                   </Typography>
                 </li>
               </ul>
