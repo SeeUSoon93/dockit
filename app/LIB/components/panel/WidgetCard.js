@@ -1,11 +1,11 @@
-import { Card, Typography } from "sud-ui";
+import { Card, Div, Typography } from "sud-ui";
 
 export default function WidgetCard({
   icon,
   title,
   children,
   dragHandleProps,
-  titleBtn
+  titleBtn,
 }) {
   const Icon = icon;
   return (
@@ -24,10 +24,10 @@ export default function WidgetCard({
           className="flex jus-bet w-100 item-cen cursor-move"
           {...dragHandleProps}
         >
-          <div className="flex gap-5 item-cen">
+          <Div className="flex gap-5 item-cen" color={"mint-8"}>
             <Icon size={20} />
             <Typography>{title}</Typography>
-          </div>
+          </Div>
           {titleBtn && titleBtn}
         </div>
         <div>{children}</div>

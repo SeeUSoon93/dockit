@@ -8,6 +8,7 @@ import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
 import { CalendarOutline, TimerOutline } from "sud-icons";
 import { BsTranslate } from "react-icons/bs";
+import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
@@ -49,31 +50,50 @@ export default function WidgetDrawer({
       <Template
         title="위젯"
         content={
-          <div className="flex flex-col gap-10">
-            <Typography pretendard="SB">문서 작성</Typography>
+          <div className="flex flex-col gap-30">
+            <div className="flex flex-col gap-10">
+              {/* AI */}
+              <Typography pretendard="SB">AI(Beta)</Typography>
+              <div className="grid col-4 w-100 gap-20">
+                {renderWidgetItem(RiChatAiFill, "AI 채팅", "aiChat")}
+                {renderWidgetItem(RiImageAiFill, "AI 이미지", "aiImage")}
+              </div>
+            </div>
 
-            <div className="grid col-4 w-100 gap-20">
-              {renderWidgetItem(
-                MdKeyboardCommandKey,
-                "특수문자",
-                "specialChar"
-              )}
-              {renderWidgetItem(PiListNumbersFill, "목차", "index")}
-              {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}
-              {renderWidgetItem(TbEdit, "편집기", "objectEditor")}
+            <div className="flex flex-col gap-10">
+              {/* 문서 작성 */}
+              <Typography pretendard="SB">문서 작성</Typography>
+              <div className="grid col-4 w-100 gap-20">
+                {renderWidgetItem(
+                  MdKeyboardCommandKey,
+                  "특수문자",
+                  "specialChar"
+                )}
+                {renderWidgetItem(PiListNumbersFill, "목차", "index")}
+                {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}
+                {renderWidgetItem(TbEdit, "편집기", "objectEditor")}
+              </div>
             </div>
-            <Typography pretendard="SB">자료 탐색</Typography>
-            <div className="grid col-4 w-100 gap-20">
-              {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
-              {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
+
+            <div className="flex flex-col gap-10">
+              {/* 자료 탐색 */}
+              <Typography pretendard="SB">자료 탐색</Typography>
+              <div className="grid col-4 w-100 gap-20">
+                {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
+                {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
+              </div>
             </div>
-            <Typography pretendard="SB">기타 도구</Typography>
-            <div className="grid col-4 w-100 gap-20">
-              {renderWidgetItem(BsTranslate, "번역기", "translate")}
-              {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
-              {renderWidgetItem(FaCalculator, "계산기", "calculator")}
-              {renderWidgetItem(CalendarOutline, "달력", "calendar")}
-              {renderWidgetItem(TimerOutline, "타이머", "timer")}
+
+            <div className="flex flex-col gap-10">
+              {/* 기타 도구 */}
+              <Typography pretendard="SB">기타 도구</Typography>
+              <div className="grid col-4 w-100 gap-20">
+                {renderWidgetItem(BsTranslate, "번역기", "translate")}
+                {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
+                {renderWidgetItem(FaCalculator, "계산기", "calculator")}
+                {renderWidgetItem(CalendarOutline, "달력", "calendar")}
+                {renderWidgetItem(TimerOutline, "타이머", "timer")}
+              </div>
             </div>
           </div>
         }

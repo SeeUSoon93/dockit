@@ -9,6 +9,8 @@ import CalendarWidget from "../components/panel/CalendarWidget";
 import Timer from "../components/panel/Timer";
 import Translate from "../components/panel/Translate";
 import ImageSearch from "../components/panel/ImageSearch";
+import AiChat from "../components/panel/AiChat";
+import AiImage from "../components/panel/AiImage";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -21,5 +23,7 @@ export const widgets = {
   calendar: <CalendarWidget />, // 달력
   timer: <Timer />, // 타이머
   translate: <Translate />, // 번역기
-  imageSearch: <ImageSearch /> // 이미지 검색
+  imageSearch: <ImageSearch />, // 이미지 검색
+  aiChat: <AiChat />, // AI 채팅
+  aiImage: <AiImage />, // AI 이미지
 };
