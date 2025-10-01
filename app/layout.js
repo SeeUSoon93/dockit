@@ -5,28 +5,42 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: "no",
+  userScalable: "no"
 };
 
 export const metadata = {
-  title: "DocKit",
+  metadataBase: new URL("https://dockit-mu.vercel.app"),
+  title: "Dockit | 온라인 문서 작성 도구",
+  description: "쓰는 것에만 집중하세요. 가장 심플한 온라인 문서, 독킷.",
+  keywords:
+    "Dockit, 온라인 문서 작성 도구, 심플한 문서, 독킷, 문서, 글 작성, 문서 작성, 작성",
   icons: {
-    icon: "/logo/logo.svg",
+    icon: "/logo/symbol.png"
   },
   openGraph: {
-    title: "DocKit",
+    title: "DocKit | 온라인 문서 작성 도구",
+    description: "쓰는 것에만 집중하세요. 가장 심플한 온라인 문서, 독킷.",
     type: "website",
     locale: "ko_KR",
-    siteName: "DocKit",
+    siteName: "DocKit | 온라인 문서 작성 도구",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "DocKit",
-      },
-    ],
+        alt: "Dockit | 온라인 문서 작성 도구"
+      }
+    ]
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dockit | 온라인 문서 작성 도구",
+    description: "쓰는 것에만 집중하세요. 가장 심플한 온라인 문서, 독킷.",
+    images: ["/og-image.png"]
+  },
+  alternates: {
+    canonical: "https://dockit-mu.vercel.app"
+  }
 };
 
 export default function RootLayout({ children }) {
@@ -45,7 +59,6 @@ export default function RootLayout({ children }) {
       <body>
         <ClientLayout>
           {children}
-
           <Analytics />
         </ClientLayout>
       </body>

@@ -1,0 +1,21 @@
+{
+  "name": "Dockit | 온라인 문서 작성 도구",
+  "short_name": "Dockit",
+  "description": "쓰는 것에만 집중하세요. 가장 심플한 온라인 문서, 독킷.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#13c2c2",
+  "icons": [
+    {
+      "src": "/logo/symbol.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/symbol.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
