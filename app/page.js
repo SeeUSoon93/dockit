@@ -91,7 +91,7 @@ export default function Home() {
     const Icon = item.icon;
 
     const card = (
-      <Card width={"100%"} key={item.title} shadow="none" border={false}>
+      <Card width={"100%"} shadow="none" border={false}>
         <Div className="flex flex-col items-center gap-10" color={"mint-7"}>
           <Icon size={60} />
           <Typography as="p" size="xl" pretendard="SB" color={"mint-7"}>
@@ -128,7 +128,7 @@ export default function Home() {
     );
 
     return (
-      <div className="flex flex-col gap-10 items-center">
+      <div className="flex flex-col gap-10 items-center" key={item.title}>
         {layoutMode === "desktop" ? (
           <div
             className="gap-10 w-100 items-center"
