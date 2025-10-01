@@ -162,7 +162,7 @@ export default function Home() {
     {
       icon: RiAiGenerate2,
       title: "AI 위젯",
-      video: "/video/ai-widget.mp4",
+      video: "/video/ai-widget.webm",
       detail: [
         "문서 작업 중, 똑똑한 AI 조수에게 바로 질문하고 답변을 얻으세요.",
         "단순한 텍스트 입력만으로, 아이디어를 생생한 이미지로 만들어보세요.",
@@ -173,7 +173,7 @@ export default function Home() {
     {
       icon: TbWriting,
       title: "문서 작성 도구",
-      video: "/video/chart.mp4",
+      video: "/video/chart.webm",
       detail: [
         "클릭 한 번으로, 자주 쓰는 특수문자와 기호를 손쉽게 추가하세요.",
         "문서의 헤딩을 분석해 클릭 가능한 목차를 자동으로 생성합니다.",
@@ -185,7 +185,7 @@ export default function Home() {
     {
       icon: MdScreenSearchDesktop,
       title: "자료 탐색",
-      video: "/video/data.mp4",
+      video: "/video/data.webm",
       detail: [
         "궁금한 단어는 즉시 사전에서 의미를 확인하세요.",
         "고품질의 이미지를 검색하고 문서에 바로 삽입하여 완성도를 높이세요.",
@@ -197,7 +197,7 @@ export default function Home() {
     {
       icon: RiToolsFill,
       title: "기타 도구",
-      video: "/video/etc.mp4",
+      video: "/video/etc.webm",
       detail: [
         "번뜩이는 아이디어를 기록할 메모장부터 일정 관리, 빠른 계산까지 모두 한 곳에서.",
         "다국어 번역기를 이용해 언어의 장벽 없이 자료를 이해하고 소통하세요.",
