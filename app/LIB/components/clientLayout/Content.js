@@ -3,6 +3,7 @@ import { useLayout } from "../../context/LayoutContext";
 import PanelContainer from "./PanelContainer";
 import { useDocument } from "../../context/DocumentContext";
 import { usePathname } from "next/navigation";
+import { useSetting } from "../../context/SettingContext";
 
 export default function Content({
   left,
@@ -10,16 +11,17 @@ export default function Content({
   children,
   overContainerId,
   containerRef,
-  scale,
+  scale
 }) {
   const { layoutMode, showLeftPanel, showRightPanel } = useLayout();
   const { document } = useDocument();
   const isDocument = document !== null;
   const isShare = usePathname().includes("share");
+  const { setting } = useSetting();
 
   return (
     <Div
-      className="flex w-full h-full"
+      className="flex w-full h-full justify-between"
       background={isDocument || isShare ? "white-9" : "white-10"}
       ref={containerRef}
     >
@@ -34,12 +36,13 @@ export default function Content({
       )}
       {/* 본문 */}
       <Div
-        className={`w-100 overflow-y-auto ${
+        className={`overflow-y-auto  ${
           isDocument || isShare ? "" : "flex justify-center"
         }`}
         style={{
+          width: isDocument || isShare ? `${setting.workspaceWidth}px` : "100%",
           transform: `scale(${scale})`,
-          transformOrigin: "top center",
+          transformOrigin: "top center"
         }}
         background={isDocument || isShare ? "white-9" : "white-10"}
       >

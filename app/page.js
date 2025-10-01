@@ -4,8 +4,13 @@ import { Button, Card, Div, Divider, Image, Tag, Typography } from "sud-ui";
 import { handleGoogleAuth } from "./LIB/utils/authUtils";
 import { useUser } from "./LIB/context/UserContext";
 import { useRouter } from "next/navigation";
-import { TbBrowserCheck, TbFileTypePdf } from "react-icons/tb";
-import { RiFilePaper2Line } from "react-icons/ri";
+import {
+  TbBrowserCheck,
+  TbChartDotsFilled,
+  TbFileTypePdf,
+  TbWriting
+} from "react-icons/tb";
+import { RiAiGenerate2, RiChatAiFill, RiFilePaper2Line } from "react-icons/ri";
 import { MdOutlineWidgets } from "react-icons/md";
 import { AiOutlineCloudSync } from "react-icons/ai";
 import { LuTableOfContents } from "react-icons/lu";
@@ -61,38 +66,96 @@ export default function Home() {
   const renderList = [
     {
       icon: TbBrowserCheck,
-      title: "웹 브라우저만 있으면 어디서나!",
-      description: "스마트폰, 태블릿, 데스크탑에서 빠르게 문서를 작성하세요.",
+      title: "웹 브라우저만 있으면 끝!",
+      description: "스마트폰, 태블릿, 데스크탑에서 빠르게 문서를 작성하세요."
     },
     {
       icon: RiFilePaper2Line,
       title: "제한 없는 콘텐츠 작성",
-      description: "페이지 나눔 없이 콘텐츠를 끊김 없이 작성하세요.",
-    },
-    {
-      icon: MdOutlineWidgets,
-      title: "다양한 위젯 제공",
-      description: "문서 작성을 돕는 위젯 뿐 아니라 다양한 위젯을 제공합니다.",
-    },
-    {
-      icon: PiProjectorScreenChartBold,
-      title: "차트 생성",
-      description:
-        "표를 선택하면 자동으로 차트를 생성합니다. 쉽고 빠르게 차트를 생성하세요.",
+      description: "페이지 나눔 없이 콘텐츠를 끊김 없이 작성하세요."
     },
     {
       icon: AiOutlineCloudSync,
       title: "클라우드 자동 저장",
-      description:
-        "자동으로 문서를 클라우드에 저장합니다. 작성을 중단하더라도 자동으로 저장됩니다.",
-    },
+      description: "자동 백업으로 중요한 내용을 안전하게 보관하세요."
+    }
+  ];
 
+  const widgetCardRender = (item, index) => {
+    const isEven = index % 2 === 0;
+    const Icon = item.icon;
+
+    return (
+      <div className="flex flex-col gap-10 items-center">
+        <div
+          className="gap-10 w-100 items-center"
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              layoutMode === "desktop"
+                ? isEven
+                  ? "3fr 1fr"
+                  : "1fr 3fr"
+                : "1fr"
+          }}
+        >
+          {isEven && <video src={item.video} autoPlay loop muted />}
+          <Card width={"100%"} key={item.title} shadow="none" border={false}>
+            <Div className="flex flex-col items-center gap-10" color={"mint-7"}>
+              <Icon size={60} />
+              <Typography as="p" size="xl" pretendard="SB" color={"mint-7"}>
+                {item.title}
+              </Typography>
+            </Div>
+          </Card>
+          {!isEven && <video src={item.video} autoPlay loop muted />}
+        </div>
+        <div className="pd-30 text-center">
+          {item.detail.map((item, index) => (
+            <Typography as="p" key={index} pretendard="SB" size="xl">
+              {item}
+            </Typography>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderWidgetList = [
     {
-      icon: LuTableOfContents,
-      title: "목차 생성",
-      description:
-        "헤딩 설정으로 자동으로 목차를 생성합니다. 목차를 통해 해당 부분으로 이동하세요.",
+      icon: RiAiGenerate2,
+      title: "AI 위젯",
+      video: "/video/ai-widget.mp4",
+      detail: [
+        "AI에게 질문하기 위한 다른 인터넷 창은 필요 없습니다.",
+        "필요한 이미지를 바로 생성하세요.",
+        <br key={"br"} />,
+        "더 이상 여러 인터넷창을 띄우고, AI를 찾아다니지 않아도 됩니다."
+      ]
     },
+    {
+      icon: TbWriting,
+      title: "문서 작성 도구",
+      video: "/video/chart.mp4",
+      detail: [
+        "자주 사용하는 특수문자를 클릭 한번으로 삽입하세요.",
+        "헤드를 지정하여 목차를 자동으로 생성하고, 해당 부분으로 빠르게 이동하세요.",
+        "더 이상 직접 차트를 그리지 않아도 됩니다. 표만 넣으세요.",
+        <br key={"br"} />,
+        "문서 작성 속도를 높이세요."
+      ]
+    },
+    {
+      icon: TbWriting,
+      title: "자료 탐색",
+      video: "/video/data.mp4",
+      detail: [
+        "모르는 단어는 바로 검색하세요.",
+        "필요한 사진, 행정구역 지도를 쉽게 찾으세요.",
+        <br key={"br"} />,
+        "더 이상 인터넷 창을 띄우고, 자료를 찾아다니지 않아도 됩니다."
+      ]
+    }
   ];
 
   return (
@@ -186,8 +249,38 @@ export default function Home() {
         </div>
       </Div>
 
+      {/* #2. 상세 소개 3 */}
+      <Div
+        className={`flex flex-col items-center w-100 pd-y-${
+          layoutMode === "desktop" ? "150" : "100"
+        }`}
+        background={"white-10"}
+      >
+        <div
+          className={`flex flex-col items-center gap-50 w-${
+            layoutMode === "desktop" ? "60" : "90"
+          }`}
+        >
+          <Typography
+            as="h2"
+            pretendard="SB"
+            style={{ fontSize: layoutMode === "desktop" ? 32 : 24 }}
+          >
+            문서 작성을 돕는 다양한 위젯
+          </Typography>
+          <div className="flex flex-col gap-200">
+            {renderWidgetList.map((item, index) =>
+              widgetCardRender(item, index)
+            )}
+          </div>
+        </div>
+      </Div>
+
       {/* 개인정보 처리방침 * 이용약관 */}
-      <Div className="flex flex-col justify-center items-center w-100 pd-y-100 gap-50">
+      <Div
+        className="flex flex-col justify-center items-center w-100 pd-t-50 pd-b-10 gap-50"
+        background={"mint-1"}
+      >
         <div className="flex justify-center items-center w-100">
           <Button
             colorType="text"
