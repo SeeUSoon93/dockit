@@ -12,7 +12,7 @@ import {
   DragOverlay,
   PointerSensor,
   useSensor,
-  useSensors,
+  useSensors
 } from "@dnd-kit/core";
 // sud-ui
 import { Div, SoonUIDesign } from "sud-ui";
@@ -26,7 +26,7 @@ import Header from "./LIB/components/clientLayout/Header";
 import Content from "./LIB/components/clientLayout/Content";
 import Drawers from "./LIB/components/clientLayout/Drawers";
 import { DocumentProvider } from "./LIB/context/DocumentContext";
-import { SettingProvider } from "./LIB/context/SettingContext";
+import { SettingProvider, useSetting } from "./LIB/context/SettingContext";
 import { useZoom } from "./LIB/hook/useZoom";
 import Footer from "./LIB/components/clientLayout/Footer";
 import { EditorProvider } from "./LIB/context/EditorContext";
@@ -46,6 +46,7 @@ function LayoutContent({ children }) {
   const { isDarkMode, setIsDarkMode } = useDarkMode();
   const { left, right, setLeft, setRight } = usePanels();
   const { containerRef, scale } = useZoom();
+  const { setting } = useSetting();
 
   // 드래그 상태 관리
   const {
@@ -53,7 +54,7 @@ function LayoutContent({ children }) {
     overContainerId,
     handleDragStart,
     handleDragEnd,
-    handleDragOver,
+    handleDragOver
   } = useDragState();
 
   // 드로어 상태는 Context로 관리됨
@@ -62,7 +63,7 @@ function LayoutContent({ children }) {
   //  (PointerSensor 사용, 8px 이동 시 드래그 시작)
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: { distance: 8 }
     })
   );
 
@@ -125,7 +126,12 @@ function LayoutContent({ children }) {
           {/*■■■■■ 드래그 오버레이 ■■■■■*/}
           <DragOverlay>
             {activeId ? (
-              <div className="w-100 max-w-px-350">{widgets[activeId]}</div>
+              <div
+                className="w-100"
+                style={{ width: `${setting.panelWidth}px` }}
+              >
+                {widgets[activeId]}
+              </div>
             ) : null}
           </DragOverlay>
         </DndContext>

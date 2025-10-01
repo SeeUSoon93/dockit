@@ -10,8 +10,13 @@ import {
   TbFileTypePdf,
   TbWriting
 } from "react-icons/tb";
-import { RiAiGenerate2, RiChatAiFill, RiFilePaper2Line } from "react-icons/ri";
-import { MdOutlineWidgets } from "react-icons/md";
+import {
+  RiAiGenerate2,
+  RiChatAiFill,
+  RiFilePaper2Line,
+  RiToolsFill
+} from "react-icons/ri";
+import { MdOutlineWidgets, MdScreenSearchDesktop } from "react-icons/md";
 import { AiOutlineCloudSync } from "react-icons/ai";
 import { LuTableOfContents } from "react-icons/lu";
 import { PiProjectorScreenChartBold } from "react-icons/pi";
@@ -127,10 +132,10 @@ export default function Home() {
       title: "AI 위젯",
       video: "/video/ai-widget.mp4",
       detail: [
-        "AI에게 질문하기 위한 다른 인터넷 창은 필요 없습니다.",
-        "필요한 이미지를 바로 생성하세요.",
+        "문서 작업 중, 똑똑한 AI 조수에게 바로 질문하고 답변을 얻으세요.",
+        "단순한 텍스트 입력만으로, 아이디어를 생생한 이미지로 만들어보세요.",
         <br key={"br"} />,
-        "더 이상 여러 인터넷창을 띄우고, AI를 찾아다니지 않아도 됩니다."
+        "Dockit 안에서, 생각의 흐름을 끊지 않고 창의력을 발휘하세요."
       ]
     },
     {
@@ -138,22 +143,33 @@ export default function Home() {
       title: "문서 작성 도구",
       video: "/video/chart.mp4",
       detail: [
-        "자주 사용하는 특수문자를 클릭 한번으로 삽입하세요.",
-        "헤드를 지정하여 목차를 자동으로 생성하고, 해당 부분으로 빠르게 이동하세요.",
-        "더 이상 직접 차트를 그리지 않아도 됩니다. 표만 넣으세요.",
+        "클릭 한 번으로, 자주 쓰는 특수문자와 기호를 손쉽게 추가하세요.",
+        "문서의 헤딩을 분석해 클릭 가능한 목차를 자동으로 생성합니다.",
+        "복잡한 표 데이터를 선택 즉시 시각적인 차트로 변환하세요.",
         <br key={"br"} />,
-        "문서 작성 속도를 높이세요."
+        "단순 작업은 Dockit에게 맡기고, 가장 중요한 본질에만 집중하세요."
       ]
     },
     {
-      icon: TbWriting,
+      icon: MdScreenSearchDesktop,
       title: "자료 탐색",
       video: "/video/data.mp4",
       detail: [
-        "모르는 단어는 바로 검색하세요.",
-        "필요한 사진, 행정구역 지도를 쉽게 찾으세요.",
+        "궁금한 단어는 즉시 사전에서 의미를 확인하세요.",
+        "고품질의 이미지를 검색하고 문서에 바로 삽입하여 완성도를 높이세요.",
+        "보고서에 필요한 대한민국 행정구역 지도를 손쉽게 추가하세요.",
         <br key={"br"} />,
-        "더 이상 인터넷 창을 띄우고, 자료를 찾아다니지 않아도 됩니다."
+        "자료 조사를 위해 더 이상 화면을 전환할 필요 없습니다. 문서 안에서 모든 것을 해결하세요."
+      ]
+    },
+    {
+      icon: RiToolsFill,
+      title: "기타 도구",
+      video: "/video/etc.mp4",
+      detail: [
+        "번뜩이는 아이디어를 기록할 메모장부터 일정 관리, 빠른 계산까지 모두 한 곳에서.",
+        "다국어 번역기를 이용해 언어의 장벽 없이 자료를 이해하고 소통하세요.",
+        "내장된 타이머와 스톱워치로 작업 시간을 관리하며 집중력을 유지하세요."
       ]
     }
   ];
