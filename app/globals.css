@@ -33,6 +33,10 @@ body {
   -ms-overflow-style: none;
 }
 
+.sud-modal__thumbnail {
+  overflow-y: auto !important;
+}
+
 /* 
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■
 ■■■■■■ tiptap css ■■■■■■

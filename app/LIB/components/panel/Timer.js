@@ -1,8 +1,18 @@
-import { Segmented, Button, Input, Typography, Card, Progress } from "sud-ui";
+import {
+  Segmented,
+  Button,
+  Input,
+  Typography,
+  Card,
+  Progress,
+  Modal,
+  Div,
+} from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { TimerOutline } from "sud-icons";
 import { useState, useEffect, useRef } from "react";
 import { PiPauseFill, PiPlayFill, PiStopFill } from "react-icons/pi";
+import { LuAlarmClockCheck } from "react-icons/lu";
 
 export default function Timer({ dragHandleProps }) {
   const [selected, setSelected] = useState("timer");
@@ -13,7 +23,9 @@ export default function Timer({ dragHandleProps }) {
     minutes: 0,
     seconds: 0,
   });
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const intervalRef = useRef(null);
+  const audioRef = useRef(null);
 
   const options = [
     { value: "timer", label: "타이머" },
@@ -58,6 +70,9 @@ export default function Timer({ dragHandleProps }) {
             if (prev <= 0) {
               clearInterval(intervalRef.current);
               setIsRunning(false);
+              setShowCompleteModal(true);
+              // 알람 소리 재생
+              playAlarmSound();
               return 0;
             }
             return prev - 10; // 10ms씩 감소
@@ -92,9 +107,54 @@ export default function Timer({ dragHandleProps }) {
     };
   }, []);
 
+  // 알람 소리 재생 함수
+  const playAlarmSound = () => {
+    try {
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      const now = audioContext.currentTime;
+
+      // 알람 비프음의 속성 설정
+      const beepDuration = 0.1; // 각 비프음의 길이 (초)
+      const gapDuration = 0.15; // 비프음 사이의 간격 (초)
+      const numberOfBeeps = 4; // 비프음 반복 횟수
+
+      // 설정된 횟수만큼 비프음 재생을 예약합니다.
+      for (let i = 0; i < numberOfBeeps; i++) {
+        const startTime = now + i * (beepDuration + gapDuration);
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // 1. 더 날카로운 'sawtooth'(톱니파) 파형 사용
+        oscillator.type = "sawtooth";
+
+        // 2. 두 개의 톤을 번갈아 사용하여 긴장감 조성
+        oscillator.frequency.value = i % 2 === 0 ? 1000 : 1200;
+
+        // 3. 각 비프음이 명확하게 끊어지도록 볼륨 조절(Attack/Decay)
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.5, startTime + 0.01); // 빠르게 볼륨 올리기
+        gainNode.gain.exponentialRampToValueAtTime(
+          0.001,
+          startTime + beepDuration
+        ); // 빠르게 볼륨 내리기
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + beepDuration);
+      }
+    } catch (error) {
+      console.error("알람 소리 재생 실패:", error);
+    }
+  };
+
   // 타이머/스톱워치 전환 시 리셋
   useEffect(() => {
     resetTimer();
+    setShowCompleteModal(false);
   }, [selected]);
 
   const inputProps = {
@@ -138,6 +198,16 @@ export default function Timer({ dragHandleProps }) {
               }
               size="lg"
               unit={"%"}
+              iconWhenFull={
+                <Div
+                  className="animate-pulse"
+                  style={{
+                    animation: "shake 0.8s ease-in-out infinite",
+                  }}
+                >
+                  <LuAlarmClockCheck size={50} />
+                </Div>
+              }
             />
           )}
 
@@ -216,6 +286,83 @@ export default function Timer({ dragHandleProps }) {
           </Button>
         </div>
       </div>
+
+      {/* 타이머 완료 모달 */}
+      <Modal
+        open={showCompleteModal}
+        onClose={() => setShowCompleteModal(false)}
+        width="300px"
+      >
+        <div className="flex flex-col gap-10 text-center items-center">
+          <Typography size="lg" pretendard="SB">
+            타이머 완료
+          </Typography>
+          <Div
+            color="mint-7"
+            className="animate-pulse"
+            style={{
+              animation: "shake 0.8s ease-in-out infinite",
+            }}
+          >
+            <LuAlarmClockCheck size={100} />
+          </Div>
+          <style jsx>{`
+            @keyframes shake {
+              0% {
+                transform: translate(0, 0);
+              }
+              10% {
+                transform: translate(-5px, -5px);
+              }
+              20% {
+                transform: translate(5px, -5px);
+              }
+              30% {
+                transform: translate(-5px, 5px);
+              }
+              40% {
+                transform: translate(5px, 5px);
+              }
+              50% {
+                transform: translate(-5px, -5px);
+              }
+              60% {
+                transform: translate(5px, -5px);
+              }
+              70% {
+                transform: translate(-5px, 5px);
+              }
+              80% {
+                transform: translate(5px, 5px);
+              }
+              90% {
+                transform: translate(-5px, -5px);
+              }
+              100% {
+                transform: translate(0, 0);
+              }
+            }
+          `}</style>
+          <Typography suite={"B"} size="lg">
+            {formatTime(
+              (inputTime.hours * 3600 +
+                inputTime.minutes * 60 +
+                inputTime.seconds) *
+                1000
+            )}
+          </Typography>
+          <div className="flex flex-col w-100">
+            <Button
+              onClick={() => setShowCompleteModal(false)}
+              colorType="primary"
+              size="sm"
+              border={false}
+            >
+              확인
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </WidgetCard>
   );
 }

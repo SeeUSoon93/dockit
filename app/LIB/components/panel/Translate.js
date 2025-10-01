@@ -5,7 +5,7 @@ import {
   Select,
   Card,
   Textarea,
-  toast
+  toast,
 } from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { BsTranslate } from "react-icons/bs";
@@ -27,7 +27,7 @@ export default function Translate({ dragHandleProps }) {
       const params = new URLSearchParams({
         text: sourceText,
         source_lang: sourceLang,
-        target_lang: targetLang
+        target_lang: targetLang,
       });
 
       const response = await fetch(
@@ -54,12 +54,12 @@ export default function Translate({ dragHandleProps }) {
   };
 
   const selectProps = {
-    size: "sm",
     searchable: true,
     options: languages,
     shadow: "none",
     border: false,
-    background: "mint-2"
+    background: "mint-2",
+    style: { width: "100%" },
   };
 
   return (
@@ -70,7 +70,8 @@ export default function Translate({ dragHandleProps }) {
     >
       <div className="w-100 flex flex-col gap-10">
         <Textarea
-          placeholder="번역할 텍스트를 입력하세요... (Shift+Enter로 번역)"
+          placeholder={`텍스트를 입력하세요.
+(Shift+Enter로 번역 실행)`}
           value={sourceText}
           onChange={(e) => setSourceText(e.target.value)}
           onKeyDown={(e) => {
@@ -94,6 +95,7 @@ export default function Translate({ dragHandleProps }) {
             <Button
               icon={<HiMiniArrowsUpDown />}
               colorType="text"
+              size="sm"
               onClick={swapLanguages}
             />
             <Select

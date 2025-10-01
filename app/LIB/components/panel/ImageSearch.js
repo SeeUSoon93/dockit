@@ -1,32 +1,40 @@
-import { Button, DotSpinner, Image, Input, Typography } from "sud-ui";
+import {
+  Avatar,
+  Button,
+  Card,
+  Div,
+  Divider,
+  DotSpinner,
+  Image,
+  Input,
+  Modal,
+  Pagination,
+  Typography,
+} from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { inputProps } from "../../constant/uiProps";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdImageSearch } from "react-icons/md";
+import { useLayout } from "../../context/LayoutContext";
+import { CalendarOutline, Download, HeartFill, Link } from "sud-icons";
 
 const NEXT_PUBLIC_UNSPLASH_ACCESS_KEY =
   process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
+
 export default function ImageSearch({ dragHandleProps }) {
+  const { layoutMode } = useLayout();
   const [searchTerm, setSearchTerm] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [allResults, setAllResults] = useState([]);
-  const [contextMenu, setContextMenu] = useState({
-    visible: false,
-    x: 0,
-    y: 0,
-    imageUrl: "",
-    imageId: ""
-  });
+  const [page, setPage] = useState(1);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleAPI = async (page = 1) => {
+  const searchImages = async () => {
     if (!searchTerm.trim()) return;
     setLoading(true);
-    if (page === 1) {
-      setResult(null);
-      setAllResults([]);
-    }
+    setResult(null);
     try {
       const response = await fetch(
         `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
@@ -34,23 +42,15 @@ export default function ImageSearch({ dragHandleProps }) {
         )}&per_page=10&page=${page}&client_id=${NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`,
         {
           headers: {
-            Authorization: `Client-ID ${NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`
-          }
+            Authorization: `Client-ID ${NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`,
+          },
         }
       );
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
-
-      if (page === 1) {
-        setResult(data);
-        setAllResults(data.results || []);
-      } else {
-        setAllResults((prev) => [...prev, ...(data.results || [])]);
-      }
+      setResult(data);
       setCurrentPage(page);
     } catch (error) {
       console.error("이미지 검색 오류:", error);
@@ -58,21 +58,6 @@ export default function ImageSearch({ dragHandleProps }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const loadMore = () => {
-    handleAPI(currentPage + 1);
-  };
-
-  const handleImageContextMenu = (e, imageUrl, imageId) => {
-    e.preventDefault();
-    setContextMenu({
-      visible: true,
-      x: e.clientX,
-      y: e.clientY,
-      imageUrl,
-      imageId
-    });
   };
 
   const handleDownloadImage = async (imageUrl) => {
@@ -92,23 +77,12 @@ export default function ImageSearch({ dragHandleProps }) {
     }
   };
 
-  const handleCopyImage = async (imageUrl) => {
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          [blob.type]: blob
-        })
-      ]);
-    } catch (error) {
-      console.error("이미지 복사 실패:", error);
+  // 페이지가 바뀔 때마다 검색 실행
+  useEffect(() => {
+    if (searchTerm.trim() && page !== currentPage) {
+      searchImages();
     }
-  };
-
-  const closeContextMenu = () => {
-    setContextMenu({ visible: false, x: 0, y: 0, imageUrl: "", imageId: "" });
-  };
+  }, [page]);
 
   return (
     <WidgetCard
@@ -116,17 +90,14 @@ export default function ImageSearch({ dragHandleProps }) {
       title="이미지 검색"
       dragHandleProps={dragHandleProps}
     >
-      <div
-        className="w-100 flex flex-col gap-10 max-h-px-300 overflow-y-auto"
-        onClick={closeContextMenu}
-      >
+      <div className="w-100 flex flex-col gap-10 max-h-px-300 overflow-y-auto">
         <div className="flex jus-bet">
           <Input
             {...inputProps}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={"검색할 단어를 입력하세요"}
-            onEnter={() => handleAPI(1)}
+            onEnter={() => searchImages()}
           />
         </div>
         {
@@ -136,10 +107,6 @@ export default function ImageSearch({ dragHandleProps }) {
             ) : result?.error ? (
               <Typography color={"red-6"}>오류: {result.error}</Typography>
             ) : !result ? (
-              <Typography color={"cool-gray-7"}>
-                검색결과가 없습니다.
-              </Typography>
-            ) : allResults.length === 0 ? (
               <Typography color={"cool-gray-7"}>
                 검색결과가 없습니다.
               </Typography>
@@ -153,29 +120,40 @@ export default function ImageSearch({ dragHandleProps }) {
                 >
                   총 {result.total}건
                 </Typography>
-                {allResults.map((imageResult) => (
+                {result.results.map((imageResult) => (
                   <div key={imageResult.id}>
                     <Image
-                      src={imageResult.urls.small}
+                      src={imageResult.urls.regular}
                       alt={imageResult.alt_description}
                       width={"100%"}
-                      onContextMenu={(e) =>
-                        handleImageContextMenu(
-                          e,
-                          imageResult.urls.regular,
-                          imageResult.id
-                        )
-                      }
+                      preview={false}
+                      onClick={() => {
+                        setSelectedImage(imageResult);
+                        setOpenModal(true);
+                      }}
                     />
                   </div>
                 ))}
 
-                {/* 더 보기 버튼 */}
-                {allResults.length < result.total && (
-                  <div className="flex pd-20 flex-col">
-                    <Button onClick={loadMore} disabled={loading}>
-                      더보기
-                    </Button>
+                {result && result.total > 10 && (
+                  <div>
+                    <Pagination
+                      align="center"
+                      total={result?.total}
+                      defaultCurrent={page}
+                      onChange={setPage}
+                      maxVisibleButtons={3}
+                      activeStyle={{
+                        background: "mint-7",
+                        color: "mint-1",
+                        size: "sm",
+                      }}
+                      defaultStyle={{
+                        background: "mint-1",
+                        color: "mint-7",
+                        size: "sm",
+                      }}
+                    />
                   </div>
                 )}
               </div>
@@ -184,35 +162,83 @@ export default function ImageSearch({ dragHandleProps }) {
         }
       </div>
 
-      {/* 컨텍스트 메뉴 */}
-      {contextMenu.visible && (
-        <div
-          className="fixed z-50 bg-white border border-gray-300 rounded shadow-lg"
-          style={{
-            left: contextMenu.x,
-            top: contextMenu.y
-          }}
-          onClick={(e) => e.stopPropagation()}
+      {selectedImage && (
+        <Modal
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          width={layoutMode === "desktop" ? "50vw" : "90vw"}
+          className="overflow-y-auto"
+          thumb={selectedImage.urls.full}
+          border={false}
+          style={{ maxHeight: "80vh" }}
         >
-          <div
-            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            onClick={() => {
-              handleDownloadImage(contextMenu.imageUrl);
-              closeContextMenu();
-            }}
-          >
-            다운로드
+          <div className="flex flex-col gap-15">
+            <div className="flex justify-between items-end">
+              {/* 유저 프로필 */}
+              <div className="flex items-center gap-5">
+                <Avatar
+                  src={
+                    selectedImage.user.profile_image.medium ||
+                    selectedImage.user.name
+                  }
+                  alt={selectedImage.user.name}
+                  size="xs"
+                  border={true}
+                />
+                <div className="flex flex-col gap-3">
+                  <Typography pretendard="SB">
+                    {selectedImage.user.name}
+                  </Typography>
+                  <Typography
+                    as="a"
+                    target="_blank"
+                    href={selectedImage.user.links.html}
+                    className="flex items-center gap-3"
+                    size="sm"
+                  >
+                    <Link size={12} /> {selectedImage.user.links.html}
+                  </Typography>
+                </div>
+              </div>
+              {/* 좋아요 & 업데이트 날짜 */}
+              <div className="flex flex-col gap-10">
+                <div className="flex justify-end">
+                  <Download
+                    size={18}
+                    onClick={() => handleDownloadImage(selectedImage.urls.full)}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-3">
+                  <Div color="volcano">
+                    <HeartFill size={18} />
+                  </Div>
+                  <Typography size="sm">{selectedImage.likes}</Typography>
+                  <Divider vertical style={{ height: "13px", margin: 5 }} />
+                  <Div color="mint-7">
+                    <CalendarOutline size={18} />
+                  </Div>
+                  <Typography size="sm">
+                    {new Date(selectedImage.created_at).toLocaleDateString(
+                      "ko-KR",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      }
+                    )}
+                  </Typography>
+                </div>
+              </div>
+            </div>
+            {/* 사진 설명 */}
+            <Card width={"100%"} shadow="none">
+              <Typography>
+                {selectedImage.description || selectedImage.alt_description}
+              </Typography>
+            </Card>
           </div>
-          <div
-            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            onClick={() => {
-              handleCopyImage(contextMenu.imageUrl);
-              closeContextMenu();
-            }}
-          >
-            복사
-          </div>
-        </div>
+        </Modal>
       )}
     </WidgetCard>
   );

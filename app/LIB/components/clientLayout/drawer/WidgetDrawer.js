@@ -11,7 +11,7 @@ import { BsTranslate } from "react-icons/bs";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer
+  setOpenWidgetDrawer,
 }) {
   const { left, right, toggle } = usePanels();
 
@@ -52,7 +52,7 @@ export default function WidgetDrawer({
           <div className="flex flex-col gap-10">
             <Typography pretendard="SB">문서 작성</Typography>
 
-            <div className="grid col-5 w-100 gap-20">
+            <div className="grid col-4 w-100 gap-20">
               {renderWidgetItem(
                 MdKeyboardCommandKey,
                 "특수문자",
@@ -63,12 +63,12 @@ export default function WidgetDrawer({
               {renderWidgetItem(TbEdit, "편집기", "objectEditor")}
             </div>
             <Typography pretendard="SB">자료 탐색</Typography>
-            <div className="grid col-5 w-100 gap-20">
+            <div className="grid col-4 w-100 gap-20">
               {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
               {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
             </div>
             <Typography pretendard="SB">기타 도구</Typography>
-            <div className="grid col-5 w-100 gap-20">
+            <div className="grid col-4 w-100 gap-20">
               {renderWidgetItem(BsTranslate, "번역기", "translate")}
               {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
               {renderWidgetItem(FaCalculator, "계산기", "calculator")}

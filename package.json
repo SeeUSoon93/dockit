@@ -53,7 +53,7 @@
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0",
     "sud-icons": "^1.0.4",
-    "sud-ui": "^0.7.0",
+    "sud-ui": "^1.1.2",
     "xmldom": "^0.6.0"
   },
   "devDependencies": {
