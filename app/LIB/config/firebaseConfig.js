@@ -7,6 +7,7 @@ import {
   GoogleAIBackend,
   ResponseModality,
 } from "firebase/ai";
+import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -21,6 +22,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+const storage = getStorage(app);
 
 const ai = getAI(app, { backend: new GoogleAIBackend() });
 const chatModel = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
@@ -36,4 +38,15 @@ if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
 
-export { auth, provider, analytics, ai, chatModel, imageModel };
+export {
+  auth,
+  provider,
+  analytics,
+  ai,
+  chatModel,
+  imageModel,
+  storage,
+  ref,
+  listAll,
+  getDownloadURL,
+};

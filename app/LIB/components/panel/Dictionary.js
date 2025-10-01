@@ -119,8 +119,10 @@ export default function Dictionary({ dragHandleProps }) {
                   ))}
                 </div>
                 {result.item.length > visibleCount && (
-                  <div className="flex pd-20 flex-col">
-                    <Button onClick={handleLoadMore}>더보기</Button>
+                  <div className="flex flex-col pd-10">
+                    <Button onClick={handleLoadMore} size="sm">
+                      더보기
+                    </Button>
                   </div>
                 )}
               </div>

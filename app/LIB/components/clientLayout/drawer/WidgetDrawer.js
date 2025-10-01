@@ -6,9 +6,10 @@ import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
-import { CalendarOutline, TimerOutline } from "sud-icons";
+import { CalendarOutline, Korea, TimerOutline } from "sud-icons";
 import { BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
+import { GiSouthKorea } from "react-icons/gi";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
@@ -81,6 +82,7 @@ export default function WidgetDrawer({
               <div className="grid col-4 w-100 gap-20">
                 {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
                 {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
+                {renderWidgetItem(GiSouthKorea, "행정지도", "geoJson")}
               </div>
             </div>
 

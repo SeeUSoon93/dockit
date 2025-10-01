@@ -189,12 +189,12 @@ export default function Timer({ dragHandleProps }) {
                   inputTime.seconds) *
                   1000 -
                   time) /
-                1000
+                  1000 || 0
               }
               max={
                 inputTime.hours * 3600 +
-                inputTime.minutes * 60 +
-                inputTime.seconds
+                  inputTime.minutes * 60 +
+                  inputTime.seconds || 100
               }
               size="lg"
               unit={"%"}
@@ -268,22 +268,24 @@ export default function Timer({ dragHandleProps }) {
         <div className="flex gap-5 justify-center">
           <Button
             onClick={toggleTimer}
-            colorType={isRunning ? "primary" : "success"}
-            icon={
-              isRunning ? <PiPauseFill size={16} /> : <PiPlayFill size={16} />
-            }
+            colorType="primary"
+            icon={<PiPauseFill size={16} />}
             size="sm"
-          >
-            {isRunning ? "일시정지" : "시작"}
-          </Button>
+            disabled={!isRunning}
+          />
+          <Button
+            onClick={toggleTimer}
+            colorType="success"
+            icon={<PiPlayFill size={16} />}
+            size="sm"
+            disabled={isRunning}
+          />
           <Button
             onClick={resetTimer}
-            colorType="text"
+            colorType="danger"
             icon={<PiStopFill size={16} />}
             size="sm"
-          >
-            리셋
-          </Button>
+          />
         </div>
       </div>
 

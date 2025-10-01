@@ -1,15 +1,16 @@
 import WidgetCard from "./WidgetCard";
 import { useEditorContext } from "../../context/EditorContext";
 import { Button, Card, Segmented, Typography } from "sud-ui";
-import Chart from "./Chart";
+import Chart from "./ChartComponent/Chart";
 
 import React from "react";
 import {
   TbChartBar,
   TbChartDotsFilled,
   TbChartLine,
-  TbChartPie
+  TbChartPie,
 } from "react-icons/tb";
+import { IoCopyOutline } from "react-icons/io5";
 
 export default function MadeChart({ dragHandleProps }) {
   const { selectedObject, editor } = useEditorContext();
@@ -41,7 +42,7 @@ export default function MadeChart({ dragHandleProps }) {
   const chartOptions = [
     { value: "bar", label: <TbChartBar /> },
     { value: "line", label: <TbChartLine /> },
-    { value: "pie", label: <TbChartPie /> }
+    { value: "pie", label: <TbChartPie /> },
   ];
 
   // 차트 데이터 가공 함수 (Chart.js와 동일한 로직)
@@ -69,10 +70,10 @@ export default function MadeChart({ dragHandleProps }) {
               "#FFCE56",
               "#4BC0C0",
               "#9966FF",
-              "#FF9F40"
-            ]
-          }
-        ]
+              "#FF9F40",
+            ],
+          },
+        ],
       };
     }
 
@@ -92,8 +93,8 @@ export default function MadeChart({ dragHandleProps }) {
         }, 1)`,
         borderWidth: 2,
         tension: chartType === "line" ? 0.4 : 0,
-        fill: false
-      }))
+        fill: false,
+      })),
     };
   };
 
@@ -148,19 +149,19 @@ export default function MadeChart({ dragHandleProps }) {
               labels: {
                 font: {
                   size: 24, // 범례 폰트 크기 대폭 증가
-                  weight: "bold"
+                  weight: "bold",
                 },
-                padding: 20
-              }
+                padding: 20,
+              },
             },
             tooltip: {
               titleFont: {
-                size: 20
+                size: 20,
               },
               bodyFont: {
-                size: 18
-              }
-            }
+                size: 18,
+              },
+            },
           },
           scales:
             chartType !== "pie"
@@ -169,33 +170,33 @@ export default function MadeChart({ dragHandleProps }) {
                     ticks: {
                       font: {
                         size: 20, // X축 라벨 폰트 크기 대폭 증가
-                        weight: "bold"
-                      }
+                        weight: "bold",
+                      },
                     },
                     title: {
                       font: {
                         size: 22,
-                        weight: "bold"
-                      }
-                    }
+                        weight: "bold",
+                      },
+                    },
                   },
                   y: {
                     ticks: {
                       font: {
                         size: 20, // Y축 라벨 폰트 크기 대폭 증가
-                        weight: "bold"
-                      }
+                        weight: "bold",
+                      },
                     },
                     title: {
                       font: {
                         size: 22,
-                        weight: "bold"
-                      }
-                    }
-                  }
+                        weight: "bold",
+                      },
+                    },
+                  },
                 }
-              : {}
-        }
+              : {},
+        },
       });
 
       // 차트 렌더링 완료 대기
@@ -209,8 +210,8 @@ export default function MadeChart({ dragHandleProps }) {
       // 클립보드에 복사
       await navigator.clipboard.write([
         new ClipboardItem({
-          "image/png": blob
-        })
+          "image/png": blob,
+        }),
       ]);
 
       // 차트 인스턴스 정리
@@ -247,7 +248,12 @@ export default function MadeChart({ dragHandleProps }) {
                   ref={chartRef}
                 />
               </Card>
-              <Button onClick={copyChartAsImage}>복사</Button>
+              <Button
+                icon={<IoCopyOutline size={16} />}
+                onClick={copyChartAsImage}
+                size="sm"
+                border={false}
+              />
             </div>
           ) : (
             <Typography color={"cool-gray-7"}>테이블을 선택하세요</Typography>
