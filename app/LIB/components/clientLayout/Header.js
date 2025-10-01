@@ -7,6 +7,7 @@ import {
   MoonOutline,
   SettingOutline,
   SunOutline,
+  UserOutline,
 } from "sud-icons";
 import { Button, Div, Tooltip, Typography } from "sud-ui";
 import { logoutUser } from "../../utils/authUtils";
@@ -33,8 +34,12 @@ export default function Header({
   const { title, setTitle, isSaving, saveDocument } = useDocument();
 
   // 드로어 상태 관리
-  const { setOpenLeftDrawer, setOpenWidgetDrawer, setOpenSettingsDrawer } =
-    useDrawerContext();
+  const {
+    setOpenLeftDrawer,
+    setOpenWidgetDrawer,
+    setOpenSettingsDrawer,
+    setOpenUserDrawer,
+  } = useDrawerContext();
 
   // ■■■■■■■■■ 제목 ■■■■■■■■■■■■■■■■
   const debouncedTitle = useDebounce(title, setting.autoSaveDelay);
@@ -81,6 +86,11 @@ export default function Header({
       tooltip: "테마 변경",
       onClick: () => setIsDarkMode(!isDarkMode),
       icon: isDarkMode ? SunOutline : MoonOutline,
+    },
+    {
+      tooltip: "회원 설정",
+      onClick: () => setOpenUserDrawer(true),
+      icon: UserOutline,
     },
     {
       tooltip: "로그아웃",
