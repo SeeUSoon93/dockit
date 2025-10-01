@@ -37,14 +37,7 @@ export default function ImageSearch({ dragHandleProps }) {
     setResult(null);
     try {
       const response = await fetch(
-        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
-          searchTerm
-        )}&per_page=10&page=${page}&client_id=${NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`,
-        {
-          headers: {
-            Authorization: `Client-ID ${NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`,
-          },
-        }
+        `/api/search-image?q=${encodeURIComponent(searchTerm)}&page=${page}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
