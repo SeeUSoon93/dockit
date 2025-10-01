@@ -94,7 +94,10 @@ export default function Header({
     },
     {
       tooltip: "로그아웃",
-      onClick: async () => await logoutUser(),
+      onClick: async () => {
+        router.push("/");
+        await logoutUser();
+      },
       icon: LogoutCircle,
     },
   ];

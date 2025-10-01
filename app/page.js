@@ -185,6 +185,28 @@ export default function Home() {
           </div>
         </div>
       </Div>
+
+      {/* 개인정보 처리방침 * 이용약관 */}
+      <Div className="flex flex-col justify-center items-center w-100 pd-y-100 gap-50">
+        <div className="flex justify-center items-center w-100">
+          <Button
+            colorType="text"
+            onClick={() => router.push("/privacy-policy")}
+          >
+            <Typography>개인정보 처리방침</Typography>
+          </Button>
+          <Divider vertical style={{ height: "10px" }} />
+          <Button
+            colorType="text"
+            onClick={() => router.push("/terms-of-service")}
+          >
+            <Typography>이용약관</Typography>
+          </Button>
+        </div>
+        <Typography size="sm" color="cool-gray-7" pretendard="B">
+          All rights reserved @seeusoon93
+        </Typography>
+      </Div>
     </div>
   );
 }
