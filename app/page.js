@@ -104,7 +104,24 @@ export default function Home() {
                 : "1fr"
           }}
         >
-          {isEven && <video src={item.video} autoPlay loop muted />}
+          {isEven && (
+            <video
+              src={item.video}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              onLoadStart={() => console.log("비디오 로딩 시작")}
+              onCanPlay={() => console.log("비디오 재생 가능")}
+              onError={(e) => console.log("비디오 로딩 오류:", e)}
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "cover"
+              }}
+            />
+          )}
           <Card width={"100%"} key={item.title} shadow="none" border={false}>
             <Div className="flex flex-col items-center gap-10" color={"mint-7"}>
               <Icon size={60} />
@@ -113,7 +130,24 @@ export default function Home() {
               </Typography>
             </Div>
           </Card>
-          {!isEven && <video src={item.video} autoPlay loop muted />}
+          {!isEven && (
+            <video
+              src={item.video}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              onLoadStart={() => console.log("비디오 로딩 시작")}
+              onCanPlay={() => console.log("비디오 재생 가능")}
+              onError={(e) => console.log("비디오 로딩 오류:", e)}
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "cover"
+              }}
+            />
+          )}
         </div>
         <div className="pd-30 text-center">
           {item.detail.map((item, index) => (
