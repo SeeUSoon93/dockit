@@ -90,65 +90,63 @@ export default function Home() {
     const isEven = index % 2 === 0;
     const Icon = item.icon;
 
+    const card = (
+      <Card width={"100%"} key={item.title} shadow="none" border={false}>
+        <Div className="flex flex-col items-center gap-10" color={"mint-7"}>
+          <Icon size={60} />
+          <Typography as="p" size="xl" pretendard="SB" color={"mint-7"}>
+            {item.title}
+          </Typography>
+        </Div>
+      </Card>
+    );
+
+    const videoCard = (
+      <Card
+        className="hover-scale-6"
+        width={"100%"}
+        border={false}
+        thumb={
+          <video
+            src={item.video}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            onLoadStart={() => console.log("비디오 로딩 시작")}
+            onCanPlay={() => console.log("비디오 재생 가능")}
+            onError={(e) => console.log("비디오 로딩 오류:", e)}
+            style={{
+              width: "100%",
+              height: "auto",
+              objectFit: "cover"
+            }}
+          />
+        }
+      />
+    );
+
     return (
       <div className="flex flex-col gap-10 items-center">
-        <div
-          className="gap-10 w-100 items-center"
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              layoutMode === "desktop"
-                ? isEven
-                  ? "3fr 1fr"
-                  : "1fr 3fr"
-                : "1fr"
-          }}
-        >
-          {isEven && (
-            <video
-              src={item.video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              onLoadStart={() => console.log("비디오 로딩 시작")}
-              onCanPlay={() => console.log("비디오 재생 가능")}
-              onError={(e) => console.log("비디오 로딩 오류:", e)}
-              style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "cover"
-              }}
-            />
-          )}
-          <Card width={"100%"} key={item.title} shadow="none" border={false}>
-            <Div className="flex flex-col items-center gap-10" color={"mint-7"}>
-              <Icon size={60} />
-              <Typography as="p" size="xl" pretendard="SB" color={"mint-7"}>
-                {item.title}
-              </Typography>
-            </Div>
-          </Card>
-          {!isEven && (
-            <video
-              src={item.video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              onLoadStart={() => console.log("비디오 로딩 시작")}
-              onCanPlay={() => console.log("비디오 재생 가능")}
-              onError={(e) => console.log("비디오 로딩 오류:", e)}
-              style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "cover"
-              }}
-            />
-          )}
-        </div>
+        {layoutMode === "desktop" ? (
+          <div
+            className="gap-10 w-100 items-center"
+            style={{
+              display: "grid",
+              gridTemplateColumns: isEven ? "3fr 1fr" : "1fr 3fr"
+            }}
+          >
+            {isEven && videoCard}
+            {card}
+            {!isEven && videoCard}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-10 w-100 items-center">
+            {card}
+            {videoCard}
+          </div>
+        )}
         <div className="pd-30 text-center">
           {item.detail.map((item, index) => (
             <Typography as="p" key={index} pretendard="SB" size="xl">
