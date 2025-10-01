@@ -7,7 +7,7 @@ export default function TermsOfServicePage() {
     <Div className="flex flex-col items-center pd-y-50">
       <div className="max-w-px-800 w-100 flex flex-col gap-20 items-center">
         <Typography as="h1" size="3xl" pretendard="B">
-          이용약관
+          이용약관 (Beta)
         </Typography>
 
         <Div background="white-10" className="pd-20 rad-10 shadow-sm">
@@ -18,8 +18,9 @@ export default function TermsOfServicePage() {
               </Typography>
               <Typography size="sm" color="cool-gray-8">
                 본 약관은 Dockit(이하 &quot;서비스&quot;)이 제공하는 문서 작성
-                및 관리 서비스의 이용과 관련하여 회사와 이용자 간의 권리, 의무
-                및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
+                및 관리 서비스의 이용과 관련하여 운영자와 이용자 간의 권리, 의무
+                및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다. 본
+                서비스는 정식 출시 전의 베타(Beta) 서비스입니다.
               </Typography>
             </div>
 
@@ -33,20 +34,33 @@ export default function TermsOfServicePage() {
               <ul className="mg-t-10 mg-l-20">
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • &quot;서비스&quot;란 Dockit이 제공하는 문서 작성, 편집,
-                    저장 및 관리 서비스를 의미합니다.
+                    • &quot;운영자&quot;란 Dockit 서비스를 운영하는 주체를
+                    의미합니다.
                   </Typography>
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • &quot;이용자&quot;란 본 약관에 따라 회사가 제공하는
+                    • &quot;서비스&quot;란 운영자가 제공하는 문서 작성, 편집,
+                    저장 및 관리 등 Dockit 관련 제반 서비스를 의미합니다.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography size="sm" color="cool-gray-8">
+                    • &quot;이용자&quot;란 본 약관에 따라 운영자가 제공하는
                     서비스를 이용하는 회원 및 비회원을 말합니다.
                   </Typography>
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
                     • &quot;회원&quot;이란 서비스에 접속하여 본 약관에 따라
-                    회사와 이용계약을 체결하고 서비스를 이용하는 자를
+                    운영자와 이용계약을 체결하고 서비스를 이용하는 자를
+                    의미합니다.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography size="sm" color="cool-gray-8">
+                    • &quot;게시물&quot;이란 회원이 서비스를 이용하여 작성,
+                    게시, 저장한 모든 문서, 텍스트, 이미지 등의 정보를
                     의미합니다.
                   </Typography>
                 </li>
@@ -61,9 +75,9 @@ export default function TermsOfServicePage() {
                 ① 본 약관은 서비스를 이용하고자 하는 모든 이용자에게 그 효력이
                 발생합니다.
                 <br />
-                ② 회사는 필요한 경우 관련 법령을 위배하지 않는 범위에서 본
-                약관을 변경할 수 있으며, 변경된 약관은 공지사항을 통해
-                공지합니다.
+                ② 운영자는 필요한 경우 관련 법령을 위배하지 않는 범위에서 본
+                약관을 변경할 수 있으며, 변경된 약관은 시행일 7일 전에 서비스
+                웹사이트의 공지사항을 통해 공지합니다.
                 <br />③ 회원은 변경된 약관에 동의하지 않을 경우 서비스 이용을
                 중단하고 탈퇴할 수 있습니다.
               </Typography>
@@ -74,7 +88,7 @@ export default function TermsOfServicePage() {
                 제4조 (서비스의 제공)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
-                ① 회사는 다음과 같은 서비스를 제공합니다.
+                ① 운영자는 다음과 같은 서비스를 제공합니다.
               </Typography>
               <ul className="mg-t-10 mg-l-20">
                 <li>
@@ -89,30 +103,41 @@ export default function TermsOfServicePage() {
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • 문서 공유 서비스
-                  </Typography>
-                </li>
-                <li>
-                  <Typography size="sm" color="cool-gray-8">
-                    • 기타 회사가 추가 개발하거나 제휴계약 등을 통해 제공하는
+                    • 기타 운영자가 추가 개발하거나 제휴계약 등을 통해 제공하는
                     일체의 서비스
                   </Typography>
                 </li>
               </ul>
               <Typography size="sm" color="cool-gray-8" className="mg-t-10">
-                ② 회사는 서비스의 품질 향상을 위해 서비스의 내용을 변경할 수
+                ② 운영자는 서비스의 품질 향상을 위해 서비스의 내용을 변경할 수
                 있습니다.
               </Typography>
             </div>
 
             <div className="flex flex-col">
               <Typography size="lg" pretendard="SB" className="mg-b-10">
-                제5조 (회원가입)
+                제5조 (서비스의 변경 및 중단)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
-                ① 이용자는 회사가 정한 가입 양식에 따라 회원정보를 기입한 후 본
-                약관에 동의한다는 의사표시를 함으로써 회원가입을 신청합니다.
-                <br />② 회사는 제1항과 같이 회원으로 가입할 것을 신청한 이용자
+                ① 운영자는 상당한 이유가 있는 경우에 운영상, 기술상의 필요에
+                따라 제공하고 있는 전부 또는 일부 서비스를 변경할 수 있습니다.
+                <br />② 운영자는 컴퓨터 등 정보통신설비의 보수점검, 교체 및
+                고장, 통신두절 등의 사유가 발생한 경우에는 서비스의 제공을
+                일시적으로 중단할 수 있습니다.
+                <br />③ 본 서비스는 베타 서비스로, 안정성 확보 및 기능 개선을
+                위해 사전 예고 없이 서비스의 내용이 변경되거나 데이터가 초기화될
+                수 있습니다.
+              </Typography>
+            </div>
+
+            <div className="flex flex-col">
+              <Typography size="lg" pretendard="SB" className="mg-b-10">
+                제6조 (회원가입)
+              </Typography>
+              <Typography size="sm" color="cool-gray-8">
+                ① 이용자는 운영자가 정한 가입 양식에 따라 회원정보를 기입한 후
+                본 약관에 동의한다는 의사표시를 함으로써 회원가입을 신청합니다.
+                <br />② 운영자는 제1항과 같이 회원으로 가입할 것을 신청한 이용자
                 중 다음 각 호에 해당하지 않는 한 회원으로 등록합니다.
               </Typography>
               <ul className="mg-t-10 mg-l-20">
@@ -123,7 +148,7 @@ export default function TermsOfServicePage() {
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • 기타 회원으로 등록하는 것이 회사의 기술상 현저히 지장이
+                    • 기타 회원으로 등록하는 것이 운영자의 기술상 현저히 지장이
                     있다고 판단되는 경우
                   </Typography>
                 </li>
@@ -132,12 +157,12 @@ export default function TermsOfServicePage() {
 
             <div className="flex flex-col">
               <Typography size="lg" pretendard="SB" className="mg-b-10">
-                제6조 (회원 탈퇴 및 자격 상실)
+                제7조 (회원 탈퇴 및 자격 상실)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
                 ① 회원은 언제든지 서비스 내 회원 탈퇴 기능을 통해 이용계약 해지
-                신청을 할 수 있으며, 회사는 즉시 회원 탈퇴를 처리합니다.
-                <br />② 회원이 다음 각 호의 사유에 해당하는 경우, 회사는
+                신청을 할 수 있으며, 운영자는 즉시 회원 탈퇴를 처리합니다.
+                <br />② 회원이 다음 각 호의 사유에 해당하는 경우, 운영자는
                 회원자격을 제한 및 정지시킬 수 있습니다.
               </Typography>
               <ul className="mg-t-10 mg-l-20">
@@ -148,14 +173,14 @@ export default function TermsOfServicePage() {
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • 다른 사람의 서비스 이용을 방해하거나 그 정보를 도용하는 등
-                    전자거래질서를 위협하는 경우
+                    • 다른 사람의 서비스 이용을 방해하거나 그 정보를 도용하는
+                    경우
                   </Typography>
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • 서비스를 이용하여 법령과 본 약관이 금지하거나 공서양속에
-                    반하는 행위를 하는 경우
+                    • 서비스를 이용하여 법령과 본 약관이 금지하는 행위를 하는
+                    경우
                   </Typography>
                 </li>
               </ul>
@@ -163,10 +188,10 @@ export default function TermsOfServicePage() {
 
             <div className="flex flex-col">
               <Typography size="lg" pretendard="SB" className="mg-b-10">
-                제7조 (회원의 의무)
+                제8조 (회원의 의무)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
-                ① 회원은 다음 행위를 하여서는 안 됩니다.
+                회원은 다음 행위를 하여서는 안 됩니다.
               </Typography>
               <ul className="mg-t-10 mg-l-20">
                 <li>
@@ -181,23 +206,12 @@ export default function TermsOfServicePage() {
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • 회사가 게시한 정보의 변경
+                    • 운영자가 게시한 정보의 변경
                   </Typography>
                 </li>
                 <li>
                   <Typography size="sm" color="cool-gray-8">
-                    • 회사가 정한 정보 이외의 정보(컴퓨터 프로그램 등) 등의 송신
-                    또는 게시
-                  </Typography>
-                </li>
-                <li>
-                  <Typography size="sm" color="cool-gray-8">
-                    • 회사 기타 제3자의 저작권 등 지적재산권에 대한 침해
-                  </Typography>
-                </li>
-                <li>
-                  <Typography size="sm" color="cool-gray-8">
-                    • 기타 불법적이거나 부당한 행위
+                    • 운영자 및 기타 제3자의 저작권 등 지적재산권에 대한 침해
                   </Typography>
                 </li>
               </ul>
@@ -205,46 +219,61 @@ export default function TermsOfServicePage() {
 
             <div className="flex flex-col">
               <Typography size="lg" pretendard="SB" className="mg-b-10">
-                제8조 (저작권의 귀속 및 이용제한)
+                제9조 (저작권의 귀속)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
-                ① Dockit 서비스(플랫폼, 소프트웨어, UI/UX, 로고 등)에 대한
-                저작권 및 지적재산권은 회사에 귀속됩니다.
+                ① 서비스에 대한 저작권 및 지적재산권은 운영자에게 귀속됩니다.
                 <br />
-                ② 회원이 Dockit을 이용하여 작성한 문서 및 콘텐츠에 대한 저작권은
-                해당 회원에게 귀속됩니다.
+                ② 회원이 서비스 내에 작성한 게시물에 대한 저작권은 해당 회원에게
+                귀속됩니다.
                 <br />
-                ③ 회사는 회원이 작성한 문서를 회원의 명시적 동의 없이 영리
-                목적으로 사용하지 않습니다.
-                <br />④ 이용자는 Dockit 서비스 자체를 회사의 사전 승낙 없이
-                복제, 수정, 배포, 판매하거나 제3자에게 이용하게 하여서는 안
-                됩니다.
+                ③ 운영자는 회원의 게시물이 타인의 저작권을 침해하는 경우 이에
+                대한 책임을 부담하지 않습니다.
+                <br />④ 운영자는 회원의 게시물을 서비스 운영, 개선을 위한 범위
+                내에서만 사용할 수 있으며, 이를 위해 게시물을 복제, 전송, 표시할
+                수 있는 비독점적이고 전 세계적인 라이선스를 부여받습니다. 단, 이
+                라이선스는 회원이 탈퇴하여 게시물이 삭제되면 소멸됩니다.
               </Typography>
             </div>
 
             <div className="flex flex-col">
               <Typography size="lg" pretendard="SB" className="mg-b-10">
-                제9조 (면책조항)
+                제10조 (면책조항)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
-                ① 회사는 천재지변 또는 이에 준하는 불가항력으로 인하여 서비스를
-                제공할 수 없는 경우에는 서비스 제공에 관한 책임이 면제됩니다.
+                ① 운영자는 천재지변 또는 이에 준하는 불가항력으로 인하여
+                서비스를 제공할 수 없는 경우에는 서비스 제공에 관한 책임이
+                면제됩니다.
                 <br />
-                ② 회사는 회원의 귀책사유로 인한 서비스 이용의 장애에 대하여
+                ② 운영자는 회원의 귀책사유로 인한 서비스 이용의 장애에 대하여
                 책임을 지지 않습니다.
-                <br />③ 회사는 회원이 서비스를 이용하여 기대하는 수익을 상실한
-                것에 대하여 책임을 지지 않으며, 그 밖의 서비스를 통하여 얻은
-                자료로 인한 손해에 관하여 책임을 지지 않습니다.
+                <br />③ 운영자는 베타 서비스 기간 동안 발생할 수 있는 서비스
+                오류, 데이터 손실 등에 대해 운영자의 중대한 과실이 없는 한
+                책임을 지지 않으며, 중요한 게시물은 이용자 스스로 별도 보관할
+                것을 권장합니다.
               </Typography>
             </div>
 
             <div className="flex flex-col">
               <Typography size="lg" pretendard="SB" className="mg-b-10">
-                제10조 (관할법원)
+                제11조 (관할법원)
               </Typography>
               <Typography size="sm" color="cool-gray-8">
-                서비스 이용으로 발생한 분쟁에 대해 소송이 제기될 경우 회사의
-                소재지를 관할하는 법원을 관할법원으로 합니다.
+                서비스 이용으로 발생한 분쟁에 대해 소송이 제기될 경우,
+                민사소송법상의 관할법원에 제소함을 원칙으로 합니다.
+              </Typography>
+            </div>
+
+            <div className="flex flex-col">
+              <Typography size="lg" pretendard="SB" className="mg-b-10">
+                제12조 (운영자 정보)
+              </Typography>
+              <Typography size="sm" color="cool-gray-8">
+                명칭: Dockit (도킷)
+                <br />
+                대표: 김군순
+                <br />
+                이메일: rlarnstns@gmail.com
               </Typography>
             </div>
 
@@ -255,8 +284,7 @@ export default function TermsOfServicePage() {
                 color="cool-gray-8"
                 className="mg-t-20"
               >
-                부칙
-                <br />본 약관은 2025년 10월 1일부터 시행됩니다.
+                부칙: 본 약관은 2025년 10월 1일부터 시행됩니다.
               </Typography>
             </div>
           </div>
