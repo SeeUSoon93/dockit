@@ -7,7 +7,7 @@ import {
   Modal,
   Tag,
   toast,
-  Typography,
+  Typography
 } from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { useState, useEffect } from "react";
@@ -98,7 +98,7 @@ export default function CalendarWidget({ dragHandleProps }) {
 
     await createData("calendar", null, {
       content: itemContent,
-      date: dayjs(itemDate).format("YYYY-MM-DD"),
+      date: dayjs(itemDate).format("YYYY-MM-DD")
     });
     setOpenAddModal(false);
     setItemContent("");
@@ -145,6 +145,7 @@ export default function CalendarWidget({ dragHandleProps }) {
           locale="ko"
           items={events}
           onChange={(value) => setDate(dayjs(value))}
+          size="miniView"
           headerRender={
             <div className="flex jus-cen item-cen w-100">
               <Button
@@ -174,7 +175,7 @@ export default function CalendarWidget({ dragHandleProps }) {
           holidays={holidays}
           holidaysStyle={{
             background: "cool-gray-2",
-            color: "red-7",
+            color: "red-7"
           }}
         />
         <Divider />
@@ -184,15 +185,14 @@ export default function CalendarWidget({ dragHandleProps }) {
           </Typography>
           <div className="flex flex-wrap gap-5 overflow-y-auto max-h-[80px]">
             {todayEvents.map((event, index) => (
-              <div key={event._id}>
-                <Tag
-                  colorType={index % 2 === 0 ? "mint" : "blue"}
-                  closeable
-                  onClose={() => handleDeleteEvent(event._id)}
-                >
-                  <Typography size="sm">● {event.content}</Typography>
-                </Tag>
-              </div>
+              <Tag
+                key={event._id}
+                colorType={index % 2 === 0 ? "mint" : "blue"}
+                closeable
+                onClose={() => handleDeleteEvent(event._id)}
+              >
+                <Typography size="sm">● {event.content}</Typography>
+              </Tag>
             ))}
           </div>
         </div>
