@@ -1,19 +1,24 @@
 import Template from "./Template";
 import { Button, Div, Drawer, Tag, Typography } from "sud-ui";
 
-import { FaBookBookmark, FaCalculator, FaNoteSticky } from "react-icons/fa6";
+import {
+  FaBookBookmark,
+  FaCalculator,
+  FaNoteSticky,
+  FaWikipediaW
+} from "react-icons/fa6";
 import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
-import { CalendarOutline, Korea, TimerOutline } from "sud-icons";
+import { CalendarOutline, Korea, Map, TimerOutline } from "sud-icons";
 import { BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
 import { GiSouthKorea } from "react-icons/gi";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer,
+  setOpenWidgetDrawer
 }) {
   const { left, right, toggle } = usePanels();
 
@@ -83,6 +88,8 @@ export default function WidgetDrawer({
                 {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
                 {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
                 {renderWidgetItem(GiSouthKorea, "행정지도", "geoJson")}
+                {renderWidgetItem(Map, "지도", "map")}
+                {/* {renderWidgetItem(FaWikipediaW, "위키", "wikipediaSearch")} */}
               </div>
             </div>
 

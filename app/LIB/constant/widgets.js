@@ -12,6 +12,8 @@ import ImageSearch from "../components/panel/ImageSearch";
 import AiChat from "../components/panel/AiChat";
 import AiImage from "../components/panel/AiImage";
 import GeoJson from "../components/panel/GeoJson";
+import WikipediaSearch from "../components/panel/WikipediaSearch";
+import MapWidget from "../components/panel/MapWidget";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -28,4 +30,6 @@ export const widgets = {
   aiChat: <AiChat />, // AI 채팅
   aiImage: <AiImage />, // AI 이미지
   geoJson: <GeoJson />, // 행정지도
+  wikipediaSearch: <WikipediaSearch />, // 위키
+  map: <MapWidget /> // 지도
 };
