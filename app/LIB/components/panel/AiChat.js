@@ -50,7 +50,7 @@ export default function AiChat({ dragHandleProps }) {
     const chat = model.startChat({
       history: messages,
       generationConfig: {
-        maxOutputTokens: 100,
+        maxOutputTokens: 2048,
       },
     });
     console.log(chat);
