@@ -60,6 +60,7 @@
     "react-markdown": "^10.1.0",
     "sud-icons": "^1.0.4",
     "sud-ui": "^1.1.2",
+    "xml2js": "^0.6.2",
     "xmldom": "^0.6.0"
   },
   "devDependencies": {

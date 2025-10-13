@@ -9,7 +9,7 @@ import {
   Input,
   Modal,
   Pagination,
-  Typography,
+  Typography
 } from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { inputProps } from "../../constant/uiProps";
@@ -17,9 +17,6 @@ import { useState, useEffect } from "react";
 import { MdImageSearch } from "react-icons/md";
 import { useLayout } from "../../context/LayoutContext";
 import { CalendarOutline, Download, HeartFill, Link } from "sud-icons";
-
-const NEXT_PUBLIC_UNSPLASH_ACCESS_KEY =
-  process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 
 export default function ImageSearch({ dragHandleProps }) {
   const { layoutMode } = useLayout();
@@ -139,12 +136,12 @@ export default function ImageSearch({ dragHandleProps }) {
                       activeStyle={{
                         background: "mint-7",
                         color: "mint-1",
-                        size: "sm",
+                        size: "sm"
                       }}
                       defaultStyle={{
                         background: "mint-1",
                         color: "mint-7",
-                        size: "sm",
+                        size: "sm"
                       }}
                     />
                   </div>
@@ -217,7 +214,7 @@ export default function ImageSearch({ dragHandleProps }) {
                       {
                         year: "numeric",
                         month: "long",
-                        day: "numeric",
+                        day: "numeric"
                       }
                     )}
                   </Typography>

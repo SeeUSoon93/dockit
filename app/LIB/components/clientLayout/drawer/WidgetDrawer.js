@@ -7,7 +7,7 @@ import {
   FaNoteSticky,
   FaWikipediaW
 } from "react-icons/fa6";
-import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
+import { MdImageSearch, MdKeyboardCommandKey, MdMuseum } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
@@ -105,6 +105,11 @@ export default function WidgetDrawer({
                 {renderWidgetItem(CalendarOutline, "달력", "calendar")}
                 {renderWidgetItem(TimerOutline, "타이머", "timer")}
               </div>
+            </div>
+            <div className="flex flex-col gap-10">
+              {/* 공공데이터 */}
+              <Typography pretendard="SB">공공데이터 검색</Typography>
+              <div className="grid col-4 w-100 gap-20"></div>
             </div>
           </div>
         }
