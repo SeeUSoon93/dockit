@@ -11,7 +11,7 @@ import {
   Progress,
   Textarea,
   Typography,
-  toast,
+  toast
 } from "sud-ui";
 import { Download, MapArrowFill } from "sud-icons";
 import { createData } from "../../utils/dataUtils";
@@ -29,13 +29,13 @@ export default function AiImage({ dragHandleProps }) {
   const model = imageModel;
 
   const sendMessage = async () => {
-    if (input.trim() === "") return;
-    setLoading(true);
     if (!user || userLoading) return;
     if (user.ai_beta_points < 150) {
       toast.danger("포인트가 부족합니다.");
       return;
     }
+    if (input.trim() === "") return;
+    setLoading(true);
     try {
       const result = await model.generateContent(input);
       const inlineDataParts = result.response.inlineDataParts();
@@ -44,15 +44,15 @@ export default function AiImage({ dragHandleProps }) {
         setImgUrl(`data:${imageData.mimeType};base64,${imageData.data}`);
         await createData("ai-image", null, {
           title: input,
-          content: imgUrl,
+          content: imgUrl
         });
       }
       const response = await refreshUserPoint({
-        ai_beta_points: user.ai_beta_points - 150,
+        ai_beta_points: user.ai_beta_points - 150
       });
       setUser({
         ...user,
-        ai_beta_points: response.user.ai_beta_points,
+        ai_beta_points: response.user.ai_beta_points
       });
     } catch (err) {
       console.error("Prompt or candidate was blocked:", err);

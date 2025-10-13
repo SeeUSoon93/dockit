@@ -7,7 +7,7 @@ import { TbClockRecord } from "react-icons/tb";
 
 export default function SettingDrawer({
   openSettingsDrawer,
-  setOpenSettingsDrawer,
+  setOpenSettingsDrawer
 }) {
   const { setting, setSetting, settingLoading } = useSetting();
 
@@ -29,10 +29,11 @@ export default function SettingDrawer({
       open={openSettingsDrawer}
       onClose={() => setOpenSettingsDrawer(false)}
       width="400px"
-      title="설정"
       divider={false}
     >
       <Template
+        title="설정"
+        setOpen={setOpenSettingsDrawer}
         content={
           !settingLoading && (
             <div className="flex flex-col gap-10">

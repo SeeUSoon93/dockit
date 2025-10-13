@@ -18,12 +18,12 @@ export default function UserDrawer({ openUserDrawer, setOpenUserDrawer }) {
     if (!user.ai_beta_points) {
       console.log("포인트 없음");
       const response = await refreshUserPoint({
-        ai_beta_points: 2000,
+        ai_beta_points: 2000
       });
       console.log(response);
       setUser({
         ...user,
-        ai_beta_points: response.user.ai_beta_points,
+        ai_beta_points: response.user.ai_beta_points
       });
     } else {
       refreshUser();
@@ -35,10 +35,11 @@ export default function UserDrawer({ openUserDrawer, setOpenUserDrawer }) {
       open={openUserDrawer}
       onClose={() => setOpenUserDrawer(false)}
       width="400px"
-      title="회원 설정"
       divider={false}
     >
       <Template
+        title="회원 설정"
+        setOpen={setOpenUserDrawer}
         content={
           !userLoading &&
           user && (

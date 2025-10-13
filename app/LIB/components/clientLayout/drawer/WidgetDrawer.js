@@ -5,7 +5,7 @@ import {
   FaBookBookmark,
   FaCalculator,
   FaNoteSticky,
-  FaWikipediaW,
+  FaWikipediaW
 } from "react-icons/fa6";
 import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
@@ -18,7 +18,7 @@ import { GiSouthKorea } from "react-icons/gi";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer,
+  setOpenWidgetDrawer
 }) {
   const { left, right, toggle } = usePanels();
 
@@ -52,10 +52,11 @@ export default function WidgetDrawer({
       open={openWidgetDrawer}
       onClose={() => setOpenWidgetDrawer(false)}
       width="400px"
-      title="위젯"
       divider={false}
     >
       <Template
+        title="위젯"
+        setOpen={setOpenWidgetDrawer}
         content={
           <div className="flex flex-col gap-30">
             <div className="flex flex-col gap-10">
