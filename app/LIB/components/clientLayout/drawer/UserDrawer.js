@@ -26,9 +26,10 @@ export default function UserDrawer({ openUserDrawer, setOpenUserDrawer }) {
       open={openUserDrawer}
       onClose={() => setOpenUserDrawer(false)}
       width="400px"
+      title="회원 설정"
+      divider={false}
     >
       <Template
-        title="회원 설정"
         content={
           !userLoading &&
           user && (

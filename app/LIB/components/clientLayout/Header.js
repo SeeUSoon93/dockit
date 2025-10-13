@@ -20,6 +20,7 @@ import { MdSync } from "react-icons/md";
 import { useSetting } from "../../context/SettingContext";
 import { useDocument } from "../../context/DocumentContext";
 import { useDrawerContext } from "../../context/DrawerContext";
+import { usePathname } from "next/navigation";
 
 export default function Header({
   user,
@@ -32,6 +33,7 @@ export default function Header({
   const router = useRouter();
   const { setting } = useSetting();
   const { title, setTitle, isSaving, saveDocument } = useDocument();
+  const pathname = usePathname();
 
   // 드로어 상태 관리
   const {
@@ -56,13 +58,17 @@ export default function Header({
   const leftIcons = [
     {
       tooltip: "뒤로가기",
-      onClick: () => router.back(),
+      onClick: () => {
+        router.back();
+      },
       icon: AngleLeft,
+      disabled: pathname === "/workspace",
     },
     {
       tooltip: "워크스페이스 홈",
       onClick: () => router.push("/workspace"),
       icon: HomeOutline,
+      disabled: pathname === "/workspace",
     },
     {
       tooltip: "메뉴",
@@ -117,7 +123,7 @@ export default function Header({
         <Button
           colorType="text"
           size="sm"
-          onClick={data.onClick}
+          onClick={data.disabled ? undefined : data.onClick}
           icon={Icon && <Icon size="16" />}
           color="mint-8"
         />

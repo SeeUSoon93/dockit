@@ -7,7 +7,7 @@ import {
   fetchDataList,
   updateData,
   moveData,
-  fetchDataTree
+  fetchDataTree,
 } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
@@ -41,7 +41,7 @@ export default function WorkspacePage() {
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
-    y: 0
+    y: 0,
   });
 
   // 드래그앤드롭 상태
@@ -284,7 +284,7 @@ export default function WorkspacePage() {
     setContextMenu({
       visible: true,
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
     });
   };
 
@@ -358,7 +358,7 @@ export default function WorkspacePage() {
                     setContextMenu({
                       visible: true,
                       x: e.clientX,
-                      y: e.clientY
+                      y: e.clientY,
                     });
                   }}
                   onDoubleClick={() => {
@@ -368,7 +368,7 @@ export default function WorkspacePage() {
                       router.push(`/workspace/${item._id}`);
                     }
                   }}
-                  className={`cursor-pointer transition-all duration-200 ${
+                  className={`cursor-pointer transition-all duration-200 max-w-100 ${
                     isDragged ? "opacity-50 scale-95" : ""
                   } ${isDragOver ? "ring-2 ring-blue-500 bg-blue-50" : ""}`}
                 >
@@ -379,7 +379,11 @@ export default function WorkspacePage() {
                       ) : (
                         <FcFolder size={50} />
                       )}
-                      <Typography pretendard="SB">{item.title}</Typography>
+                      <Typography pretendard="SB">
+                        {item.title.length > 5
+                          ? item.title.substring(0, 5) + "..."
+                          : item.title}
+                      </Typography>
                     </div>
                   </Button>
                 </div>
@@ -425,7 +429,7 @@ export default function WorkspacePage() {
             className="fixed z-50"
             style={{
               left: contextMenu.x,
-              top: contextMenu.y
+              top: contextMenu.y,
             }}
             onClick={(e) => e.stopPropagation()}
           >

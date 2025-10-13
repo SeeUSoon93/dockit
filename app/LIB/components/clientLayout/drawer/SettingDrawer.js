@@ -11,10 +11,14 @@ export default function SettingDrawer({
 }) {
   const { setting, setSetting, settingLoading } = useSetting();
 
-  const [autoSave, setAutoSave] = useState(setting.autoSave);
-  const [autoSaveDelay, setAutoSaveDelay] = useState(setting.autoSaveDelay);
-  const [workspaceWidth, setWorkspaceWidth] = useState(setting.workspaceWidth);
-  const [panelWidth, setPanelWidth] = useState(setting.panelWidth);
+  const [autoSave, setAutoSave] = useState(setting.autoSave || false);
+  const [autoSaveDelay, setAutoSaveDelay] = useState(
+    setting.autoSaveDelay || 2000
+  );
+  const [workspaceWidth, setWorkspaceWidth] = useState(
+    setting.workspaceWidth || 800
+  );
+  const [panelWidth, setPanelWidth] = useState(setting.panelWidth || 350);
 
   const handleChange = (key, value) => {
     setSetting({ ...setting, [key]: value });
@@ -25,9 +29,10 @@ export default function SettingDrawer({
       open={openSettingsDrawer}
       onClose={() => setOpenSettingsDrawer(false)}
       width="400px"
+      title="설정"
+      divider={false}
     >
       <Template
-        title="설정"
         content={
           !settingLoading && (
             <div className="flex flex-col gap-10">

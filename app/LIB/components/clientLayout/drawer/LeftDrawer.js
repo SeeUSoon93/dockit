@@ -142,9 +142,10 @@ export default function LeftDrawer({ openLeftDrawer, setOpenLeftDrawer }) {
       onClose={() => setOpenLeftDrawer(false)}
       placement="left"
       width="400px"
+      title="폴더"
+      divider={false}
     >
       <Template
-        title="폴더"
         content={
           <div className="flex flex-col">
             <div

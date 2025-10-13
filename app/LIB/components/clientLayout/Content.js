@@ -11,7 +11,7 @@ export default function Content({
   children,
   overContainerId,
   containerRef,
-  scale
+  scale,
 }) {
   const { layoutMode, showLeftPanel, showRightPanel } = useLayout();
   const { document } = useDocument();
@@ -21,7 +21,7 @@ export default function Content({
 
   return (
     <Div
-      className="flex w-full h-full justify-between"
+      className="flex w-full h-full justify-between gap-10"
       background={isDocument || isShare ? "white-9" : "white-10"}
       ref={containerRef}
     >
@@ -40,9 +40,12 @@ export default function Content({
           isDocument || isShare ? "" : "flex justify-center"
         }`}
         style={{
-          width: isDocument || isShare ? `${setting.workspaceWidth}px` : "100%",
+          width:
+            isDocument || isShare
+              ? `${setting.workspaceWidth || 800}px`
+              : "100%",
           transform: `scale(${scale})`,
-          transformOrigin: "top center"
+          transformOrigin: "top center",
         }}
         background={isDocument || isShare ? "white-9" : "white-10"}
       >

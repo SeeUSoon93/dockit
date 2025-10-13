@@ -7,7 +7,6 @@ export default function Template({ title, content }) {
       <Typography as="h1" pretendard="B" size="xl">
         {title}
       </Typography>
-      <Divider style={{ margin: 0 }} />
       {/* 내용 */}
       {content}
     </div>
