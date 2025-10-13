@@ -8,12 +8,16 @@ import {
   DotSpinner,
   Image,
   Modal,
+  Progress,
   Textarea,
   Typography,
+  toast,
 } from "sud-ui";
 import { Download, MapArrowFill } from "sud-icons";
 import { createData } from "../../utils/dataUtils";
 import { useLayout } from "../../context/LayoutContext";
+import { useUser } from "../../context/UserContext";
+import { refreshUserPoint } from "../../utils/authUtils";
 
 export default function AiImage({ dragHandleProps }) {
   const { layoutMode } = useLayout();
@@ -21,11 +25,17 @@ export default function AiImage({ dragHandleProps }) {
   const [imgUrl, setImgUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
+  const { user, setUser, userLoading } = useUser();
   const model = imageModel;
+
   const sendMessage = async () => {
     if (input.trim() === "") return;
     setLoading(true);
+    if (!user || userLoading) return;
+    if (user.ai_beta_points < 150) {
+      toast.danger("포인트가 부족합니다.");
+      return;
+    }
     try {
       const result = await model.generateContent(input);
       const inlineDataParts = result.response.inlineDataParts();
@@ -37,6 +47,13 @@ export default function AiImage({ dragHandleProps }) {
           content: imgUrl,
         });
       }
+      const response = await refreshUserPoint({
+        ai_beta_points: user.ai_beta_points - 150,
+      });
+      setUser({
+        ...user,
+        ai_beta_points: response.user.ai_beta_points,
+      });
     } catch (err) {
       console.error("Prompt or candidate was blocked:", err);
     } finally {
@@ -67,6 +84,22 @@ export default function AiImage({ dragHandleProps }) {
       icon={RiImageAiFill}
       title="AI 이미지"
       dragHandleProps={dragHandleProps}
+      titleBtn={
+        <div className="w-30" style={{ minWidth: "100px" }}>
+          <div className="grid col-2 gap-5 items-center">
+            <Progress
+              value={user.ai_beta_points || 0}
+              max={2000}
+              valuePosition="outside-right"
+              color="mint-7"
+              showText={false}
+            />
+            <Typography size="sm" pretendard="SB" color="mint-7">
+              {user.ai_beta_points}P
+            </Typography>
+          </div>
+        </div>
+      }
     >
       <div className="w-100 flex flex-col gap-10">
         {loading && (
@@ -110,6 +143,7 @@ export default function AiImage({ dragHandleProps }) {
           }}
         />
       </div>
+      <Typography size="sm">※ 이미지 생성 시 150P 소모됩니다.</Typography>
       {imgUrl && (
         <Modal
           open={openModal}

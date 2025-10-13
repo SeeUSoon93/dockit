@@ -3,14 +3,25 @@ import WidgetCard from "./WidgetCard";
 import { useEffect, useRef, useState } from "react";
 import { chatModel } from "../../config/firebaseConfig";
 import ReactMarkdown from "react-markdown";
-import { Avatar, Button, Div, DotSpinner, Textarea } from "sud-ui";
+import {
+  Avatar,
+  Button,
+  Div,
+  DotSpinner,
+  Progress,
+  Textarea,
+  Typography,
+} from "sud-ui";
 import { MapArrowFill } from "sud-icons";
+import { useUser } from "../../context/UserContext";
+import { refreshUserPoint } from "../../utils/authUtils";
 
 export default function AiChat({ dragHandleProps }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const { user, userLoading, setUser } = useUser();
 
   const model = chatModel;
 
@@ -20,6 +31,11 @@ export default function AiChat({ dragHandleProps }) {
     }
   }, [messages]);
   const sendMessage = async () => {
+    if (!user || userLoading) return;
+    if (user.ai_beta_points < 50) {
+      toast.danger("포인트가 부족합니다.");
+      return;
+    }
     if (input.trim() === "") return;
     setLoading(true);
     const trimmedInput = input.trim();
@@ -37,6 +53,7 @@ export default function AiChat({ dragHandleProps }) {
         maxOutputTokens: 100,
       },
     });
+    console.log(chat);
     try {
       const result = await chat.sendMessage(trimmedInput);
       const response = result.response;
@@ -47,6 +64,13 @@ export default function AiChat({ dragHandleProps }) {
         ...updatedMessages,
         { role: "model", parts: [{ text: text }] },
       ]);
+      const response2 = await refreshUserPoint({
+        ai_beta_points: user.ai_beta_points - 50,
+      });
+      setUser({
+        ...user,
+        ai_beta_points: response2.user.ai_beta_points,
+      });
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -58,6 +82,22 @@ export default function AiChat({ dragHandleProps }) {
       icon={RiChatAiFill}
       title="AI 채팅"
       dragHandleProps={dragHandleProps}
+      titleBtn={
+        <div className="w-30" style={{ minWidth: "100px" }}>
+          <div className="grid col-2 gap-5 items-center">
+            <Progress
+              value={user.ai_beta_points || 0}
+              max={2000}
+              valuePosition="outside-right"
+              color="mint-7"
+              showText={false}
+            />
+            <Typography size="sm" pretendard="SB" color="mint-7">
+              {user.ai_beta_points}P
+            </Typography>
+          </div>
+        </div>
+      }
     >
       <div className="w-100 flex flex-col gap-10">
         {/* 메시지 출력 영역 */}
@@ -160,6 +200,7 @@ export default function AiChat({ dragHandleProps }) {
           }}
         />
       </div>
+      <Typography size="sm">※ 채팅 시 50P 소모됩니다.</Typography>
     </WidgetCard>
   );
 }

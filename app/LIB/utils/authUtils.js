@@ -4,7 +4,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
-  deleteUser
+  deleteUser,
 } from "firebase/auth";
 import { auth } from "../config/firebaseConfig";
 import { callApi } from "./apiUtils";
@@ -50,4 +50,12 @@ export const handleDeleteUser = async () => {
     console.error("회원 탈퇴 중 오류:", e);
     throw e;
   }
+};
+
+// 5. 포인트 갱신
+export const refreshUserPoint = async (data) => {
+  return callApi(`${API_BASE_URL}/users/me/points`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 };
