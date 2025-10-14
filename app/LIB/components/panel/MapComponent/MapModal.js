@@ -10,10 +10,12 @@ import "@geoman-io/leaflet-geoman-free";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-geosearch/dist/geosearch.css";
 import { inputProps } from "@/app/LIB/constant/uiProps";
+import { useDarkMode } from "@/app/LIB/context/DarkModeContext";
 
 export default function MapModal({ searchTerm, setSearchTerm }) {
   const mapInstanceRef = useRef(null);
   const tileLayerRef = useRef(null);
+  const { isDarkMode } = useDarkMode();
 
   const selectProps = {
     size: "sm",
@@ -21,7 +23,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
   };
 
   // 지도 유형
-  const [mapType, setMapType] = useState("Base");
+  const [mapType, setMapType] = useState(isDarkMode ? "Dark" : "Base");
   const mapTypeOptions = [
     { label: "기본", value: "Base" },
     { label: "흰색", value: "White" },

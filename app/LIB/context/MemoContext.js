@@ -21,7 +21,7 @@ export function MemoProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      memo,
+      memo: memo || DEFAULT_MEMO, // null이면 기본값 사용
       setMemo,
       saveMemo,
       memoLoading,

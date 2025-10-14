@@ -26,7 +26,8 @@ export function SettingProvider({ children }) {
 
   // 숫자 값들을 보장
   const setting = useMemo(() => {
-    if (!rawSetting) return DEFAULT_SETTING;
+    // 로딩 중이거나 데이터가 없으면 null 반환
+    if (settingLoading || !rawSetting) return null;
 
     return {
       ...rawSetting,
@@ -36,11 +37,11 @@ export function SettingProvider({ children }) {
         Number(rawSetting.workspaceWidth) || DEFAULT_SETTING.workspaceWidth,
       panelWidth: Number(rawSetting.panelWidth) || DEFAULT_SETTING.panelWidth,
     };
-  }, [rawSetting]);
+  }, [rawSetting, settingLoading]);
 
   const value = useMemo(
     () => ({
-      setting,
+      setting: setting || DEFAULT_SETTING, // null이면 기본값 사용
       setSetting,
       saveSetting,
       settingLoading,
