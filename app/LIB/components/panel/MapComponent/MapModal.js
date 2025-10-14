@@ -253,29 +253,30 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
           L.DomEvent.stopPropagation(e);
           L.DomEvent.preventDefault(e);
 
-          if (navigator.geolocation) {
+          if (typeof navigator !== "undefined" && navigator.geolocation) {
             button.innerHTML = "⏳";
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords;
-                map.setView([latitude, longitude], 16);
+            typeof navigator !== "undefined" &&
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  const { latitude, longitude } = position.coords;
+                  map.setView([latitude, longitude], 16);
 
-                // 내 위치에 마커 추가
-                L.marker([latitude, longitude], { icon: customIcons.green })
-                  .addTo(map)
-                  .bindPopup("현재 위치")
-                  .openPopup();
+                  // 내 위치에 마커 추가
+                  L.marker([latitude, longitude], { icon: customIcons.green })
+                    .addTo(map)
+                    .bindPopup("현재 위치")
+                    .openPopup();
 
-                button.innerHTML = "📍";
-              },
-              (error) => {
-                alert("위치 정보를 가져올 수 없습니다.");
-                button.innerHTML = "📍";
-              },
-              {
-                enableHighAccuracy: true,
-              }
-            );
+                  button.innerHTML = "📍";
+                },
+                (error) => {
+                  alert("위치 정보를 가져올 수 없습니다.");
+                  button.innerHTML = "📍";
+                },
+                {
+                  enableHighAccuracy: true,
+                }
+              );
           } else {
             alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
           }
@@ -307,7 +308,28 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
           } else {
             console.log("검색 결과를 찾을 수 없습니다.");
             // 검색 실패 시 현재 위치 사용
-            if (navigator.geolocation) {
+            if (typeof navigator !== "undefined" && navigator.geolocation) {
+              typeof navigator !== "undefined" &&
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    const { latitude, longitude } = position.coords;
+                    mapInstanceRef.current.setView([latitude, longitude], 15);
+                  },
+                  (error) => {
+                    console.log(
+                      "위치 정보를 가져올 수 없습니다. 기본 위치를 사용합니다.",
+                      error
+                    );
+                  }
+                );
+            }
+          }
+        })
+        .catch((error) => {
+          console.log("검색 중 오류가 발생했습니다:", error);
+          // 검색 실패 시 현재 위치 사용
+          if (typeof navigator !== "undefined" && navigator.geolocation) {
+            typeof navigator !== "undefined" &&
               navigator.geolocation.getCurrentPosition(
                 (position) => {
                   const { latitude, longitude } = position.coords;
@@ -320,42 +342,24 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
                   );
                 }
               );
-            }
-          }
-        })
-        .catch((error) => {
-          console.log("검색 중 오류가 발생했습니다:", error);
-          // 검색 실패 시 현재 위치 사용
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords;
-                mapInstanceRef.current.setView([latitude, longitude], 15);
-              },
-              (error) => {
-                console.log(
-                  "위치 정보를 가져올 수 없습니다. 기본 위치를 사용합니다.",
-                  error
-                );
-              }
-            );
           }
         });
     } else {
       // 검색어가 없으면 현재 위치 사용
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            mapInstanceRef.current.setView([latitude, longitude], 15);
-          },
-          (error) => {
-            console.log(
-              "위치 정보를 가져올 수 없습니다. 기본 위치(서울시청)를 사용합니다.",
-              error
-            );
-          }
-        );
+      if (typeof navigator !== "undefined" && navigator.geolocation) {
+        typeof navigator !== "undefined" &&
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              mapInstanceRef.current.setView([latitude, longitude], 15);
+            },
+            (error) => {
+              console.log(
+                "위치 정보를 가져올 수 없습니다. 기본 위치(서울시청)를 사용합니다.",
+                error
+              );
+            }
+          );
       }
     }
 
