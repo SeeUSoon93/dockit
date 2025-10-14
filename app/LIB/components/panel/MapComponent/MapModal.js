@@ -1,25 +1,23 @@
 "use client";
 
-import { Card, Modal, Select } from "sud-ui";
+import { Card, Modal, Select, Input } from "sud-ui";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import "@geoman-io/leaflet-geoman-free";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-geosearch/dist/geosearch.css";
-import "leaflet-routing-machine";
-import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
+import { inputProps } from "@/app/LIB/constant/uiProps";
 
-export default function MapModal() {
+export default function MapModal({ searchTerm, setSearchTerm }) {
   const mapInstanceRef = useRef(null);
   const tileLayerRef = useRef(null);
-  const routingControlRef = useRef(null);
 
   const selectProps = {
     size: "sm",
-    style: { width: "100px" }
+    style: { width: "100px" },
   };
 
   // 지도 유형
@@ -28,8 +26,71 @@ export default function MapModal() {
     { label: "기본", value: "Base" },
     { label: "흰색", value: "White" },
     { label: "다크", value: "Dark" },
-    { label: "위성", value: "Satellite" }
+    { label: "위성", value: "Satellite" },
   ];
+
+  // 검색 상태
+  const [searchQuery, setSearchQuery] = useState(searchTerm);
+
+  // 커스텀 마커 아이콘 정의 (useMemo로 최적화)
+  const customIcons = useMemo(() => {
+    const createCustomIcon = (color = "#3b82f6", size = [32, 32]) => {
+      return L.icon({
+        iconUrl: `data:image/svg+xml;base64,${btoa(`
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="${size[0]}" height="${size[1]}" viewBox="0 0 24 24">
+            <path fill="${color}" d="M12,2c-4.4106636,0-8,3.2363591-8,7.213275,0,4.6789999,5.0177794,10.2740602,7.1760015,12.4621477.4266939.4327698,1.2222462.4327698,1.6479969,0,2.1573582-2.1880875,7.1760015-7.7831478,7.1760015-12.4621477,0-3.9769158-3.5893364-7.213275-8-7.213275Z"/>
+            <path fill="#fff" d="M12,12.2132397c-1.6539564,0-3-1.3460245-3-2.9999561,0-1.6540198,1.3460436-3.0000439,3-3.0000439,1.6540442,0,3,1.346024,3,3.0000439,0,1.6539316-1.3459558,2.9999561-3,2.9999561Z"/>
+          </svg>
+        `)}`,
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        iconSize: size,
+        iconAnchor: [size[0] / 2, size[1]],
+        popupAnchor: [0, -size[1]],
+        shadowSize: [size[0], size[1]],
+      });
+    };
+
+    return {
+      blue: createCustomIcon("#3b82f6", [32, 32]),
+      red: createCustomIcon("#ef4444", [32, 32]),
+      green: createCustomIcon("#10b981", [32, 32]),
+      purple: createCustomIcon("#8b5cf6", [32, 32]),
+      orange: createCustomIcon("#f59e0b", [32, 32]),
+    };
+  }, []);
+
+  // 검색 함수
+  const handleSearch = async (query) => {
+    if (!query.trim()) return;
+    setSearchTerm(query);
+
+    try {
+      const provider = new OpenStreetMapProvider();
+      const results = await provider.search({ query });
+
+      if (results && results.length > 0) {
+        const result = results[0];
+        const { y: latitude, x: longitude } = result;
+        mapInstanceRef.current.setView([latitude, longitude], 15);
+
+        // 기존 마커 제거
+        mapInstanceRef.current.eachLayer((layer) => {
+          if (layer instanceof L.Marker) {
+            mapInstanceRef.current.removeLayer(layer);
+          }
+        });
+
+        // 검색된 위치에 마커 추가
+        L.marker([latitude, longitude], { icon: customIcons.red })
+          .addTo(mapInstanceRef.current)
+          .bindPopup(`검색 결과: ${result.label}`)
+          .openPopup();
+      }
+    } catch (error) {
+      console.log("검색 중 오류가 발생했습니다:", error);
+    }
+  };
 
   // 타일 레이어 맵
   const getTileLayer = (type) => {
@@ -40,7 +101,7 @@ export default function MapModal() {
           maxZoom: 20,
           attribution:
             '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          ext: "png"
+          ext: "png",
         }
       ),
       White: L.tileLayer(
@@ -49,7 +110,7 @@ export default function MapModal() {
           attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
           subdomains: "abcd",
-          maxZoom: 20
+          maxZoom: 20,
         }
       ),
       Dark: L.tileLayer(
@@ -58,7 +119,7 @@ export default function MapModal() {
           maxZoom: 20,
           attribution:
             '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          ext: "png"
+          ext: "png",
         }
       ),
       Satellite: L.tileLayer(
@@ -66,9 +127,9 @@ export default function MapModal() {
         {
           maxZoom: 20,
           attribution:
-            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
         }
-      )
+      ),
     };
     return layers[type] || layers.Base;
   };
@@ -88,7 +149,7 @@ export default function MapModal() {
     mapInstanceRef.current = L.map("v-map", {
       center: defaultCenter,
       zoom: 12,
-      zoomControl: true
+      zoomControl: true,
     });
 
     // 타일 레이어 추가
@@ -108,15 +169,22 @@ export default function MapModal() {
       dragMode: true,
       cutPolygon: true,
       removalMode: true,
-      rotateMode: true
+      rotateMode: true,
     });
 
     // 측정 기능 활성화
     mapInstanceRef.current.pm.setGlobalOptions({
       measurements: {
         measurement: true,
-        displayFormat: "metric"
-      }
+        displayFormat: "metric",
+      },
+    });
+
+    // Geoman 마커에 커스텀 아이콘 설정
+    mapInstanceRef.current.pm.setGlobalOptions({
+      markerStyle: {
+        icon: customIcons.blue,
+      },
     });
 
     // Geoman 한글화
@@ -130,12 +198,12 @@ export default function MapModal() {
         editMode: "편집 모드",
         dragMode: "드래그 모드",
         cutPolygon: "다각형 자르기",
-        removalMode: "삭제 모드"
+        removalMode: "삭제 모드",
       },
       actions: {
         finish: "완료",
         cancel: "취소",
-        removeLastVertex: "마지막 점 삭제"
+        removeLastVertex: "마지막 점 삭제",
       },
       buttonTitles: {
         drawMarkerButton: "마커 추가",
@@ -147,34 +215,16 @@ export default function MapModal() {
         dragButton: "레이어 드래그",
         cutButton: "레이어 자르기",
         deleteButton: "레이어 삭제",
-        drawCircleMarkerButton: "원형 마커"
-      }
+        drawCircleMarkerButton: "원형 마커",
+      },
     });
 
-    // 2. 주소 검색 (GeoSearch)
-    const searchControl = new GeoSearchControl({
-      provider: new OpenStreetMapProvider(),
-      style: "bar",
-      showMarker: true,
-      showPopup: true,
-      marker: {
-        icon: new L.Icon.Default(),
-        draggable: false
-      },
-      popupFormat: ({ query, result }) => result.label,
-      maxMarkers: 1,
-      retainZoomLevel: false,
-      animateZoom: true,
-      autoClose: true,
-      searchLabel: "주소 또는 장소 검색",
-      keepResult: true
-    });
-    mapInstanceRef.current.addControl(searchControl);
+    // 2. 주소 검색은 커스텀 Input으로 대체
 
     // 3. 내 위치 찾기 버튼 (커스텀 구현)
     const MyLocationButton = L.Control.extend({
       options: {
-        position: "topleft"
+        position: "topleft",
       },
       onAdd: function (map) {
         const container = L.DomUtil.create(
@@ -209,7 +259,7 @@ export default function MapModal() {
                 map.setView([latitude, longitude], 16);
 
                 // 내 위치에 마커 추가
-                L.marker([latitude, longitude])
+                L.marker([latitude, longitude], { icon: customIcons.green })
                   .addTo(map)
                   .bindPopup("현재 위치")
                   .openPopup();
@@ -221,7 +271,7 @@ export default function MapModal() {
                 button.innerHTML = "📍";
               },
               {
-                enableHighAccuracy: true
+                enableHighAccuracy: true,
               }
             );
           } else {
@@ -230,118 +280,81 @@ export default function MapModal() {
         });
 
         return container;
-      }
+      },
     });
 
     new MyLocationButton().addTo(mapInstanceRef.current);
 
-    // 4. 길찾기 버튼 (커스텀 컨트롤)
-    const RoutingButton = L.Control.extend({
-      options: {
-        position: "topleft"
-      },
-      onAdd: function (map) {
-        const container = L.DomUtil.create(
-          "div",
-          "leaflet-bar leaflet-control"
-        );
-        const button = L.DomUtil.create(
-          "a",
-          "leaflet-control-routing",
-          container
-        );
-        button.innerHTML = "🚗";
-        button.href = "#";
-        button.title = "길찾기";
-        button.style.fontSize = "18px";
-        button.style.width = "30px";
-        button.style.height = "30px";
-        button.style.lineHeight = "30px";
-        button.style.textAlign = "center";
-        button.style.textDecoration = "none";
-        button.style.display = "block";
+    // 검색어가 있으면 해당 위치 검색, 없으면 현재 위치 사용
+    if (searchTerm && searchTerm.trim()) {
+      // 검색어로 위치 검색
+      const provider = new OpenStreetMapProvider();
+      provider
+        .search({ query: searchTerm })
+        .then((results) => {
+          if (results && results.length > 0) {
+            const result = results[0];
+            const { y: latitude, x: longitude } = result;
+            mapInstanceRef.current.setView([latitude, longitude], 15);
 
-        L.DomEvent.on(button, "click", function (e) {
-          L.DomEvent.stopPropagation(e);
-          L.DomEvent.preventDefault(e);
-
-          if (routingControlRef.current) {
-            // 길찾기 제거
-            map.removeControl(routingControlRef.current);
-            routingControlRef.current = null;
-            button.style.backgroundColor = "";
+            // 검색된 위치에 마커 추가
+            L.marker([latitude, longitude], { icon: customIcons.red })
+              .addTo(mapInstanceRef.current)
+              .bindPopup(`검색 결과: ${result.label}`)
+              .openPopup();
           } else {
-            // 길찾기 추가
-            routingControlRef.current = L.Routing.control({
-              waypoints: [],
-              routeWhileDragging: true,
-              showAlternatives: true,
-              addWaypoints: true,
-              draggableWaypoints: true,
-              fitSelectedRoutes: true,
-              show: true,
-              lineOptions: {
-                styles: [{ color: "#6366f1", weight: 4, opacity: 0.7 }]
+            console.log("검색 결과를 찾을 수 없습니다.");
+            // 검색 실패 시 현재 위치 사용
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  const { latitude, longitude } = position.coords;
+                  mapInstanceRef.current.setView([latitude, longitude], 15);
+                },
+                (error) => {
+                  console.log(
+                    "위치 정보를 가져올 수 없습니다. 기본 위치를 사용합니다.",
+                    error
+                  );
+                }
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          console.log("검색 중 오류가 발생했습니다:", error);
+          // 검색 실패 시 현재 위치 사용
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const { latitude, longitude } = position.coords;
+                mapInstanceRef.current.setView([latitude, longitude], 15);
               },
-              createMarker: function (i, waypoint, n) {
-                const marker = L.marker(waypoint.latLng, {
-                  draggable: true,
-                  icon: L.icon({
-                    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${
-                      i === 0 ? "green" : i === n - 1 ? "red" : "blue"
-                    }.png`,
-                    shadowUrl:
-                      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                  })
-                });
-                return marker;
-              }
-            }).addTo(map);
-
-            button.style.backgroundColor = "#6366f1";
-            button.style.color = "white";
-
-            // 지도 클릭으로 경유지 추가
-            let clickCount = 0;
-            const onMapClick = (e) => {
-              const waypoints = routingControlRef.current.getWaypoints();
-              if (waypoints.length < 10) {
-                routingControlRef.current.spliceWaypoints(
-                  waypoints.length,
-                  1,
-                  e.latlng
+              (error) => {
+                console.log(
+                  "위치 정보를 가져올 수 없습니다. 기본 위치를 사용합니다.",
+                  error
                 );
               }
-            };
-
-            map.on("click", onMapClick);
+            );
           }
         });
-
-        return container;
+    } else {
+      // 검색어가 없으면 현재 위치 사용
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            mapInstanceRef.current.setView([latitude, longitude], 15);
+          },
+          (error) => {
+            console.log(
+              "위치 정보를 가져올 수 없습니다. 기본 위치(서울시청)를 사용합니다.",
+              error
+            );
+          }
+        );
       }
-    });
-
-    new RoutingButton().addTo(mapInstanceRef.current);
-
-    // 사용자 현재 위치 가져오기 (초기 로드)
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          mapInstanceRef.current.setView([latitude, longitude], 15);
-        },
-        (error) => {
-          console.log(
-            "위치 정보를 가져올 수 없습니다. 기본 위치(서울시청)를 사용합니다.",
-            error
-          );
-        }
-      );
     }
 
     return () => {
@@ -349,24 +362,34 @@ export default function MapModal() {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
         tileLayerRef.current = null;
-        routingControlRef.current = null;
       }
     };
-  }, [mapType]);
+  }, [mapType, searchTerm, customIcons]);
 
   return (
     <div className="relative">
       {/* 지도 */}
-      <div id="v-map" style={{ width: "100%", height: "90vh" }} />
+      <div id="v-map" className="w-100" style={{ height: "90vh" }} />
 
       {/* 지도 타입 선택 */}
-      <div className="absolute top-px-10 right-px-10" style={{ zIndex: 1000 }}>
-        <Select
-          options={mapTypeOptions}
-          onChange={(value) => setMapType(value)}
-          value={mapType}
-          {...selectProps}
-        />
+      <div className="absolute top-px-10 w-100" style={{ zIndex: 1000 }}>
+        <div className="flex gap-10 items-center justify-center w-100">
+          <Input
+            placeholder="주소 또는 장소 검색"
+            {...inputProps}
+            value={searchQuery}
+            shadow="sm"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onEnter={() => handleSearch(searchQuery)}
+            style={{ width: "300px" }}
+          />
+          <Select
+            options={mapTypeOptions}
+            onChange={(value) => setMapType(value)}
+            value={mapType}
+            {...selectProps}
+          />
+        </div>
       </div>
     </div>
   );
