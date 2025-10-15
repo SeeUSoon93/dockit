@@ -11,7 +11,7 @@ import {
   Progress,
   Textarea,
   Typography,
-  toast
+  toast,
 } from "sud-ui";
 import { Download, MapArrowFill } from "sud-icons";
 import { createData } from "../../utils/dataUtils";
@@ -44,15 +44,15 @@ export default function AiImage({ dragHandleProps }) {
         setImgUrl(`data:${imageData.mimeType};base64,${imageData.data}`);
         await createData("ai-image", null, {
           title: input,
-          content: imgUrl
+          content: imgUrl,
         });
       }
       const response = await refreshUserPoint({
-        ai_beta_points: user.ai_beta_points - 150
+        ai_beta_points: user.ai_beta_points - 150,
       });
       setUser({
         ...user,
-        ai_beta_points: response.user.ai_beta_points
+        ai_beta_points: response.user.ai_beta_points,
       });
     } catch (err) {
       console.error("Prompt or candidate was blocked:", err);
@@ -85,7 +85,7 @@ export default function AiImage({ dragHandleProps }) {
       title="AI 이미지"
       dragHandleProps={dragHandleProps}
       titleBtn={
-        <div className="w-30" style={{ minWidth: "100px" }}>
+        <div className="w-30 justify-end flex" style={{ minWidth: "100px" }}>
           <div className="grid col-2 gap-5 items-center">
             <Progress
               value={user.ai_beta_points || 0}

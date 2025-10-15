@@ -53,6 +53,8 @@ export default function PanelContainer({
 
   const panelWidth = setting.panelWidth || 350;
   const workspaceWidth = setting.workspaceWidth || 800;
+  const panelLeft = setting.panelLeft ?? true;
+  const panelRight = setting.panelRight ?? true;
 
   return (
     <SortableContext
@@ -68,10 +70,22 @@ export default function PanelContainer({
         background={isDropTarget && "white-8"}
         style={{
           width: `${panelWidth}px`,
-          maxWidth:
-            layoutMode === "desktop"
-              ? `calc((100vw - ${workspaceWidth}px) / 2)`
-              : `calc(100vw - ${workspaceWidth}px)`,
+          maxWidth: (() => {
+            if (layoutMode !== "desktop") {
+              return `calc(100vw - ${workspaceWidth}px)`;
+            }
+
+            // 데스크톱 모드에서 한쪽 패널만 활성화된 경우
+            const isOnlyLeftActive = panelLeft && !panelRight;
+            const isOnlyRightActive = !panelLeft && panelRight;
+
+            if (isOnlyLeftActive || isOnlyRightActive) {
+              return `calc(100vw - ${workspaceWidth}px)`;
+            }
+
+            // 양쪽 패널 모두 활성화된 경우
+            return `calc((100vw - ${workspaceWidth}px) / 2)`;
+          })(),
         }}
       >
         {widgets.map((widgetId) => (

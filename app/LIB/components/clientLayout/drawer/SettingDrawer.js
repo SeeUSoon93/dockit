@@ -4,10 +4,17 @@ import { AiFillSave } from "react-icons/ai";
 import { useSetting } from "@/app/LIB/context/SettingContext";
 import { useState } from "react";
 import { TbClockRecord } from "react-icons/tb";
+import { MdDocumentScanner } from "react-icons/md";
+import {
+  LuInspectionPanel,
+  LuPanelLeft,
+  LuPanelLeftClose,
+  LuPanelRightClose,
+} from "react-icons/lu";
 
 export default function SettingDrawer({
   openSettingsDrawer,
-  setOpenSettingsDrawer
+  setOpenSettingsDrawer,
 }) {
   const { setting, setSetting, settingLoading } = useSetting();
 
@@ -19,6 +26,8 @@ export default function SettingDrawer({
     setting.workspaceWidth || 800
   );
   const [panelWidth, setPanelWidth] = useState(setting.panelWidth || 350);
+  const [panelLeft, setPanelLeft] = useState(setting.panelLeft || true);
+  const [panelRight, setPanelRight] = useState(setting.panelRight || true);
 
   const handleChange = (key, value) => {
     setSetting({ ...setting, [key]: value });
@@ -36,7 +45,7 @@ export default function SettingDrawer({
         setOpen={setOpenSettingsDrawer}
         content={
           !settingLoading && (
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-15">
               {/* 자동저장 */}
               <div className="flex items-center justify-between">
                 <Typography pretendard="SB" className="flex items-center gap-5">
@@ -89,7 +98,7 @@ export default function SettingDrawer({
               {/* 워크스페이스 넓이 */}
               <div className="flex items-center justify-between">
                 <Typography pretendard="SB" className="flex items-center gap-5">
-                  <AiFillSave size={20} />
+                  <MdDocumentScanner size={20} />
                   워크스페이스 넓이
                 </Typography>
                 <Input
@@ -108,7 +117,7 @@ export default function SettingDrawer({
               {/* 패널 넓이 */}
               <div className="flex items-center justify-between">
                 <Typography pretendard="SB" className="flex items-center gap-5">
-                  <AiFillSave size={20} />
+                  <LuInspectionPanel size={20} />
                   위젯 패널 최대 넓이
                 </Typography>
                 <Input
@@ -122,6 +131,43 @@ export default function SettingDrawer({
                   shadow="none"
                   size="sm"
                   suffix="px"
+                />
+              </div>
+              {/* 패널 활성화 */}
+              <div className="flex items-center justify-between">
+                <Typography pretendard="SB" className="flex items-center gap-5">
+                  <LuPanelLeftClose size={20} />
+                  왼쪽 패널 활성화
+                </Typography>
+                <Switch
+                  checked={panelLeft}
+                  onChange={() => {
+                    handleChange("panelLeft", !panelLeft);
+                    setPanelLeft(!panelLeft);
+                  }}
+                  size="sm"
+                  onColor="mint"
+                  offColor="mint-3"
+                  onText="활성화"
+                  offText="비활성화"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Typography pretendard="SB" className="flex items-center gap-5">
+                  <LuPanelRightClose size={20} />
+                  오른쪽 패널 활성화
+                </Typography>
+                <Switch
+                  checked={panelRight}
+                  onChange={() => {
+                    handleChange("panelRight", !panelRight);
+                    setPanelRight(!panelRight);
+                  }}
+                  size="sm"
+                  onColor="mint"
+                  offColor="mint-3"
+                  onText="활성화"
+                  offText="비활성화"
                 />
               </div>
             </div>

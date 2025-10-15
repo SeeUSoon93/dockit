@@ -19,14 +19,23 @@ export default function Content({
   const isShare = usePathname().includes("share");
   const { setting } = useSetting();
 
+  // 패널 활성화 상태 확인
+  const panelLeft = setting.panelLeft ?? true;
+  const panelRight = setting.panelRight ?? true;
+  const hasLeftPanel = showLeftPanel && isDocument && panelLeft;
+  const hasRightPanel = showRightPanel && isDocument && panelRight;
+  const hasBothPanels = hasLeftPanel && hasRightPanel;
+
   return (
     <Div
-      className="flex w-full h-full justify-between gap-10"
+      className={`flex w-full h-full gap-10 ${
+        hasBothPanels ? "justify-between" : "justify-center"
+      }`}
       background={isDocument || isShare ? "white-9" : "white-10"}
       ref={containerRef}
     >
       {/* 왼쪽패널 */}
-      {showLeftPanel && isDocument && (
+      {showLeftPanel && isDocument && setting.panelLeft && (
         <PanelContainer
           side="left"
           widgets={left}
@@ -52,7 +61,7 @@ export default function Content({
         {children}
       </Div>
       {/* 오른쪽패널 */}
-      {showRightPanel && isDocument && (
+      {showRightPanel && isDocument && setting.panelRight && (
         <PanelContainer
           side="right"
           widgets={right}

@@ -11,7 +11,7 @@ import {
   Progress,
   Textarea,
   toast,
-  Typography
+  Typography,
 } from "sud-ui";
 import { MapArrowFill } from "sud-icons";
 import { useUser } from "../../context/UserContext";
@@ -51,8 +51,8 @@ export default function AiChat({ dragHandleProps }) {
     const chat = model.startChat({
       history: messages,
       generationConfig: {
-        maxOutputTokens: 2048
-      }
+        maxOutputTokens: 2048,
+      },
     });
     console.log(chat);
     try {
@@ -63,14 +63,14 @@ export default function AiChat({ dragHandleProps }) {
       // 새 메시지와 응답을 추가
       setMessages([
         ...updatedMessages,
-        { role: "model", parts: [{ text: text }] }
+        { role: "model", parts: [{ text: text }] },
       ]);
       const response2 = await refreshUserPoint({
-        ai_beta_points: user.ai_beta_points - 70
+        ai_beta_points: user.ai_beta_points - 70,
       });
       setUser({
         ...user,
-        ai_beta_points: response2.user.ai_beta_points
+        ai_beta_points: response2.user.ai_beta_points,
       });
     } catch (error) {
       console.error(error.message);
@@ -84,7 +84,7 @@ export default function AiChat({ dragHandleProps }) {
       title="AI 채팅"
       dragHandleProps={dragHandleProps}
       titleBtn={
-        <div className="w-30" style={{ minWidth: "100px" }}>
+        <div className="w-30 justify-end flex" style={{ minWidth: "100px" }}>
           <div className="grid col-2 gap-5 items-center">
             <Progress
               value={user.ai_beta_points || 0}
@@ -110,7 +110,7 @@ export default function AiChat({ dragHandleProps }) {
                 key={index}
                 className="flex gap-10 justify-start items-start"
                 style={{
-                  flexDirection: isUser ? "row-reverse" : "row"
+                  flexDirection: isUser ? "row-reverse" : "row",
                 }}
               >
                 {!isUser && (
@@ -124,7 +124,7 @@ export default function AiChat({ dragHandleProps }) {
                   className="rad-15 pd-10 inline-block whitespace-pre-wrap break-words"
                   background={isUser ? "mint-1" : "sky-1"}
                   style={{
-                    maxWidth: "75%"
+                    maxWidth: "75%",
                   }}
                 >
                   <ReactMarkdown
@@ -133,7 +133,7 @@ export default function AiChat({ dragHandleProps }) {
                         <ol
                           style={{
                             listStylePosition: "inside", // ✅ 숫자를 안쪽으로
-                            margin: 0
+                            margin: 0,
                           }}
                         >
                           {children}
@@ -143,7 +143,7 @@ export default function AiChat({ dragHandleProps }) {
                         <li
                           style={{
                             marginBottom: "0.3em",
-                            whiteSpace: "pre-wrap"
+                            whiteSpace: "pre-wrap",
                           }}
                         >
                           {children}
@@ -154,12 +154,12 @@ export default function AiChat({ dragHandleProps }) {
                           style={{
                             margin: 0,
                             whiteSpace: "pre-wrap",
-                            wordBreak: "break-word"
+                            wordBreak: "break-word",
                           }}
                         >
                           {children}
                         </p>
-                      )
+                      ),
                     }}
                   >
                     {msg.parts[0]?.text}

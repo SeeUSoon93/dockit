@@ -8,6 +8,8 @@ const DEFAULT_SETTING = {
   autoSaveDelay: 2000,
   workspaceWidth: 800,
   panelWidth: 350,
+  panelLeft: true,
+  panelRight: true,
 };
 
 const localStorageKey = "DOCKIT_SETTING";
@@ -36,6 +38,8 @@ export function SettingProvider({ children }) {
       workspaceWidth:
         Number(rawSetting.workspaceWidth) || DEFAULT_SETTING.workspaceWidth,
       panelWidth: Number(rawSetting.panelWidth) || DEFAULT_SETTING.panelWidth,
+      panelLeft: rawSetting.panelLeft ?? DEFAULT_SETTING.panelLeft,
+      panelRight: rawSetting.panelRight ?? DEFAULT_SETTING.panelRight,
     };
   }, [rawSetting, settingLoading]);
 
