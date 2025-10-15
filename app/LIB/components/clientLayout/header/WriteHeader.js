@@ -9,6 +9,7 @@ import { GrDocumentConfig } from "react-icons/gr";
 import { useParams } from "next/navigation";
 
 import {
+  PiFileHtmlBold,
   PiFilePdfBold,
   PiHighlighterFill,
   PiListBulletsBold,
@@ -29,8 +30,13 @@ import { MdFormatColorText } from "react-icons/md";
 import DocSettingModal from "./DocSettingModal";
 import { fontOptions } from "@/app/LIB/constant/fontOptions";
 export default function WriteHeader() {
-  const { editor, printAction, saveAction, downloadPDFAction } =
-    useEditorContext();
+  const {
+    editor,
+    printAction,
+    saveAction,
+    downloadPDFAction,
+    downloadHTMLAction,
+  } = useEditorContext();
   const params = useParams();
   const [font, setFont] = useState("Pretendard-Medium");
   const [currentFontSize, setCurrentFontSize] = useState(16);
@@ -120,7 +126,7 @@ export default function WriteHeader() {
   };
 
   return (
-    <div className="flex gap-5 items-center">
+    <div className="flex gap-5 items-center overflow-x-auto">
       {/* 취소 & 재실행 */}
       {renderBtn(
         TbArrowBackUp,
@@ -349,6 +355,7 @@ export default function WriteHeader() {
       <>
         {renderBtn(GrDocumentConfig, () => setDocSettingModalOpen(true), "")}
         {renderBtn(PiFilePdfBold, () => downloadPDFAction?.(), "")}
+        {renderBtn(PiFileHtmlBold, () => downloadHTMLAction?.(), "")}
       </>
       <Divider
         vertical

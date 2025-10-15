@@ -16,6 +16,7 @@ import { CalendarOutline, Korea, Map, TimerOutline } from "sud-icons";
 import { BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
 import { GiSouthKorea, GiStarSattelites } from "react-icons/gi";
+import { IoSyncCircle } from "react-icons/io5";
 
 export default function WidgetDrawer({
   openWidgetDrawer,

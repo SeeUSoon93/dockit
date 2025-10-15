@@ -52,6 +52,8 @@ export default function Content({
           width:
             isDocument || isShare
               ? `${setting.workspaceWidth || 800}px`
+              : layoutMode === "mobile"
+              ? "100vw"
               : "100%",
           transform: `scale(${scale})`,
           transformOrigin: "top center",

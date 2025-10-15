@@ -134,7 +134,7 @@ export default function Header({
   return (
     !userLoading &&
     user && (
-      <Div className="flex flex-col gap-5">
+      <Div className="flex flex-col gap-5 overflow-x-auto">
         {/* 기본 헤더 */}
         <div className="flex items-center justify-between">
           {/* 왼쪽 */}

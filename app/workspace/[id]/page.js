@@ -8,6 +8,7 @@ import { useDebounce } from "@/app/LIB/hook/useDebounce";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 
 import { useSetting } from "@/app/LIB/context/SettingContext";
+import { useLayout } from "@/app/LIB/context/LayoutContext";
 
 // 외부 CSS 파일 내용을 가져와 <style> 태그로 바꿔주는 헬퍼 함수
 async function inlineCssStyles(htmlString) {
@@ -53,9 +54,14 @@ export default function WritePage() {
     setContent,
     title,
   } = useDocument();
-  const { setSaveAction, setDownloadPDFAction, editor, setPrintAction } =
-    useEditorContext();
-
+  const {
+    setSaveAction,
+    setDownloadPDFAction,
+    editor,
+    setPrintAction,
+    setDownloadHTMLAction,
+  } = useEditorContext();
+  const { layoutMode } = useLayout();
   const { setting } = useSetting();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -146,6 +152,76 @@ export default function WritePage() {
     }
   }, [content, title, docSetting]);
 
+  const handleDownloadHTML = useCallback(async () => {
+    if (!content || !title) {
+      toast.error("내용이 없습니다.");
+      return;
+    }
+
+    toast.info("HTML 생성 중입니다. 잠시만 기다려주세요...");
+
+    try {
+      // 현재 페이지의 스타일을 가져오기
+      const styleTags = Array.from(
+        typeof window !== "undefined"
+          ? window.document.querySelectorAll('style, link[rel="stylesheet"]')
+          : []
+      )
+        .map((tag) => tag.outerHTML)
+        .join("");
+
+      // HTML 문서 생성
+      const htmlContent = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  ${styleTags}
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    .document-content {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="document-content">
+    <h1>${title}</h1>
+    ${content}
+  </div>
+</body>
+</html>`;
+
+      // Blob 생성 및 다운로드
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const a = window.document.createElement("a");
+      a.href = url;
+      a.download = `${title.replace(/[^a-zA-Z0-9가-힣]/g, "_")}.html`;
+      window.document.body.appendChild(a);
+      a.click();
+      window.document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success("HTML 파일이 다운로드되었습니다!");
+    } catch (error) {
+      console.error("HTML 다운로드 실패:", error);
+      toast.error("HTML 다운로드에 실패했습니다.");
+    }
+  }, [content, title]);
+
   const handlePrint = useCallback(() => {
     window.print();
   }, []);
@@ -153,11 +229,13 @@ export default function WritePage() {
   useEffect(() => {
     setSaveAction(() => handleSave);
     setDownloadPDFAction(() => handleDownloadPDF);
+    setDownloadHTMLAction(() => handleDownloadHTML);
     setPrintAction(() => handlePrint);
 
     return () => {
       setSaveAction(null);
       setDownloadPDFAction(null);
+      setDownloadHTMLAction(null);
       setPrintAction(null);
     };
   }, [
@@ -165,6 +243,8 @@ export default function WritePage() {
     setSaveAction,
     setDownloadPDFAction,
     handleDownloadPDF,
+    setDownloadHTMLAction,
+    handleDownloadHTML,
     setPrintAction,
     handlePrint,
   ]);
@@ -202,7 +282,7 @@ export default function WritePage() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleSave, editor, handlePrint]);
+  }, [handleSave, editor, handlePrint, layoutMode]);
 
   useEffect(() => {
     // docSetting이 없으면 아무것도 하지 않음
@@ -239,8 +319,13 @@ export default function WritePage() {
 
   const divStyle = () => {
     if (!docSetting) return {}; // docSetting이 없을 경우 대비
+    const currentVwInPx = window.innerWidth;
+    const width =
+      layoutMode === "mobile"
+        ? currentVwInPx - 20
+        : setting.workspaceWidth || 800;
 
-    const widthRatio = (setting.workspaceWidth || 800) / docSetting.pageWidth;
+    const widthRatio = width / docSetting.pageWidth;
     const paddingTop = docSetting.paddingTop * widthRatio;
     const paddingBottom = docSetting.paddingBottom * widthRatio;
     const paddingLeft = docSetting.paddingLeft * widthRatio;
@@ -255,7 +340,7 @@ export default function WritePage() {
       paddingLeft: `${paddingLeft}px`,
       paddingRight: `${paddingRight}px`,
       minHeight: `${pageHeight}px`,
-      width: `${setting.workspaceWidth || 800}px`,
+      width: `${width}px`,
     };
   };
 
