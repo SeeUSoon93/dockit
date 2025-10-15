@@ -7,7 +7,7 @@ import {
   Modal,
   Tag,
   toast,
-  Typography
+  Typography,
 } from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { useState, useEffect } from "react";
@@ -15,7 +15,7 @@ import { CalendarOutline, Plus, TriangleLeft, TriangleRight } from "sud-icons";
 import dayjs from "dayjs";
 import { locale_ko } from "../../constant/widget_constant";
 import { createData, deleteData, fetchDataList } from "../../utils/dataUtils";
-const API_SUB_URL = process.env.NEXT_PUBLIC_API_SUB_URL;
+import { API_HKI_URL } from "../../config/config";
 
 export default function CalendarWidget({ dragHandleProps }) {
   const [events, setEvents] = useState([]);
@@ -33,7 +33,7 @@ export default function CalendarWidget({ dragHandleProps }) {
     const fetchHolidays = async () => {
       try {
         const res = await fetch(
-          `${API_SUB_URL}/check/holidays/${currentYear}/18`
+          `${API_HKI_URL}/check/holidays/${currentYear}/18`
         );
         const data = await res.json();
         console.log(data);
@@ -98,7 +98,7 @@ export default function CalendarWidget({ dragHandleProps }) {
 
     await createData("calendar", null, {
       content: itemContent,
-      date: dayjs(itemDate).format("YYYY-MM-DD")
+      date: dayjs(itemDate).format("YYYY-MM-DD"),
     });
     setOpenAddModal(false);
     setItemContent("");
@@ -175,7 +175,7 @@ export default function CalendarWidget({ dragHandleProps }) {
           holidays={holidays}
           holidaysStyle={{
             background: "cool-gray-2",
-            color: "red-7"
+            color: "red-7",
           }}
         />
         <Divider />

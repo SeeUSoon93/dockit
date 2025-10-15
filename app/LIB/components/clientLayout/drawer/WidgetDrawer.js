@@ -4,8 +4,9 @@ import { Button, Div, Drawer, Tag, Typography } from "sud-ui";
 import {
   FaBookBookmark,
   FaCalculator,
+  FaDice,
   FaNoteSticky,
-  FaWikipediaW
+  FaWikipediaW,
 } from "react-icons/fa6";
 import { MdImageSearch, MdKeyboardCommandKey, MdMuseum } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
@@ -14,11 +15,11 @@ import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
 import { CalendarOutline, Korea, Map, TimerOutline } from "sud-icons";
 import { BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
-import { GiSouthKorea } from "react-icons/gi";
+import { GiSouthKorea, GiStarSattelites } from "react-icons/gi";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer
+  setOpenWidgetDrawer,
 }) {
   const { left, right, toggle } = usePanels();
 
@@ -96,8 +97,8 @@ export default function WidgetDrawer({
             </div>
 
             <div className="flex flex-col gap-10">
-              {/* 기타 도구 */}
-              <Typography pretendard="SB">기타 도구</Typography>
+              {/* 도구 */}
+              <Typography pretendard="SB">도구</Typography>
               <div className="grid col-4 w-100 gap-20">
                 {renderWidgetItem(BsTranslate, "번역기", "translate")}
                 {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
@@ -107,9 +108,12 @@ export default function WidgetDrawer({
               </div>
             </div>
             <div className="flex flex-col gap-10">
-              {/* 공공데이터 */}
-              <Typography pretendard="SB">공공데이터 검색</Typography>
-              <div className="grid col-4 w-100 gap-20"></div>
+              {/* 기타 */}
+              <Typography pretendard="SB">기타</Typography>
+              <div className="grid col-4 w-100 gap-20">
+                {renderWidgetItem(GiStarSattelites, "띠별 운세", "fortune")}
+                {renderWidgetItem(FaDice, "주사위", "dice")}
+              </div>
             </div>
           </div>
         }
