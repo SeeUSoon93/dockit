@@ -102,7 +102,7 @@ export default function AiChat({ dragHandleProps }) {
     >
       <div className="w-100 flex flex-col gap-10">
         {/* 메시지 출력 영역 */}
-        <div className="flex flex-col gap-20 overflow-y-auto max-h-px-300">
+        <div className="flex flex-col gap-20 overflow-y-auto max-h-px-350">
           {messages.map((msg, index) => {
             const isUser = msg.role === "user";
             return (

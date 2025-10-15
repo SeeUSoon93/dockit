@@ -54,7 +54,7 @@ export default function Dictionary({ dragHandleProps }) {
       title="사전"
       dragHandleProps={dragHandleProps}
     >
-      <div className="w-100 flex flex-col gap-10 max-h-px-300 overflow-y-auto">
+      <div className="w-100 flex flex-col gap-10 max-h-px-350 overflow-y-auto">
         <div className="flex jus-bet">
           <Input
             {...inputProps}

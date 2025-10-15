@@ -21,7 +21,7 @@ export default function WikipediaSearch({ dragHandleProps }) {
       title="Wiki"
       dragHandleProps={dragHandleProps}
     >
-      <div className="w-100 flex flex-col gap-10 max-h-px-300 overflow-y-auto">
+      <div className="w-100 flex flex-col gap-10 max-h-px-350 overflow-y-auto">
         <div className="flex jus-bet">
           <Input
             {...inputProps}

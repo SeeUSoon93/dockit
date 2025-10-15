@@ -12,7 +12,7 @@ import {
   DragOverlay,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
 } from "@dnd-kit/core";
 // sud-ui
 import { Div, SoonUIDesign } from "sud-ui";
@@ -38,6 +38,7 @@ import { useDocumentManager } from "./LIB/hook/useDocumentManager";
 import { useDragState } from "./LIB/hook/useDragState";
 import { DrawerProvider } from "./LIB/context/DrawerContext";
 import { usePathname } from "next/navigation";
+import { MusicProvider } from "./LIB/context/MusicContext";
 
 function LayoutContent({ children }) {
   // 커스텀 훅들 사용
@@ -54,7 +55,7 @@ function LayoutContent({ children }) {
     overContainerId,
     handleDragStart,
     handleDragEnd,
-    handleDragOver
+    handleDragOver,
   } = useDragState();
 
   // 드로어 상태는 Context로 관리됨
@@ -63,7 +64,7 @@ function LayoutContent({ children }) {
   //  (PointerSensor 사용, 8px 이동 시 드래그 시작)
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 }
+      activationConstraint: { distance: 8 },
     })
   );
 
@@ -153,7 +154,9 @@ export default function ClientLayout({ children }) {
                 <EditorProvider>
                   <MemoProvider>
                     <DrawerProvider>
-                      <LayoutContent>{children}</LayoutContent>
+                      <MusicProvider>
+                        <LayoutContent>{children}</LayoutContent>
+                      </MusicProvider>
                     </DrawerProvider>
                   </MemoProvider>
                 </EditorProvider>

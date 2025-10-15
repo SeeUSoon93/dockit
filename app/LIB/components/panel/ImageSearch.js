@@ -9,7 +9,7 @@ import {
   Input,
   Modal,
   Pagination,
-  Typography
+  Typography,
 } from "sud-ui";
 import WidgetCard from "./WidgetCard";
 import { inputProps } from "../../constant/uiProps";
@@ -28,20 +28,25 @@ export default function ImageSearch({ dragHandleProps }) {
   const [openModal, setOpenModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const searchImages = async () => {
+  const searchImages = async (isNewSearch = false) => {
     if (!searchTerm.trim()) return;
     setLoading(true);
     setResult(null);
     try {
       const response = await fetch(
-        `/api/search-image?q=${encodeURIComponent(searchTerm)}&page=${page}`
+        `/api/search-image?q=${encodeURIComponent(searchTerm)}&page=${
+          isNewSearch ? 1 : page
+        }`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       setResult(data);
-      setCurrentPage(page);
+      setCurrentPage(isNewSearch ? 1 : page);
+      if (isNewSearch) {
+        setPage(1);
+      }
     } catch (error) {
       console.error("이미지 검색 오류:", error);
       setResult({ error: error.message });
@@ -80,14 +85,14 @@ export default function ImageSearch({ dragHandleProps }) {
       title="이미지 검색"
       dragHandleProps={dragHandleProps}
     >
-      <div className="w-100 flex flex-col gap-10 max-h-px-300 overflow-y-auto">
+      <div className="w-100 flex flex-col gap-10 max-h-px-350 overflow-y-auto">
         <div className="flex jus-bet">
           <Input
             {...inputProps}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={"검색할 단어를 입력하세요"}
-            onEnter={() => searchImages()}
+            onEnter={() => searchImages(true)}
           />
         </div>
         {
@@ -136,12 +141,12 @@ export default function ImageSearch({ dragHandleProps }) {
                       activeStyle={{
                         background: "mint-7",
                         color: "mint-1",
-                        size: "sm"
+                        size: "sm",
                       }}
                       defaultStyle={{
                         background: "mint-1",
                         color: "mint-7",
-                        size: "sm"
+                        size: "sm",
                       }}
                     />
                   </div>
@@ -214,7 +219,7 @@ export default function ImageSearch({ dragHandleProps }) {
                       {
                         year: "numeric",
                         month: "long",
-                        day: "numeric"
+                        day: "numeric",
                       }
                     )}
                   </Typography>

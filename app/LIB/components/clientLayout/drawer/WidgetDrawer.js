@@ -13,7 +13,7 @@ import { usePanels } from "@/app/LIB/context/PanelContext";
 import { TbChartDotsFilled, TbEdit } from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
 import { CalendarOutline, Korea, Map, TimerOutline } from "sud-icons";
-import { BsTranslate } from "react-icons/bs";
+import { BsMusicPlayerFill, BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
 import { GiSouthKorea, GiStarSattelites } from "react-icons/gi";
 import { IoSyncCircle } from "react-icons/io5";
@@ -114,6 +114,11 @@ export default function WidgetDrawer({
               <div className="grid col-4 w-100 gap-20">
                 {renderWidgetItem(GiStarSattelites, "띠별 운세", "fortune")}
                 {renderWidgetItem(FaDice, "주사위", "dice")}
+                {renderWidgetItem(
+                  BsMusicPlayerFill,
+                  "음악 플레이어",
+                  "musicPlayer"
+                )}
               </div>
             </div>
           </div>
