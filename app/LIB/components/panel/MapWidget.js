@@ -1,14 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import WidgetCard from "./WidgetCard";
 import { Map } from "sud-icons";
 import { Input, Modal } from "sud-ui";
 import { inputProps } from "../../constant/uiProps";
-import MapModal from "./MapComponent/MapModal";
+import dynamic from "next/dynamic";
 
 export default function MapWidget({ dragHandleProps }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [openModal, setOpenModal] = useState(false);
+
+  const MapModal = useMemo(
+    () => dynamic(() => import("./MapComponent/MapModal"), { ssr: false }),
+    []
+  );
 
   return (
     <WidgetCard icon={Map} title="지도" dragHandleProps={dragHandleProps}>

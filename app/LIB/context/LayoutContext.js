@@ -55,7 +55,7 @@ export function LayoutProvider({ children }) {
         showLeftPanel,
         showRightPanel,
         toggleLeftPanel,
-        toggleRightPanel
+        toggleRightPanel,
       }}
     >
       {children}
