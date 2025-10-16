@@ -44,10 +44,7 @@ export function MusicProvider({ children }) {
               `music/${category}/${fileName}.jpg`
             );
             thumbnailUrl = await getDownloadURL(thumbnailRef);
-          } catch (error) {
-            // jpg 파일이 없으면 무시
-            console.log(`썸네일 없음: ${itemRef.name}`);
-          }
+          } catch (error) {}
 
           return {
             name: itemRef.name,
