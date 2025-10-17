@@ -10,13 +10,13 @@ import {
   IoVolumeMute,
   IoMusicalNotesOutline,
   IoPlayBack,
-  IoPlayForward,
+  IoPlayForward
 } from "react-icons/io5";
 import {
   PiMusicNotesFill,
   PiNumberOneBold,
   PiRepeatBold,
-  PiRepeatOnceBold,
+  PiRepeatOnceBold
 } from "react-icons/pi";
 
 export default function MusicPlayer({ dragHandleProps }) {
@@ -188,7 +188,7 @@ export default function MusicPlayer({ dragHandleProps }) {
 
   useEffect(() => {
     if (selected === "music") {
-      setThumb("/player/lofi.png");
+      setThumb("/player/video.mp4");
     } else {
       if (currentTrack) {
         setThumb(currentTrack.thumbnailUrl);
@@ -208,7 +208,7 @@ export default function MusicPlayer({ dragHandleProps }) {
         <Segmented
           options={[
             { value: "nature", label: "자연" },
-            { value: "music", label: "Lofi" },
+            { value: "music", label: "Lofi" }
           ]}
           value={selected}
           onChange={setSelected}
@@ -223,11 +223,15 @@ export default function MusicPlayer({ dragHandleProps }) {
               style={{ borderRadius: "10px" }}
             >
               {thumb ? (
-                <img
+                <video
                   src={thumb}
                   alt="thumb"
                   className="w-100 h-100 object-cover"
                   style={{ borderRadius: "10px" }}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
                 />
               ) : (
                 <Div
