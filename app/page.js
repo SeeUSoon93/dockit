@@ -22,6 +22,7 @@ import { LuTableOfContents } from "react-icons/lu";
 import { PiProjectorScreenChartBold } from "react-icons/pi";
 import { useLayout } from "./LIB/context/LayoutContext";
 import { useEffect } from "react";
+import Link from "next/link"; 
 
 export default function Home() {
   const { user, userLoading } = useUser();
@@ -327,19 +328,18 @@ export default function Home() {
         background={"mint-1"}
       >
         <div className="flex justify-center items-center w-100">
-          <Button
-            colorType="text"
-            onClick={() => router.push("/privacy-policy")}
-          >
-            <Typography>개인정보 처리방침</Typography>
-          </Button>
-          <Divider vertical style={{ height: "10px" }} />
-          <Button
-            colorType="text"
-            onClick={() => router.push("/terms-of-service")}
-          >
-            <Typography>이용약관</Typography>
-          </Button>
+          <Link href="/privacy-policy" passHref legacyBehavior>
+      <Button colorType="text">
+        <Typography>개인정보 처리방침</Typography>
+      </Button>
+    </Link>
+    <Divider vertical style={{ height: "10px" }} />
+    {/* 이용약관도 동일하게 수정합니다. */}
+    <Link href="/terms-of-service" passHref legacyBehavior>
+      <Button colorType="text">
+        <Typography>이용약관</Typography>
+      </Button>
+    </Link>
         </div>
         <Typography size="sm" color="cool-gray-7" pretendard="B">
           All rights reserved @seeusoon93
