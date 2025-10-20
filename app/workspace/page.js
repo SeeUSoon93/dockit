@@ -108,8 +108,8 @@ export default function WorkspacePage() {
 
       const totalDocumentCount = countDocumentsInTree(folderTree);
 
-      if (totalDocumentCount >= 5) {
-        toast.danger("베타버전에서 문서는 최대 5개까지만 생성할 수 있습니다.");
+      if (totalDocumentCount >= 10) {
+        toast.danger("베타버전에서 문서는 최대 10개까지만 생성할 수 있습니다.");
         return;
       }
     }
