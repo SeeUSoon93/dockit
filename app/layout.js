@@ -13,7 +13,7 @@ export const metadata = {
   title: "Dockit | 온라인 문서 작성 도구",
   description: "쓰는 것에만 집중하세요. 가장 심플한 온라인 문서, 독킷.",
   keywords:
-    "Dockit, 온라인 문서 작성 도구, 심플한 문서, 독킷, 문서, 글 작성, 문서 작성, 작성",
+    "Dockit, 온라인 문서 작성 도구, 심플한 문서, 독킷, 문서, 글 작성, 문서 작성, 작성, 독스, 구글 독스, ",
   icons: {
     icon: "/logo/symbol.png",
   },
