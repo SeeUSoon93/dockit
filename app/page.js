@@ -4,25 +4,14 @@ import { Button, Card, Div, Divider, Image, Tag, Typography } from "sud-ui";
 import { handleGoogleAuth } from "./LIB/utils/authUtils";
 import { useUser } from "./LIB/context/UserContext";
 import { useRouter } from "next/navigation";
-import {
-  TbBrowserCheck,
-  TbChartDotsFilled,
-  TbFileTypePdf,
-  TbWriting,
-} from "react-icons/tb";
-import {
-  RiAiGenerate2,
-  RiChatAiFill,
-  RiFilePaper2Line,
-  RiToolsFill,
-} from "react-icons/ri";
-import { MdOutlineWidgets, MdScreenSearchDesktop } from "react-icons/md";
+import { TbBrowserCheck, TbWriting } from "react-icons/tb";
+import { RiAiGenerate2, RiFilePaper2Line, RiToolsFill } from "react-icons/ri";
+import { MdScreenSearchDesktop } from "react-icons/md";
 import { AiOutlineCloudSync } from "react-icons/ai";
-import { LuTableOfContents } from "react-icons/lu";
-import { PiProjectorScreenChartBold } from "react-icons/pi";
 import { useLayout } from "./LIB/context/LayoutContext";
 import { useEffect } from "react";
 import Link from "next/link";
+import { Player } from "@lottiefiles/react-lottie-player";
 
 export default function Home() {
   const { user, userLoading } = useUser();
@@ -254,14 +243,11 @@ export default function Home() {
         </div>
         {/* 메인 이미지 */}
         <div className="flex justify-center">
-          <Image
-            style={{ cursor: "default" }}
-            src="/image/main-01.png"
-            alt="sample"
-            width={"100%"}
-            preview={false}
-            mask={null}
-            shape="rounded"
+          <Player
+            autoplay
+            loop
+            src="/lottie/main.json"
+            style={{ height: "auto", width: "100%" }}
           />
         </div>
       </div>
