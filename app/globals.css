@@ -506,6 +506,31 @@ u {
     orphans: 2; /* 페이지 상단에 있어야 할 최소 줄 수 */
   }
 }
+
+/* 컬럼 레이아웃을 위한 필수 스타일 */
+
+.ProseMirror .column-block {
+  width: 100%;
+  display: grid;
+  /* 컬럼을 가로로 나열 */
+  grid-auto-flow: column;
+  /* 모든 컬럼이 동일한 너비를 갖도록 함 */
+  grid-auto-columns: 1fr;
+  gap: 24px; /* 컬럼 사이의 간격 */
+  padding: 8px 0;
+}
+
+.ProseMirror .column {
+  overflow: hidden;
+  padding: 8px;
+  margin: -8px;
+}
+
+/* (선택 사항) 에디터 포커스 시 컬럼 영역 표시 */
+.ProseMirror-focused .column {
+  border: 1px gray dashed;
+  border-radius: 8px;
+}
 /* 
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■
 ■■■■■■ font css ■■■■■■

@@ -1,4 +1,9 @@
-import { TbArrowBackUp, TbArrowForwardUp, TbBlockquote } from "react-icons/tb";
+import {
+  TbArrowBackUp,
+  TbArrowForwardUp,
+  TbBlockquote,
+  TbColumns
+} from "react-icons/tb";
 import { Code, PhotoOutline, Print, ShareFill } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
@@ -38,6 +43,7 @@ import { MdFormatColorText } from "react-icons/md";
 import DocSettingModal from "./DocSettingModal";
 import { fontOptions } from "@/app/LIB/constant/fontOptions";
 import { LuSubscript, LuSuperscript } from "react-icons/lu";
+import { findParentNode } from "@tiptap/core";
 export default function WriteHeader() {
   const {
     editor,
@@ -103,6 +109,51 @@ export default function WriteHeader() {
         ?.focus()
         ?.setMark("textStyle", { fontSize: `${size}px` })
         .run();
+    }
+  };
+  const handleColumnToggle = () => {
+    const { selection } = editor.state;
+    const predicate = (node) => node.type.name === "columnBlock";
+    const parentNodeInfo = findParentNode(predicate)(selection);
+
+    if (parentNodeInfo) {
+      const columnBlockNode = parentNodeInfo.node;
+      const currentCols = columnBlockNode.childCount;
+      const nodePos = parentNodeInfo.pos;
+      const deletionRange = {
+        from: nodePos,
+        to: nodePos + columnBlockNode.nodeSize
+      };
+
+      if (currentCols >= 4) {
+        // 내용물 복사 없이, 블록 삭제 후 빈 단락 1개만 삽입
+        editor
+          .chain()
+          .focus()
+          .deleteRange(deletionRange)
+          .insertContentAt(deletionRange.from, { type: "paragraph" })
+          .run();
+      } else {
+        const nextCols = currentCols + 1;
+        const newColumns = Array.from({ length: nextCols }, () => ({
+          type: "column",
+          content: [{ type: "paragraph" }]
+        }));
+
+        const newColumnBlock = {
+          type: "columnBlock",
+          content: newColumns
+        };
+
+        editor
+          .chain()
+          .focus()
+          .deleteRange(deletionRange)
+          .insertContentAt(deletionRange.from, newColumnBlock)
+          .run();
+      }
+    } else {
+      editor.chain().focus().setColumns(2).run();
     }
   };
 
@@ -195,7 +246,7 @@ export default function WriteHeader() {
           !editor,
           ""
         )}
-        <Typography size="xs">{currentFontSize}px</Typography>
+        <span className="text-xs">{currentFontSize}px</span>
         {renderBtn(
           HiPlus,
           // 새로운 핸들러 함수를 사용
@@ -283,6 +334,7 @@ export default function WriteHeader() {
           () => editor?.chain()?.focus()?.indent()?.run(),
           ""
         )}
+        {renderBtn(TbColumns, () => handleColumnToggle(), "")}
       </>
       <Divider
         vertical

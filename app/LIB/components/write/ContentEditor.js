@@ -44,6 +44,7 @@ import Indent from "../../extensions/Indent";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import Math, { migrateMathStrings } from "@tiptap/extension-mathematics";
+import { ColumnsExtension } from "@tiptap-extend/columns";
 // ✨ props에서 onEditorCreated, editorRef 등 콜백/ref 관련 항목 모두 제거
 export default function ContentEditor({
   value,
@@ -53,10 +54,12 @@ export default function ContentEditor({
 }) {
   const [isEditable, setIsEditable] = useState(true);
   const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
-
+  const CustomDocument = Document.extend({
+    content: `(block | columnBlock)+`
+  });
   const editorExtensions = useMemo(
     () => [
-      Document,
+      CustomDocument,
       Paragraph,
       Image.configure({ allowBase64: true }),
       Blockquote,
@@ -130,7 +133,8 @@ export default function ContentEditor({
             }
           }
         }
-      })
+      }),
+      ColumnsExtension
     ],
     []
   );
