@@ -9,6 +9,7 @@ import { useEditorContext } from "@/app/LIB/context/EditorContext";
 
 import { useSetting } from "@/app/LIB/context/SettingContext";
 import { useLayout } from "@/app/LIB/context/LayoutContext";
+import "katex/dist/katex.min.css";
 
 // 외부 CSS 파일 내용을 가져와 <style> 태그로 바꿔주는 헬퍼 함수
 async function inlineCssStyles(htmlString) {
@@ -52,14 +53,14 @@ export default function WritePage() {
     content,
     bulletStyle,
     setContent,
-    title,
+    title
   } = useDocument();
   const {
     setSaveAction,
     setDownloadPDFAction,
     editor,
     setPrintAction,
-    setDownloadHTMLAction,
+    setDownloadHTMLAction
   } = useEditorContext();
   const { layoutMode } = useLayout();
   const { setting } = useSetting();
@@ -117,7 +118,7 @@ export default function WritePage() {
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           html: finalHtml, // 스타일이 모두 포함된 최종 HTML 전달
@@ -127,9 +128,9 @@ export default function WritePage() {
             paddingTop: docSetting?.paddingTop || 25.4,
             paddingBottom: docSetting?.paddingBottom || 25.4,
             paddingLeft: docSetting?.paddingLeft || 25.4,
-            paddingRight: docSetting?.paddingRight || 25.4,
-          },
-        }),
+            paddingRight: docSetting?.paddingRight || 25.4
+          }
+        })
       });
 
       if (!response.ok) {
@@ -246,7 +247,7 @@ export default function WritePage() {
     setDownloadHTMLAction,
     handleDownloadHTML,
     setPrintAction,
-    handlePrint,
+    handlePrint
   ]);
 
   useEffect(() => {
@@ -340,7 +341,7 @@ export default function WritePage() {
       paddingLeft: `${paddingLeft}px`,
       paddingRight: `${paddingRight}px`,
       minHeight: `${pageHeight}px`,
-      width: `${width}px`,
+      width: `${width}px`
     };
   };
 

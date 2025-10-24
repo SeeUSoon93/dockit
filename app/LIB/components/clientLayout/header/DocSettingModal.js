@@ -22,6 +22,36 @@ export default function DocSettingModal({
     style: { width: "100%" }
   };
 
+  const [pageSize, setPageSize] = useState("A4");
+  const pageSizeOptions = [
+    { label: "A4(210 x 297)", value: "A4" },
+    { label: "A3(297 x 420)", value: "A3" },
+    { label: "B4(257 x 364)", value: "B4" },
+    { label: "B5(182 x 257)", value: "B5" },
+    { label: "Web(1280 x 1024)", value: "Web" },
+    { label: "Tablet(768 x 1024)", value: "Tablet" },
+    { label: "Mobile(480 x 800)", value: "Mobile" },
+    { label: "Custom", value: "Custom" }
+  ];
+
+  useEffect(() => {
+    if (pageSize === "A4") {
+      setDocSetting({ ...docSetting, pageWidth: 210, pageHeight: 297 });
+    } else if (pageSize === "A3") {
+      setDocSetting({ ...docSetting, pageWidth: 297, pageHeight: 420 });
+    } else if (pageSize === "B4") {
+      setDocSetting({ ...docSetting, pageWidth: 257, pageHeight: 364 });
+    } else if (pageSize === "B5") {
+      setDocSetting({ ...docSetting, pageWidth: 182, pageHeight: 257 });
+    } else if (pageSize === "Web") {
+      setDocSetting({ ...docSetting, pageWidth: 1280, pageHeight: 1024 });
+    } else if (pageSize === "Tablet") {
+      setDocSetting({ ...docSetting, pageWidth: 768, pageHeight: 1024 });
+    } else if (pageSize === "Mobile") {
+      setDocSetting({ ...docSetting, pageWidth: 480, pageHeight: 800 });
+    }
+  }, [pageSize]);
+
   useEffect(() => {
     if (!bulletStyle) {
       setBulletStyle({
@@ -106,20 +136,34 @@ export default function DocSettingModal({
               </Typography>
             </div>
             {/* 페이지 가로 * 세로 */}
-            <div className="grid col-2 gap-10">
-              <Input
-                label="문서 가로"
+            <div className="flex flex-col gap-5">
+              <Select
                 {...inputProps}
-                value={docSetting.pageWidth}
-                onChange={(e) => handleChange("pageWidth", e.target.value)}
+                options={pageSizeOptions}
+                placeholder="페이지 크기"
+                value={pageSize}
+                onChange={(value) => setPageSize(value)}
               />
-              <Input
-                label="문서 세로"
-                {...inputProps}
-                name="pageHeight"
-                value={docSetting.pageHeight}
-                onChange={(e) => handleChange("pageHeight", e.target.value)}
-              />
+              <div className="grid col-2 gap-10">
+                <Input
+                  label="문서 가로"
+                  {...inputProps}
+                  value={docSetting.pageWidth}
+                  onChange={(e) => handleChange("pageWidth", e.target.value)}
+                  disabled={pageSize !== "Custom"}
+                />
+                <Input
+                  label="문서 세로"
+                  {...inputProps}
+                  name="pageHeight"
+                  value={docSetting.pageHeight}
+                  onChange={(e) => handleChange("pageHeight", e.target.value)}
+                  disabled={pageSize !== "Custom"}
+                />
+              </div>
+              <Typography as="p" size="xs" pretendard="B">
+                * 문서 세로 크기는 PDF로 내보낼때 적용됩니다.
+              </Typography>
             </div>
             {/* 페이지 가로 * 세로 */}
             <div className="grid col-4 gap-10">

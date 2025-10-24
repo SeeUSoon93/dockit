@@ -5,11 +5,11 @@ import { callApi } from "./apiUtils";
 export const createData = async (contentType, parentId = null, data = {}) => {
   const payload = {
     ...data,
-    ...(parentId && { parent_id: parentId }),
+    ...(parentId && { parent_id: parentId })
   };
   return callApi(`${API_BASE_URL}/${contentType}/create`, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   });
 };
 
@@ -17,14 +17,14 @@ export const createData = async (contentType, parentId = null, data = {}) => {
 export const updateData = async (contentType, docId, doc) => {
   return callApi(`${API_BASE_URL}/${contentType}/update/${docId}`, {
     method: "PUT",
-    body: JSON.stringify(doc),
+    body: JSON.stringify(doc)
   });
 };
 
 // READ ONE by ID
 export const fetchData = async (contentType, docId) => {
   return callApi(`${API_BASE_URL}/${contentType}/get/${docId}`, {
-    method: "GET",
+    method: "GET"
   });
 };
 
@@ -41,14 +41,14 @@ export const fetchDataList = async (
   params.append("limit", limit.toString());
 
   return callApi(`${API_BASE_URL}/${contentType}?${params.toString()}`, {
-    method: "GET",
+    method: "GET"
   });
 };
 
 // DELETE by ID
 export const deleteData = async (contentType, docId) => {
   return callApi(`${API_BASE_URL}/${contentType}/delete/${docId}`, {
-    method: "DELETE",
+    method: "DELETE"
   });
 };
 
@@ -65,7 +65,17 @@ export const moveData = async (contentType, docId, newParentId = null) => {
   return callApi(
     `${API_BASE_URL}/${contentType}/move/${docId}?${params.toString()}`,
     {
-      method: "PUT",
+      method: "PUT"
     }
   );
+};
+
+// Convert File to HTML
+export const convertFileToHtml = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return await fetch(`${API_BASE_URL}/file/convert`, {
+    method: "POST",
+    body: formData
+  });
 };

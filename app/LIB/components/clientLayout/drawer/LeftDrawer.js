@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Template from "./Template";
-import { Card, Drawer, Typography } from "sud-ui";
+import { Typography } from "sud-ui";
 import { fetchDataTree } from "@/app/LIB/utils/dataUtils";
 import { FcFolder, FcDocument } from "react-icons/fc";
 import { AngleDown, AngleRight } from "sud-icons";
@@ -137,30 +137,23 @@ export default function LeftDrawer({ openLeftDrawer, setOpenLeftDrawer }) {
   };
 
   return (
-    <Drawer
+    <Template
+      title="폴더"
       open={openLeftDrawer}
       onClose={() => setOpenLeftDrawer(false)}
-      placement="left"
-      width="400px"
-      divider={false}
-    >
-      <Template
-        title="폴더"
-        setOpen={setOpenLeftDrawer}
-        content={
-          <div className="flex flex-col">
-            <div
-              className={`flex items-center pd-10 cursor-pointer hover:bg-gray-100 rounded ${
-                selectedFolderId === null ? "bg-blue-100" : ""
-              }`}
-              onClick={() => setSelectedFolderId(null)}
-            >
-              <Typography size="sm">홈</Typography>
-            </div>
-            {folderTree && folderTree.length > 0 && renderTree(folderTree)}
+      content={
+        <div className="flex flex-col">
+          <div
+            className={`flex items-center pd-10 cursor-pointer hover:bg-gray-100 rounded ${
+              selectedFolderId === null ? "bg-blue-100" : ""
+            }`}
+            onClick={() => setSelectedFolderId(null)}
+          >
+            <Typography size="sm">홈</Typography>
           </div>
-        }
-      />
-    </Drawer>
+          {folderTree && folderTree.length > 0 && renderTree(folderTree)}
+        </div>
+      }
+    />
   );
 }

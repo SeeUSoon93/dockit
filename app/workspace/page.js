@@ -1,6 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button, Card, Div, DotSpinner, toast, Typography } from "sud-ui";
+import {
+  Button,
+  Card,
+  Div,
+  DotSpinner,
+  toast,
+  Typography,
+  Upload
+} from "sud-ui";
 import {
   createData,
   deleteData,
@@ -8,15 +16,23 @@ import {
   updateData,
   moveData,
   fetchDataTree,
+  convertFileToHtml
 } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
 import { FcDocument, FcFolder } from "react-icons/fc";
-import { getStorage, ref, deleteObject } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  deleteObject,
+  uploadString,
+  getDownloadURL
+} from "firebase/storage";
 import DeleteModal from "../LIB/components/workspace/DeleteModal";
 import RenameModal from "../LIB/components/workspace/RenameModal";
 import MoveModal from "../LIB/components/workspace/MoveModal";
 import { TriangleLeft } from "sud-icons";
+import { auth } from "../LIB/config/firebaseConfig";
 
 const storage = getStorage();
 
@@ -41,7 +57,7 @@ export default function WorkspacePage() {
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
-    y: 0,
+    y: 0
   });
 
   // 드래그앤드롭 상태
@@ -90,9 +106,9 @@ export default function WorkspacePage() {
   }, [router, user, userLoading]);
 
   // 새 콘텐츠 생성
-  const handleCreateContent = async (type) => {
+  const handleCreateContent = async (type, file = null) => {
     // 문서 개수 제한 체크 (전체 트리에서)
-    if (type === "documents") {
+    if (type === "documents" || type === "uploads") {
       const countDocumentsInTree = (items) => {
         let count = 0;
         for (const item of items) {
@@ -112,10 +128,44 @@ export default function WorkspacePage() {
         toast.danger("베타버전에서 문서는 최대 10개까지만 생성할 수 있습니다.");
         return;
       }
+      if (type === "uploads") {
+        if (!file) {
+          toast.danger("파일을 선택해주세요.");
+          return;
+        }
+      }
     }
 
     try {
-      await createData(type, currentFolderId);
+      if (type === "uploads") {
+        const response = await createData("documents", currentFolderId);
+        const newContent = response.content;
+
+        // 파일을 HTML로 변환
+        toast.info("파일을 변환 중입니다...");
+        const res = await convertFileToHtml(file);
+        const htmlContent = await res.json();
+
+        const dataForDB = {
+          title: file.name.replace(/\.[^/.]+$/, "") // 확장자 제거
+        };
+        const uploadUser = auth.currentUser;
+        if (!uploadUser) return;
+        const storageRef = ref(
+          storage,
+          `documents/${uploadUser.uid}/${newContent._id}.html`
+        );
+        await uploadString(storageRef, htmlContent, "raw", {});
+        const downloadURL = await getDownloadURL(storageRef);
+        dataForDB.contentURL = downloadURL;
+
+        // 변환된 HTML과 함께 문서 생성
+        await updateData("documents", newContent._id, dataForDB);
+
+        toast.success("파일이 성공적으로 업로드되었습니다!");
+      } else {
+        await createData(type, currentFolderId);
+      }
       await fetchContent(currentFolderId);
       await fetchFolderTree(); // 폴더 트리도 새로고침
       toast.success(
@@ -123,7 +173,7 @@ export default function WorkspacePage() {
       );
     } catch (error) {
       console.error("콘텐츠 생성 실패:", error);
-      toast.danger("생성에 실패했습니다.");
+      toast.danger(`생성에 실패했습니다`);
     }
   };
 
@@ -284,7 +334,7 @@ export default function WorkspacePage() {
     setContextMenu({
       visible: true,
       x: e.clientX,
-      y: e.clientY,
+      y: e.clientY
     });
   };
 
@@ -358,7 +408,7 @@ export default function WorkspacePage() {
                     setContextMenu({
                       visible: true,
                       x: e.clientX,
-                      y: e.clientY,
+                      y: e.clientY
                     });
                   }}
                   onDoubleClick={() => {
@@ -429,7 +479,7 @@ export default function WorkspacePage() {
             className="fixed z-50"
             style={{
               left: contextMenu.x,
-              top: contextMenu.y,
+              top: contextMenu.y
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -484,6 +534,18 @@ export default function WorkspacePage() {
                   }}
                 >
                   폴더 만들기
+                </div>
+                <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <Upload
+                    listType="none"
+                    ext={["docx", "txt", "html", "htm", "md", "rtf"]}
+                    onChange={(file) => {
+                      setContextMenu({ visible: false, x: 0, y: 0 });
+                      handleCreateContent("uploads", file);
+                    }}
+                  >
+                    파일 업로드
+                  </Upload>
                 </div>
               </>
             )}

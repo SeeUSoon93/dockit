@@ -1,24 +1,15 @@
-import { RiCloseLine } from "react-icons/ri";
-import { Button, Divider, Typography } from "sud-ui";
+import { Drawer } from "sud-ui";
 
-export default function Template({ title, content, setOpen }) {
+export default function Template({ open, onClose, title, content }) {
   return (
-    <div className="flex flex-col gap-20">
-      <div className="flex items-center justify-between">
-        {/* 제목 */}
-        <Typography as="h1" pretendard="B" size="xl">
-          {title}
-        </Typography>
-        <Button
-          icon={<RiCloseLine size="24" />}
-          onClick={() => setOpen(false)}
-          size="sm"
-          colorType="text"
-        />
-      </div>
-
-      {/* 내용 */}
+    <Drawer
+      open={open}
+      onClose={onClose}
+      width="400px"
+      divider={false}
+      title={title}
+    >
       {content}
-    </div>
+    </Drawer>
   );
 }

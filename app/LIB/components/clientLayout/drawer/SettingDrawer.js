@@ -1,4 +1,4 @@
-import { Divider, Drawer, Input, Switch, Typography } from "sud-ui";
+import { Divider, Input, Switch, Typography } from "sud-ui";
 import Template from "./Template";
 import { AiFillSave } from "react-icons/ai";
 import { useSetting } from "@/app/LIB/context/SettingContext";
@@ -7,14 +7,13 @@ import { TbClockRecord } from "react-icons/tb";
 import { MdDocumentScanner } from "react-icons/md";
 import {
   LuInspectionPanel,
-  LuPanelLeft,
   LuPanelLeftClose,
-  LuPanelRightClose,
+  LuPanelRightClose
 } from "react-icons/lu";
 
 export default function SettingDrawer({
   openSettingsDrawer,
-  setOpenSettingsDrawer,
+  setOpenSettingsDrawer
 }) {
   const { setting, setSetting, settingLoading } = useSetting();
 
@@ -34,146 +33,137 @@ export default function SettingDrawer({
   };
 
   return (
-    <Drawer
+    <Template
+      title="설정"
       open={openSettingsDrawer}
       onClose={() => setOpenSettingsDrawer(false)}
-      width="400px"
-      divider={false}
-    >
-      <Template
-        title="설정"
-        setOpen={setOpenSettingsDrawer}
-        content={
-          !settingLoading && (
-            <div className="flex flex-col gap-15">
-              {/* 자동저장 */}
+      content={
+        !settingLoading && (
+          <div className="flex flex-col gap-15">
+            {/* 자동저장 */}
+            <div className="flex items-center justify-between">
+              <Typography pretendard="SB" className="flex items-center gap-5">
+                <AiFillSave size={20} />
+                자동 저장
+              </Typography>
+              <Switch
+                checked={autoSave}
+                onChange={() => {
+                  handleChange("autoSave", !autoSave);
+                  setAutoSave(!autoSave);
+                }}
+                size="sm"
+                onColor="mint"
+                offColor="mint-3"
+                onText="활성화"
+                offText="비활성화"
+              />
+            </div>
+            <div>
               <div className="flex items-center justify-between">
                 <Typography pretendard="SB" className="flex items-center gap-5">
-                  <AiFillSave size={20} />
-                  자동 저장
-                </Typography>
-                <Switch
-                  checked={autoSave}
-                  onChange={() => {
-                    handleChange("autoSave", !autoSave);
-                    setAutoSave(!autoSave);
-                  }}
-                  size="sm"
-                  onColor="mint"
-                  offColor="mint-3"
-                  onText="활성화"
-                  offText="비활성화"
-                />
-              </div>
-              <div>
-                <div className="flex items-center justify-between">
-                  <Typography
-                    pretendard="SB"
-                    className="flex items-center gap-5"
-                  >
-                    <TbClockRecord size={20} />
-                    자동 저장 지연 시간
-                  </Typography>
-                  <Input
-                    type="number"
-                    value={autoSaveDelay}
-                    onChange={(e) => {
-                      handleChange("autoSaveDelay", e.target.value);
-                      setAutoSaveDelay(e.target.value);
-                    }}
-                    style={{ width: "100px" }}
-                    shadow="none"
-                    size="sm"
-                    suffix="ms"
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <Typography size="xs" color="red-7">
-                    * 1000ms = 1s
-                  </Typography>
-                </div>
-              </div>
-
-              <Divider />
-              {/* 워크스페이스 넓이 */}
-              <div className="flex items-center justify-between">
-                <Typography pretendard="SB" className="flex items-center gap-5">
-                  <MdDocumentScanner size={20} />
-                  워크스페이스 넓이
+                  <TbClockRecord size={20} />
+                  자동 저장 지연 시간
                 </Typography>
                 <Input
                   type="number"
-                  value={workspaceWidth}
+                  value={autoSaveDelay}
                   onChange={(e) => {
-                    handleChange("workspaceWidth", e.target.value);
-                    setWorkspaceWidth(e.target.value);
+                    handleChange("autoSaveDelay", e.target.value);
+                    setAutoSaveDelay(e.target.value);
                   }}
                   style={{ width: "100px" }}
                   shadow="none"
                   size="sm"
-                  suffix="px"
+                  suffix="ms"
                 />
               </div>
-              {/* 패널 넓이 */}
-              <div className="flex items-center justify-between">
-                <Typography pretendard="SB" className="flex items-center gap-5">
-                  <LuInspectionPanel size={20} />
-                  위젯 패널 최대 넓이
+              <div className="flex justify-end">
+                <Typography size="xs" color="red-7">
+                  * 1000ms = 1s
                 </Typography>
-                <Input
-                  type="number"
-                  value={panelWidth}
-                  onChange={(e) => {
-                    handleChange("panelWidth", e.target.value);
-                    setPanelWidth(e.target.value);
-                  }}
-                  style={{ width: "100px" }}
-                  shadow="none"
-                  size="sm"
-                  suffix="px"
-                />
-              </div>
-              {/* 패널 활성화 */}
-              <div className="flex items-center justify-between">
-                <Typography pretendard="SB" className="flex items-center gap-5">
-                  <LuPanelLeftClose size={20} />
-                  왼쪽 패널 활성화
-                </Typography>
-                <Switch
-                  checked={panelLeft}
-                  onChange={() => {
-                    handleChange("panelLeft", !panelLeft);
-                    setPanelLeft(!panelLeft);
-                  }}
-                  size="sm"
-                  onColor="mint"
-                  offColor="mint-3"
-                  onText="활성화"
-                  offText="비활성화"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Typography pretendard="SB" className="flex items-center gap-5">
-                  <LuPanelRightClose size={20} />
-                  오른쪽 패널 활성화
-                </Typography>
-                <Switch
-                  checked={panelRight}
-                  onChange={() => {
-                    handleChange("panelRight", !panelRight);
-                    setPanelRight(!panelRight);
-                  }}
-                  size="sm"
-                  onColor="mint"
-                  offColor="mint-3"
-                  onText="활성화"
-                  offText="비활성화"
-                />
               </div>
             </div>
-          )
-        }
-      />
-    </Drawer>
+
+            <Divider />
+            {/* 워크스페이스 넓이 */}
+            <div className="flex items-center justify-between">
+              <Typography pretendard="SB" className="flex items-center gap-5">
+                <MdDocumentScanner size={20} />
+                워크스페이스 넓이
+              </Typography>
+              <Input
+                type="number"
+                value={workspaceWidth}
+                onChange={(e) => {
+                  handleChange("workspaceWidth", e.target.value);
+                  setWorkspaceWidth(e.target.value);
+                }}
+                style={{ width: "100px" }}
+                shadow="none"
+                size="sm"
+                suffix="px"
+              />
+            </div>
+            {/* 패널 넓이 */}
+            <div className="flex items-center justify-between">
+              <Typography pretendard="SB" className="flex items-center gap-5">
+                <LuInspectionPanel size={20} />
+                위젯 패널 최대 넓이
+              </Typography>
+              <Input
+                type="number"
+                value={panelWidth}
+                onChange={(e) => {
+                  handleChange("panelWidth", e.target.value);
+                  setPanelWidth(e.target.value);
+                }}
+                style={{ width: "100px" }}
+                shadow="none"
+                size="sm"
+                suffix="px"
+              />
+            </div>
+            {/* 패널 활성화 */}
+            <div className="flex items-center justify-between">
+              <Typography pretendard="SB" className="flex items-center gap-5">
+                <LuPanelLeftClose size={20} />
+                왼쪽 패널 활성화
+              </Typography>
+              <Switch
+                checked={panelLeft}
+                onChange={() => {
+                  handleChange("panelLeft", !panelLeft);
+                  setPanelLeft(!panelLeft);
+                }}
+                size="sm"
+                onColor="mint"
+                offColor="mint-3"
+                onText="활성화"
+                offText="비활성화"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Typography pretendard="SB" className="flex items-center gap-5">
+                <LuPanelRightClose size={20} />
+                오른쪽 패널 활성화
+              </Typography>
+              <Switch
+                checked={panelRight}
+                onChange={() => {
+                  handleChange("panelRight", !panelRight);
+                  setPanelRight(!panelRight);
+                }}
+                size="sm"
+                onColor="mint"
+                offColor="mint-3"
+                onText="활성화"
+                offText="비활성화"
+              />
+            </div>
+          </div>
+        )
+      }
+    />
   );
 }

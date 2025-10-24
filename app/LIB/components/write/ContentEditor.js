@@ -24,7 +24,7 @@ import {
   ListItem,
   OrderedList,
   TaskItem,
-  TaskList,
+  TaskList
 } from "@tiptap/extension-list";
 import { TableKit } from "@tiptap/extension-table";
 import CustomTable from "../../extensions/CustomTable"; // Assuming CustomTable is correctly defined
@@ -34,20 +34,22 @@ import {
   Color,
   FontFamily,
   FontSize,
-  BackgroundColor,
+  BackgroundColor
 } from "@tiptap/extension-text-style";
 import Placeholder from "@tiptap/extension-placeholder";
 import { UndoRedo } from "@tiptap/extensions";
 import TypeBubble from "./TypeBubble";
 import { FormatPainter } from "../../extensions/FormatPainter";
 import Indent from "../../extensions/Indent";
-
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
+import Math, { migrateMathStrings } from "@tiptap/extension-mathematics";
 // ✨ props에서 onEditorCreated, editorRef 등 콜백/ref 관련 항목 모두 제거
 export default function ContentEditor({
   value,
   onChange,
   autoFocus = true,
-  bulletStyle,
+  bulletStyle
 }) {
   const [isEditable, setIsEditable] = useState(true);
   const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
@@ -71,7 +73,7 @@ export default function ContentEditor({
       TextStyle,
       TextAlign.configure({
         types: ["heading", "paragraph"],
-        defaultAlignment: "left",
+        defaultAlignment: "left"
       }),
       TableKit.configure({ table: { resizable: true } }),
       Color.configure({ types: ["textStyle"] }),
@@ -84,15 +86,51 @@ export default function ContentEditor({
       Indent,
       CustomTable,
       Underline,
+      Subscript,
+      Superscript,
       Placeholder.configure({
         placeholder: "내용을 입력하세요...",
-        emptyEditorClass: "is-editor-empty",
+        emptyEditorClass: "is-editor-empty"
       }),
       UndoRedo.configure({
         depth: 100,
-        newGroupDelay: 100,
+        newGroupDelay: 100
       }),
       FormatPainter,
+      Math.configure({
+        blockOptions: {
+          onClick: (node, pos) => {
+            const newCalculation = prompt(
+              "Enter new calculation:",
+              node.attrs.latex
+            );
+            if (newCalculation) {
+              editor
+                .chain()
+                .setNodeSelection(pos)
+                .updateBlockMath({ latex: newCalculation })
+                .focus()
+                .run();
+            }
+          }
+        },
+        inlineOptions: {
+          onClick: (node) => {
+            const newCalculation = prompt(
+              "Enter new calculation:",
+              node.attrs.latex
+            );
+            if (newCalculation) {
+              editor
+                .chain()
+                .setNodeSelection(node.pos)
+                .updateInlineMath({ latex: newCalculation })
+                .focus()
+                .run();
+            }
+          }
+        }
+      })
     ],
     []
   );
@@ -104,8 +142,11 @@ export default function ContentEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose-base focus:outline-none w-full ",
-      },
+        class: "prose prose-sm sm:prose-base focus:outline-none w-full "
+      }
+    },
+    onCreate: ({ editor: currentEditor }) => {
+      migrateMathStrings(currentEditor);
     },
     onUpdate: ({ editor }) => {
       try {
@@ -113,7 +154,7 @@ export default function ContentEditor({
       } catch (error) {
         console.error("ContentEditor onUpdate error:", error);
       }
-    },
+    }
   });
 
   const editorStyleVariables = useMemo(
@@ -138,7 +179,7 @@ export default function ContentEditor({
             node: node,
             from: pos,
             to: pos + node.nodeSize,
-            type: "table",
+            type: "table"
           };
           break;
         }

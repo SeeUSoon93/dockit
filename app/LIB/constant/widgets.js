@@ -17,6 +17,7 @@ import MapWidget from "../components/panel/MapWidget";
 import Fortune from "../components/panel/Fortune";
 import Dice from "../components/panel/Dice";
 import MusicPlayer from "../components/panel/MusicPlayer";
+import LATEX from "../components/panel/LATEX";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -38,4 +39,5 @@ export const widgets = {
   fortune: <Fortune />, // 띠별 운세
   dice: <Dice />, // 주사위
   musicPlayer: <MusicPlayer />, // 음악 플레이어
+  latex: <LATEX /> // LATEX
 };

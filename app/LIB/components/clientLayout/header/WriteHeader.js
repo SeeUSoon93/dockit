@@ -2,7 +2,15 @@ import { TbArrowBackUp, TbArrowForwardUp, TbBlockquote } from "react-icons/tb";
 import { Code, PhotoOutline, Print, ShareFill } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
-import { Button, ColorPicker, Divider, Select, Upload, toast } from "sud-ui";
+import {
+  Button,
+  ColorPicker,
+  Divider,
+  Select,
+  Typography,
+  Upload,
+  toast
+} from "sud-ui";
 import { useEffect, useState } from "react";
 import { HiMinus, HiPlus } from "react-icons/hi";
 import { GrDocumentConfig } from "react-icons/gr";
@@ -24,18 +32,19 @@ import {
   PiTextItalicBold,
   PiTextOutdentFill,
   PiTextStrikethroughBold,
-  PiTextUnderlineBold,
+  PiTextUnderlineBold
 } from "react-icons/pi";
 import { MdFormatColorText } from "react-icons/md";
 import DocSettingModal from "./DocSettingModal";
 import { fontOptions } from "@/app/LIB/constant/fontOptions";
+import { LuSubscript, LuSuperscript } from "react-icons/lu";
 export default function WriteHeader() {
   const {
     editor,
     printAction,
     saveAction,
     downloadPDFAction,
-    downloadHTMLAction,
+    downloadHTMLAction
   } = useEditorContext();
   const params = useParams();
   const [font, setFont] = useState("Pretendard-Medium");
@@ -153,6 +162,7 @@ export default function WriteHeader() {
           size="sm"
           shadow="none"
           options={fontOptions}
+          style={{ width: "150px", overflow: "hidden" }}
           border={false}
           value={font}
           onChange={(value) => {
@@ -185,7 +195,7 @@ export default function WriteHeader() {
           !editor,
           ""
         )}
-        <span>{currentFontSize}px</span>
+        <Typography size="xs">{currentFontSize}px</Typography>
         {renderBtn(
           HiPlus,
           // 새로운 핸들러 함수를 사용
@@ -287,6 +297,25 @@ export default function WriteHeader() {
           ""
         )}
       </>
+      <Divider
+        vertical
+        style={{ height: "20px", margin: "0" }}
+        borderColor="mint"
+      />
+      {/* 위 첨자 & 아래 첨자 */}
+      <>
+        {renderBtn(
+          LuSuperscript,
+          () => editor?.chain()?.focus()?.toggleSuperscript()?.run(),
+          ""
+        )}
+        {renderBtn(
+          LuSubscript,
+          () => editor?.chain()?.focus()?.toggleSubscript()?.run(),
+          ""
+        )}
+      </>
+
       <Divider
         vertical
         style={{ height: "20px", margin: "0" }}
