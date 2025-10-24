@@ -12,7 +12,7 @@ import {
   DragOverlay,
   PointerSensor,
   useSensor,
-  useSensors,
+  useSensors
 } from "@dnd-kit/core";
 // sud-ui
 import { Div, SoonUIDesign } from "sud-ui";
@@ -55,7 +55,7 @@ function LayoutContent({ children }) {
     overContainerId,
     handleDragStart,
     handleDragEnd,
-    handleDragOver,
+    handleDragOver
   } = useDragState();
 
   // 드로어 상태는 Context로 관리됨
@@ -64,7 +64,7 @@ function LayoutContent({ children }) {
   //  (PointerSensor 사용, 8px 이동 시 드래그 시작)
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: { distance: 8 }
     })
   );
 

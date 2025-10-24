@@ -4,7 +4,9 @@ import {
   Button,
   Card,
   Div,
+  Divider,
   DotSpinner,
+  Image,
   toast,
   Typography,
   Upload
@@ -20,7 +22,6 @@ import {
 } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
-import { FcDocument, FcFolder } from "react-icons/fc";
 import {
   getStorage,
   ref,
@@ -33,6 +34,8 @@ import RenameModal from "../LIB/components/workspace/RenameModal";
 import MoveModal from "../LIB/components/workspace/MoveModal";
 import { TriangleLeft } from "sud-icons";
 import { auth } from "../LIB/config/firebaseConfig";
+import { FaFile, FaFolder } from "react-icons/fa6";
+import { formatTime } from "../LIB/utils/commonUtils";
 
 const storage = getStorage();
 
@@ -74,9 +77,7 @@ export default function WorkspacePage() {
       const docs = await fetchDataList("documents", folderId);
       const folders = await fetchDataList("folders", folderId);
 
-      // 폴더가 앞에 오도록 정렬
-      const allContent = [...folders.content, ...docs.content];
-      setContentList(allContent);
+      setContentList([folders.content, docs.content]);
       setCurrentFolderId(folderId);
     } catch (error) {
       console.error("데이터 가져오기 실패:", error);
@@ -345,7 +346,7 @@ export default function WorkspacePage() {
 
   return (
     <Div
-      className="flex justify-center w-100"
+      className="flex justify-center w-100 h-full overflow-y-auto"
       background={"white-9"}
       onContextMenu={handleContextMenu}
       onClick={handleClickOutside}
@@ -386,59 +387,93 @@ export default function WorkspacePage() {
             </Typography>
           </div>
         ) : (
-          <div className="flex flex-wrap gap-10 items-start">
-            {contentList.map((item) => {
-              const type = item.content_type;
-              const isDragged = draggedItem?._id === item._id;
-              const isDragOver = dragOverItem?._id === item._id;
+          <div className="flex flex-col gap-30 w-100">
+            {contentList.map(
+              (list) =>
+                list &&
+                list.length > 0 && (
+                  <div
+                    key={list[0]._id}
+                    className="grid col-4 gap-10 items-start w-100"
+                  >
+                    {list.map((item) => {
+                      const type = item.content_type;
+                      const isDragged = draggedItem?._id === item._id;
+                      const isDragOver = dragOverItem?._id === item._id;
 
-              return (
-                <div
-                  key={item._id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, item)}
-                  onDragEnd={handleDragEnd}
-                  onDragOver={(e) => handleDragOver(e, item)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleDrop(e, item)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setSelectedItem(item);
-                    setContextMenu({
-                      visible: true,
-                      x: e.clientX,
-                      y: e.clientY
-                    });
-                  }}
-                  onDoubleClick={() => {
-                    if (type === "folders") {
-                      handleOpenFolder(item._id, item.title);
-                    } else {
-                      router.push(`/workspace/${item._id}`);
-                    }
-                  }}
-                  className={`cursor-pointer transition-all duration-200 max-w-100 ${
-                    isDragged ? "opacity-50 scale-95" : ""
-                  } ${isDragOver ? "ring-2 ring-blue-500 bg-blue-50" : ""}`}
-                >
-                  <Button colorType="text">
-                    <div className="flex flex-col items-center">
-                      {type === "documents" ? (
-                        <FcDocument size={50} />
-                      ) : (
-                        <FcFolder size={50} />
-                      )}
-                      <Typography pretendard="SB">
-                        {item.title.length > 5
-                          ? item.title.substring(0, 5) + "..."
-                          : item.title}
-                      </Typography>
-                    </div>
-                  </Button>
-                </div>
-              );
-            })}
+                      return (
+                        <div
+                          key={item._id}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, item)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={(e) => handleDragOver(e, item)}
+                          onDragLeave={handleDragLeave}
+                          onDrop={(e) => handleDrop(e, item)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setSelectedItem(item);
+                            setContextMenu({
+                              visible: true,
+                              x: e.clientX,
+                              y: e.clientY
+                            });
+                          }}
+                          onDoubleClick={() => {
+                            if (type === "folders") {
+                              handleOpenFolder(item._id, item.title);
+                            } else {
+                              router.push(`/workspace/${item._id}`);
+                            }
+                          }}
+                          className={`cursor-pointer transition-all duration-200 w-100   ${
+                            isDragged ? "opacity-50 scale-95" : ""
+                          } ${
+                            isDragOver ? "ring-2 ring-blue-500 bg-blue-50" : ""
+                          }`}
+                        >
+                          <Div
+                            className="flex flex-col items-center gap-5 rounded-lg pd-10 hover-shadow-6"
+                            background={"white-10"}
+                          >
+                            <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap">
+                              <Div color="mint-7">
+                                {type === "documents" ? (
+                                  <FaFile />
+                                ) : (
+                                  <FaFolder />
+                                )}
+                              </Div>
+                              <Typography pretendard="SB">
+                                {item.title}
+                              </Typography>
+                            </div>
+                            {type === "documents" && (
+                              <>
+                                <Image
+                                  src={item.thumbnail || "/logo/symbol.png"}
+                                  alt={item.title}
+                                  width={"100%"}
+                                  height={170}
+                                  preview={false}
+                                  mask={null}
+                                />
+
+                                <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap justify-end">
+                                  <Typography size="xs" color="cool-gray-8">
+                                    {formatTime(item.updated_at)} 수정됨
+                                  </Typography>
+                                </div>
+                              </>
+                            )}
+                          </Div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )
+            )}
           </div>
         )}
 

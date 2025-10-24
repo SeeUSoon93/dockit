@@ -11,7 +11,7 @@ export default function Content({
   children,
   overContainerId,
   containerRef,
-  scale,
+  scale
 }) {
   const { layoutMode, showLeftPanel, showRightPanel } = useLayout();
   const { document } = useDocument();
@@ -45,7 +45,7 @@ export default function Content({
       )}
       {/* 본문 */}
       <Div
-        className={`overflow-y-auto  ${
+        className={`overflow-y-auto ${
           isDocument || isShare ? "" : "flex justify-center"
         }`}
         style={{
@@ -56,7 +56,7 @@ export default function Content({
               ? "100vw"
               : "100%",
           transform: `scale(${scale})`,
-          transformOrigin: "top center",
+          transformOrigin: "top center"
         }}
         background={isDocument || isShare ? "white-9" : "white-10"}
       >
