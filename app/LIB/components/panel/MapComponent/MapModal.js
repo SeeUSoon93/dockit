@@ -7,7 +7,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import "@geoman-io/leaflet-geoman-free";
-import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
+import { OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-geosearch/dist/geosearch.css";
 import { inputProps } from "@/app/LIB/constant/uiProps";
 import { useDarkMode } from "@/app/LIB/context/DarkModeContext";
@@ -19,16 +19,14 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
 
   const selectProps = {
     size: "sm",
-    style: { width: "100px" },
+    style: { width: "100px" }
   };
 
   // 지도 유형
   const [mapType, setMapType] = useState(isDarkMode ? "Dark" : "Base");
   const mapTypeOptions = [
-    { label: "기본", value: "Base" },
-    { label: "흰색", value: "White" },
-    { label: "다크", value: "Dark" },
-    { label: "위성", value: "Satellite" },
+    { label: "기본", value: "White" },
+    { label: "위성", value: "Satellite" }
   ];
 
   // 검색 상태
@@ -49,7 +47,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
         iconSize: size,
         iconAnchor: [size[0] / 2, size[1]],
         popupAnchor: [0, -size[1]],
-        shadowSize: [size[0], size[1]],
+        shadowSize: [size[0], size[1]]
       });
     };
 
@@ -58,7 +56,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
       red: createCustomIcon("#ef4444", [32, 32]),
       green: createCustomIcon("#10b981", [32, 32]),
       purple: createCustomIcon("#8b5cf6", [32, 32]),
-      orange: createCustomIcon("#f59e0b", [32, 32]),
+      orange: createCustomIcon("#f59e0b", [32, 32])
     };
   }, []);
 
@@ -97,31 +95,13 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
   // 타일 레이어 맵
   const getTileLayer = (type) => {
     const layers = {
-      Base: L.tileLayer(
-        "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}",
-        {
-          maxZoom: 20,
-          attribution:
-            '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          ext: "png",
-        }
-      ),
       White: L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
         {
           attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
           subdomains: "abcd",
-          maxZoom: 20,
-        }
-      ),
-      Dark: L.tileLayer(
-        "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}",
-        {
-          maxZoom: 20,
-          attribution:
-            '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          ext: "png",
+          maxZoom: 20
         }
       ),
       Satellite: L.tileLayer(
@@ -129,9 +109,9 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
         {
           maxZoom: 20,
           attribution:
-            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
         }
-      ),
+      )
     };
     return layers[type] || layers.Base;
   };
@@ -151,7 +131,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
     mapInstanceRef.current = L.map("v-map", {
       center: defaultCenter,
       zoom: 12,
-      zoomControl: true,
+      zoomControl: true
     });
 
     // 타일 레이어 추가
@@ -171,22 +151,22 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
       dragMode: true,
       cutPolygon: true,
       removalMode: true,
-      rotateMode: true,
+      rotateMode: true
     });
 
     // 측정 기능 활성화
     mapInstanceRef.current.pm.setGlobalOptions({
       measurements: {
         measurement: true,
-        displayFormat: "metric",
-      },
+        displayFormat: "metric"
+      }
     });
 
     // Geoman 마커에 커스텀 아이콘 설정
     mapInstanceRef.current.pm.setGlobalOptions({
       markerStyle: {
-        icon: customIcons.blue,
-      },
+        icon: customIcons.blue
+      }
     });
 
     // Geoman 한글화
@@ -200,12 +180,12 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
         editMode: "편집 모드",
         dragMode: "드래그 모드",
         cutPolygon: "다각형 자르기",
-        removalMode: "삭제 모드",
+        removalMode: "삭제 모드"
       },
       actions: {
         finish: "완료",
         cancel: "취소",
-        removeLastVertex: "마지막 점 삭제",
+        removeLastVertex: "마지막 점 삭제"
       },
       buttonTitles: {
         drawMarkerButton: "마커 추가",
@@ -217,8 +197,8 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
         dragButton: "레이어 드래그",
         cutButton: "레이어 자르기",
         deleteButton: "레이어 삭제",
-        drawCircleMarkerButton: "원형 마커",
-      },
+        drawCircleMarkerButton: "원형 마커"
+      }
     });
 
     // 2. 주소 검색은 커스텀 Input으로 대체
@@ -226,7 +206,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
     // 3. 내 위치 찾기 버튼 (커스텀 구현)
     const MyLocationButton = L.Control.extend({
       options: {
-        position: "topleft",
+        position: "topleft"
       },
       onAdd: function (map) {
         const container = L.DomUtil.create(
@@ -274,7 +254,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
                   button.innerHTML = "📍";
                 },
                 {
-                  enableHighAccuracy: true,
+                  enableHighAccuracy: true
                 }
               );
           } else {
@@ -283,7 +263,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
         });
 
         return container;
-      },
+      }
     });
 
     new MyLocationButton().addTo(mapInstanceRef.current);
