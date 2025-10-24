@@ -16,6 +16,7 @@ export default function Content({
   const { layoutMode, showLeftPanel, showRightPanel } = useLayout();
   const { document } = useDocument();
   const isDocument = document !== null;
+  const isWorkspace = usePathname().includes("workspace");
   const isShare = usePathname().includes("share");
   const { setting } = useSetting();
 
@@ -58,7 +59,7 @@ export default function Content({
           transform: `scale(${scale})`,
           transformOrigin: "top center"
         }}
-        background={isDocument || isShare ? "white-9" : "white-10"}
+        background={isWorkspace || isShare ? "white-9" : "white-10"}
       >
         {children}
       </Div>
