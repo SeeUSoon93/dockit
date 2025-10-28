@@ -46,14 +46,14 @@ export default function AiImage({ dragHandleProps }) {
           title: input,
           content: imgUrl,
         });
+        const response = await refreshUserPoint({
+          ai_beta_points: user.ai_beta_points - 150,
+        });
+        setUser({
+          ...user,
+          ai_beta_points: response.user.ai_beta_points,
+        });
       }
-      const response = await refreshUserPoint({
-        ai_beta_points: user.ai_beta_points - 150,
-      });
-      setUser({
-        ...user,
-        ai_beta_points: response.user.ai_beta_points,
-      });
     } catch (err) {
       console.error("Prompt or candidate was blocked:", err);
     } finally {
