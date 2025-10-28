@@ -9,7 +9,7 @@ import {
   Image,
   toast,
   Typography,
-  Upload
+  Upload,
 } from "sud-ui";
 import {
   createData,
@@ -18,7 +18,7 @@ import {
   updateData,
   moveData,
   fetchDataTree,
-  convertFileToHtml
+  convertFileToHtml,
 } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
@@ -27,7 +27,7 @@ import {
   ref,
   deleteObject,
   uploadString,
-  getDownloadURL
+  getDownloadURL,
 } from "firebase/storage";
 import DeleteModal from "../LIB/components/workspace/DeleteModal";
 import RenameModal from "../LIB/components/workspace/RenameModal";
@@ -36,11 +36,13 @@ import { TriangleLeft } from "sud-icons";
 import { auth } from "../LIB/config/firebaseConfig";
 import { FaFile, FaFolder } from "react-icons/fa6";
 import { formatTime } from "../LIB/utils/commonUtils";
+import { useLayout } from "../LIB/context/LayoutContext";
 
 const storage = getStorage();
 
 export default function WorkspacePage() {
   const { user, userLoading } = useUser();
+  const { layoutMode } = useLayout();
   const router = useRouter();
 
   // 기본 상태
@@ -60,7 +62,7 @@ export default function WorkspacePage() {
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
-    y: 0
+    y: 0,
   });
 
   // 드래그앤드롭 상태
@@ -148,7 +150,7 @@ export default function WorkspacePage() {
         const htmlContent = await res.json();
 
         const dataForDB = {
-          title: file.name.replace(/\.[^/.]+$/, "") // 확장자 제거
+          title: file.name.replace(/\.[^/.]+$/, ""), // 확장자 제거
         };
         const uploadUser = auth.currentUser;
         if (!uploadUser) return;
@@ -335,7 +337,7 @@ export default function WorkspacePage() {
     setContextMenu({
       visible: true,
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
     });
   };
 
@@ -346,7 +348,9 @@ export default function WorkspacePage() {
 
   return (
     <div
-      className="flex flex-col w-50 items-start pd-y-50 gap-20"
+      className={`flex flex-col w-50 items-start pd-y-50 gap-20 ${
+        layoutMode === "desktop" ? "w-50" : "w-100 pd-x-10"
+      }`}
       onContextMenu={handleContextMenu}
       onClick={handleClickOutside}
     >
@@ -415,7 +419,7 @@ export default function WorkspacePage() {
                           setContextMenu({
                             visible: true,
                             x: e.clientX,
-                            y: e.clientY
+                            y: e.clientY,
                           });
                         }}
                         onDoubleClick={() => {
@@ -508,7 +512,7 @@ export default function WorkspacePage() {
           className="fixed z-50"
           style={{
             left: contextMenu.x,
-            top: contextMenu.y
+            top: contextMenu.y,
           }}
           onClick={(e) => e.stopPropagation()}
         >
