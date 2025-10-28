@@ -396,7 +396,9 @@ export default function WorkspacePage() {
               list.length > 0 && (
                 <div
                   key={list[0]._id}
-                  className="grid col-4 gap-10 items-start w-100"
+                  className={`grid gap-10 items-start w-100 ${
+                    layoutMode === "desktop" ? "col-4" : "col-2"
+                  }`}
                 >
                   {list.map((item) => {
                     const type = item.content_type;
