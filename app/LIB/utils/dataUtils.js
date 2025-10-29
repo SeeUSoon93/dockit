@@ -5,11 +5,11 @@ import { callApi } from "./apiUtils";
 export const createData = async (contentType, parentId = null, data = {}) => {
   const payload = {
     ...data,
-    ...(parentId && { parent_id: parentId })
+    ...(parentId && { parent_id: parentId }),
   };
   return callApi(`${API_BASE_URL}/${contentType}/create`, {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 };
 
@@ -17,14 +17,14 @@ export const createData = async (contentType, parentId = null, data = {}) => {
 export const updateData = async (contentType, docId, doc) => {
   return callApi(`${API_BASE_URL}/${contentType}/update/${docId}`, {
     method: "PUT",
-    body: JSON.stringify(doc)
+    body: JSON.stringify(doc),
   });
 };
 
 // READ ONE by ID
 export const fetchData = async (contentType, docId) => {
   return callApi(`${API_BASE_URL}/${contentType}/get/${docId}`, {
-    method: "GET"
+    method: "GET",
   });
 };
 
@@ -41,14 +41,14 @@ export const fetchDataList = async (
   params.append("limit", limit.toString());
 
   return callApi(`${API_BASE_URL}/${contentType}?${params.toString()}`, {
-    method: "GET"
+    method: "GET",
   });
 };
 
 // DELETE by ID
 export const deleteData = async (contentType, docId) => {
   return callApi(`${API_BASE_URL}/${contentType}/delete/${docId}`, {
-    method: "DELETE"
+    method: "DELETE",
   });
 };
 
@@ -65,7 +65,7 @@ export const moveData = async (contentType, docId, newParentId = null) => {
   return callApi(
     `${API_BASE_URL}/${contentType}/move/${docId}?${params.toString()}`,
     {
-      method: "PUT"
+      method: "PUT",
     }
   );
 };
@@ -76,6 +76,26 @@ export const convertFileToHtml = async (file) => {
   formData.append("file", file);
   return await fetch(`${API_BASE_URL}/file/convert`, {
     method: "POST",
-    body: formData
+    body: formData,
+  });
+};
+
+// Generate PDF
+export const generatePdf = async (html, settings) => {
+  // 1. ⭐️ 현재 문서의 <head>에서 모든 CSS 링크를 찾습니다.
+  const cssUrls = Array.from(
+    document.querySelectorAll('link[rel="stylesheet"]')
+  ).map((link) => link.href);
+  return await fetch(`${API_BASE_URL}/pdf/generate-pdf`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      html,
+      settings,
+      css_urls: cssUrls, // 2. ⭐️ 찾은 CSS URL 배열을 함께 보냅니다.
+      base_url: window.location.origin, // 3. ⭐️ (중요) 이미지 등 상대 경로를 위해 기준 URL(https://dockit.kr)도 보냅니다.
+    }),
   });
 };

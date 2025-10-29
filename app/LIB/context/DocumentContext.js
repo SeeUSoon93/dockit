@@ -22,6 +22,9 @@ import { auth } from "../config/firebaseConfig";
 const DocumentContext = createContext();
 const storage = getStorage(); // Storage 서비스 초기화
 
+const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL;
+const API_KEY = process.env.NEXT_PUBLIC_PUPPETEER_API_KEY;
+
 export function DocumentProvider({ children }) {
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -51,10 +54,11 @@ export function DocumentProvider({ children }) {
 
   const generateThumbnail = useCallback(async (htmlContent, docSettings) => {
     try {
-      const response = await fetch("/api/generate-thumbnail", {
+      const response = await fetch(`${NODE_URL}/api/thumbnail`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
         },
         body: JSON.stringify({
           html: htmlContent,

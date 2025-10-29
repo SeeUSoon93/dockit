@@ -455,7 +455,7 @@ export default function WorkspacePage() {
                                 src={item.thumbnail || "/logo/symbol.png"}
                                 alt={item.title}
                                 width={"100%"}
-                                height={170}
+                                height={200}
                                 preview={false}
                                 mask={null}
                               />

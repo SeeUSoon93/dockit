@@ -11,6 +11,9 @@ import { useSetting } from "@/app/LIB/context/SettingContext";
 import { useLayout } from "@/app/LIB/context/LayoutContext";
 import "katex/dist/katex.min.css";
 
+const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL;
+const API_KEY = process.env.NEXT_PUBLIC_PUPPETEER_API_KEY;
+
 // 외부 CSS 파일 내용을 가져와 <style> 태그로 바꿔주는 헬퍼 함수
 async function inlineCssStyles(htmlString) {
   // DOMParser를 사용해 문자열을 실제 HTML 문서처럼 다룰 수 있게 합니다.
@@ -53,14 +56,14 @@ export default function WritePage() {
     content,
     bulletStyle,
     setContent,
-    title
+    title,
   } = useDocument();
   const {
     setSaveAction,
     setDownloadPDFAction,
     editor,
     setPrintAction,
-    setDownloadHTMLAction
+    setDownloadHTMLAction,
   } = useEditorContext();
   const { layoutMode } = useLayout();
   const { setting } = useSetting();
@@ -78,10 +81,10 @@ export default function WritePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedContent, setting.autoSave]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     // 즉시 저장 로직
     if (document && content !== null) {
-      saveDocument(document._id, { content: content });
+      await saveDocument(document._id, { content: content });
       toast.success("저장되었습니다!");
     }
   }, [document, content, saveDocument]);
@@ -115,22 +118,23 @@ export default function WritePage() {
       const finalHtml = await inlineCssStyles(combinedHtml);
 
       // 4. 준비된 HTML을 API로 전송하여 PDF를 생성합니다.
-      const response = await fetch("/api/generate-pdf", {
+      const response = await fetch(`${NODE_URL}/api/pdf`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`, // 👈 인증 헤더 추가
         },
         body: JSON.stringify({
-          html: finalHtml, // 스타일이 모두 포함된 최종 HTML 전달
+          html: finalHtml,
           settings: {
             pageWidth: docSetting?.pageWidth || 210,
             pageHeight: docSetting?.pageHeight || 297,
             paddingTop: docSetting?.paddingTop || 25.4,
             paddingBottom: docSetting?.paddingBottom || 25.4,
             paddingLeft: docSetting?.paddingLeft || 25.4,
-            paddingRight: docSetting?.paddingRight || 25.4
-          }
-        })
+            paddingRight: docSetting?.paddingRight || 25.4,
+          },
+        }),
       });
 
       if (!response.ok) {
@@ -173,36 +177,35 @@ export default function WritePage() {
 
       // HTML 문서 생성
       const htmlContent = `<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
-  ${styleTags}
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      line-height: 1.6;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #ffffff;
-    }
-    .document-content {
-      background: white;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body>
-  <div class="document-content">
-    <h1>${title}</h1>
-    ${content}
-  </div>
-</body>
-</html>`;
+  <html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    ${styleTags}
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        line-height: 1.6;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        width: ${docSetting?.pageWidth}mm;
+        padding: ${docSetting?.paddingTop}mm ${docSetting?.paddingRight}mm ${docSetting?.paddingBottom}mm ${docSetting?.paddingLeft}mm;
+      }
+        image{
+          max-width: 100% !important;
+          height: auto;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="document-content">
+      <h1>${title}</h1>
+      ${content}
+    </div>
+  </body>
+  </html>`;
 
       // Blob 생성 및 다운로드
       const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
@@ -247,7 +250,7 @@ export default function WritePage() {
     setDownloadHTMLAction,
     handleDownloadHTML,
     setPrintAction,
-    handlePrint
+    handlePrint,
   ]);
 
   useEffect(() => {
@@ -341,7 +344,7 @@ export default function WritePage() {
       paddingLeft: `${paddingLeft}px`,
       paddingRight: `${paddingRight}px`,
       minHeight: `${pageHeight}px`,
-      width: `${width}px`
+      width: `${width}px`,
     };
   };
 
