@@ -1,4 +1,5 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 export async function POST(request) {
   try {
@@ -47,17 +48,17 @@ export async function POST(request) {
     `;
 
     const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
+      executablePath: await chromium.executablePath(),
+      args: chromium.args,
+      headless: chromium.headless,
     });
 
-    const page = await browser.newPage();
+    const page = await broawser.newPage();
 
-    // 페이지 크기 설정 (800px 기준)
     await page.setViewport({
       width: renderWidth,
       height: renderHeight,
-      deviceScaleFactor: 1
+      deviceScaleFactor: 1,
     });
 
     await page.setContent(fullHtml, { waitUntil: "networkidle0" });
@@ -70,25 +71,25 @@ export async function POST(request) {
         x: 0,
         y: 0,
         width: renderWidth,
-        height: renderHeight
-      }
+        height: renderHeight,
+      },
     });
 
     await browser.close();
 
     return new Response(
       JSON.stringify({
-        thumbnail: `data:image/png;base64,${screenshot}`
+        thumbnail: `data:image/png;base64,${screenshot}`,
       }),
       {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       }
     );
   } catch (error) {
     console.error("썸네일 생성 오류:", error);
     return new Response(JSON.stringify({ error: "썸네일 생성 실패" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     });
   }
 }
