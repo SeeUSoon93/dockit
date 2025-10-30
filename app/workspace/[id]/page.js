@@ -104,6 +104,7 @@ export default function WritePage() {
       <html>
         <head>
           <meta charset="UTF-8">
+          <base href="https://dockit.kr/">
           ${styleTags}
         </head>
         <body>

@@ -54,6 +54,30 @@ export function DocumentProvider({ children }) {
 
   const generateThumbnail = useCallback(async (htmlContent, docSettings) => {
     try {
+      const styleTags = Array.from(
+        window.document.querySelectorAll('style, link[rel="stylesheet"]')
+      )
+        .map((tag) => tag.outerHTML)
+        .join("");
+
+      const combinedHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <base href="https://dockit.kr/">
+          ${styleTags}
+        </head>
+        <body>
+          <div class="tiptap-container">
+            ${htmlContent}
+          </div>
+        </body>
+      </html>
+    `;
+
+      const finalHtml = await inlineCssStyles(combinedHtml);
+
       const response = await fetch(`${NODE_URL}/api/thumbnail`, {
         method: "POST",
         headers: {
@@ -61,7 +85,7 @@ export function DocumentProvider({ children }) {
           Authorization: `Bearer ${API_KEY}`,
         },
         body: JSON.stringify({
-          html: htmlContent,
+          html: finalHtml,
           settings: docSettings,
         }),
       });
