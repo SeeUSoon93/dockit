@@ -15,7 +15,7 @@ const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL;
 const API_KEY = process.env.NEXT_PUBLIC_PUPPETEER_API_KEY;
 
 // 외부 CSS 파일 내용을 가져와 <style> 태그로 바꿔주는 헬퍼 함수
-async function inlineCssStyles(htmlString) {
+export const inlineCssStyles = async (htmlString) => {
   // DOMParser를 사용해 문자열을 실제 HTML 문서처럼 다룰 수 있게 합니다.
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, "text/html");
@@ -45,7 +45,7 @@ async function inlineCssStyles(htmlString) {
   }
   // 수정된 문서의 전체 HTML을 문자열로 반환합니다.
   return doc.documentElement.outerHTML;
-}
+};
 
 export default function WritePage() {
   const {

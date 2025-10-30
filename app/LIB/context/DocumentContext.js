@@ -18,6 +18,7 @@ import {
 } from "react";
 import { fetchData, updateData } from "../utils/dataUtils"; // 데이터 관련 API 함수
 import { auth } from "../config/firebaseConfig";
+import { inlineCssStyles } from "@/app/workspace/[id]/page";
 
 const DocumentContext = createContext();
 const storage = getStorage(); // Storage 서비스 초기화
