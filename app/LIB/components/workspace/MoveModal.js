@@ -68,7 +68,7 @@ export default function MoveModal({
             className={`flex items-center gap-10 pd-10 cursor-pointer hover:bg-gray-100 rounded ${
               selectedFolderId === folder._id ? "bg-blue-100" : ""
             }`}
-            style={{ paddingLeft: `${level * 20 + 10}px` }}
+            style={{ paddingLeft: `${level * 15 + 10}px` }}
           >
             {/* 토글 버튼 */}
             {hasChildren && (

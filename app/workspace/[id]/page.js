@@ -58,13 +58,8 @@ export default function WritePage() {
     setContent,
     title,
   } = useDocument();
-  const {
-    setSaveAction,
-    setDownloadPDFAction,
-    editor,
-    setPrintAction,
-    setDownloadHTMLAction,
-  } = useEditorContext();
+  const { setSaveAction, setDownloadPDFAction, editor, setPrintAction } =
+    useEditorContext();
   const { layoutMode } = useLayout();
   const { setting } = useSetting();
   const [mounted, setMounted] = useState(false);
@@ -158,75 +153,6 @@ export default function WritePage() {
     }
   }, [content, title, docSetting]);
 
-  const handleDownloadHTML = useCallback(async () => {
-    if (!content || !title) {
-      toast.error("내용이 없습니다.");
-      return;
-    }
-
-    toast.info("HTML 생성 중입니다. 잠시만 기다려주세요...");
-
-    try {
-      // 현재 페이지의 스타일을 가져오기
-      const styleTags = Array.from(
-        typeof window !== "undefined"
-          ? window.document.querySelectorAll('style, link[rel="stylesheet"]')
-          : []
-      )
-        .map((tag) => tag.outerHTML)
-        .join("");
-
-      // HTML 문서 생성
-      const htmlContent = `<!DOCTYPE html>
-  <html lang="ko">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    ${styleTags}
-    <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        line-height: 1.6;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #ffffff;
-        width: ${docSetting?.pageWidth}mm;
-        padding: ${docSetting?.paddingTop}mm ${docSetting?.paddingRight}mm ${docSetting?.paddingBottom}mm ${docSetting?.paddingLeft}mm;
-      }
-        image{
-          max-width: 100% !important;
-          height: auto;
-        }
-    </style>
-  </head>
-  <body>
-    <div class="document-content">
-      <h1>${title}</h1>
-      ${content}
-    </div>
-  </body>
-  </html>`;
-
-      // Blob 생성 및 다운로드
-      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-
-      const a = window.document.createElement("a");
-      a.href = url;
-      a.download = `${title.replace(/[^a-zA-Z0-9가-힣]/g, "_")}.html`;
-      window.document.body.appendChild(a);
-      a.click();
-      window.document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      toast.success("HTML 파일이 다운로드되었습니다!");
-    } catch (error) {
-      console.error("HTML 다운로드 실패:", error);
-      toast.error("HTML 다운로드에 실패했습니다.");
-    }
-  }, [content, title]);
-
   const handlePrint = useCallback(() => {
     window.print();
   }, []);
@@ -234,13 +160,11 @@ export default function WritePage() {
   useEffect(() => {
     setSaveAction(() => handleSave);
     setDownloadPDFAction(() => handleDownloadPDF);
-    setDownloadHTMLAction(() => handleDownloadHTML);
     setPrintAction(() => handlePrint);
 
     return () => {
       setSaveAction(null);
       setDownloadPDFAction(null);
-      setDownloadHTMLAction(null);
       setPrintAction(null);
     };
   }, [
@@ -248,8 +172,6 @@ export default function WritePage() {
     setSaveAction,
     setDownloadPDFAction,
     handleDownloadPDF,
-    setDownloadHTMLAction,
-    handleDownloadHTML,
     setPrintAction,
     handlePrint,
   ]);

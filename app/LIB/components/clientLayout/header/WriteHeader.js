@@ -2,27 +2,18 @@ import {
   TbArrowBackUp,
   TbArrowForwardUp,
   TbBlockquote,
-  TbColumns
+  TbColumns,
 } from "react-icons/tb";
 import { Code, PhotoOutline, Print, ShareFill } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
-import {
-  Button,
-  ColorPicker,
-  Divider,
-  Select,
-  Typography,
-  Upload,
-  toast
-} from "sud-ui";
+import { Button, ColorPicker, Divider, Select, Upload, toast } from "sud-ui";
 import { useEffect, useState } from "react";
 import { HiMinus, HiPlus } from "react-icons/hi";
 import { GrDocumentConfig } from "react-icons/gr";
 import { useParams } from "next/navigation";
 
 import {
-  PiFileHtmlBold,
   PiFilePdfBold,
   PiHighlighterFill,
   PiListBulletsBold,
@@ -37,7 +28,7 @@ import {
   PiTextItalicBold,
   PiTextOutdentFill,
   PiTextStrikethroughBold,
-  PiTextUnderlineBold
+  PiTextUnderlineBold,
 } from "react-icons/pi";
 import { MdFormatColorText } from "react-icons/md";
 import DocSettingModal from "./DocSettingModal";
@@ -45,13 +36,8 @@ import { fontOptions } from "@/app/LIB/constant/fontOptions";
 import { LuSubscript, LuSuperscript } from "react-icons/lu";
 import { findParentNode } from "@tiptap/core";
 export default function WriteHeader() {
-  const {
-    editor,
-    printAction,
-    saveAction,
-    downloadPDFAction,
-    downloadHTMLAction
-  } = useEditorContext();
+  const { editor, printAction, saveAction, downloadPDFAction } =
+    useEditorContext();
   const params = useParams();
   const [font, setFont] = useState("Pretendard-Medium");
   const [currentFontSize, setCurrentFontSize] = useState(16);
@@ -122,7 +108,7 @@ export default function WriteHeader() {
       const nodePos = parentNodeInfo.pos;
       const deletionRange = {
         from: nodePos,
-        to: nodePos + columnBlockNode.nodeSize
+        to: nodePos + columnBlockNode.nodeSize,
       };
 
       if (currentCols >= 4) {
@@ -137,12 +123,12 @@ export default function WriteHeader() {
         const nextCols = currentCols + 1;
         const newColumns = Array.from({ length: nextCols }, () => ({
           type: "column",
-          content: [{ type: "paragraph" }]
+          content: [{ type: "paragraph" }],
         }));
 
         const newColumnBlock = {
           type: "columnBlock",
-          content: newColumns
+          content: newColumns,
         };
 
         editor
@@ -436,7 +422,6 @@ export default function WriteHeader() {
       <>
         {renderBtn(GrDocumentConfig, () => setDocSettingModalOpen(true), "")}
         {renderBtn(PiFilePdfBold, () => downloadPDFAction?.(), "")}
-        {renderBtn(PiFileHtmlBold, () => downloadHTMLAction?.(), "")}
       </>
       <Divider
         vertical

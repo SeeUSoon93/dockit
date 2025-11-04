@@ -67,6 +67,7 @@ export default function LeftDrawer({ openLeftDrawer, setOpenLeftDrawer }) {
           const childFolders = hasChildren
             ? filterFolders(folder.children)
             : [];
+          const childFiles = hasChildren ? filterFiles(folder.children) : [];
 
           return (
             <div key={folder._id} className="w-100">
@@ -100,9 +101,9 @@ export default function LeftDrawer({ openLeftDrawer, setOpenLeftDrawer }) {
                 >
                   <FcFolder size={20} />
                   <Typography size="sm">{folder.title}</Typography>
-                  {childFolders.length > 0 && (
+                  {(childFolders.length > 0 || childFiles.length > 0) && (
                     <Typography size="xs" color="cool-gray-5">
-                      ({childFolders.length})
+                      ({childFolders.length + childFiles.length})
                     </Typography>
                   )}
                 </div>
@@ -110,6 +111,9 @@ export default function LeftDrawer({ openLeftDrawer, setOpenLeftDrawer }) {
 
               {/* 하위 폴더들 */}
               {hasChildren && isExpanded && childFolders.length > 0 && (
+                <div>{renderTree(folder.children, level + 1)}</div>
+              )}
+              {hasChildren && isExpanded && childFiles.length > 0 && (
                 <div>{renderTree(folder.children, level + 1)}</div>
               )}
             </div>

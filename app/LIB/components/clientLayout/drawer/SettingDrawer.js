@@ -8,12 +8,12 @@ import { MdDocumentScanner } from "react-icons/md";
 import {
   LuInspectionPanel,
   LuPanelLeftClose,
-  LuPanelRightClose
+  LuPanelRightClose,
 } from "react-icons/lu";
 
 export default function SettingDrawer({
   openSettingsDrawer,
-  setOpenSettingsDrawer
+  setOpenSettingsDrawer,
 }) {
   const { setting, setSetting, settingLoading } = useSetting();
 
@@ -41,7 +41,7 @@ export default function SettingDrawer({
         !settingLoading && (
           <div className="flex flex-col gap-15">
             {/* 자동저장 */}
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <Typography pretendard="SB" className="flex items-center gap-5">
                 <AiFillSave size={20} />
                 자동 저장
@@ -83,9 +83,9 @@ export default function SettingDrawer({
                   * 1000ms = 1s
                 </Typography>
               </div>
-            </div>
+            </div> */}
 
-            <Divider />
+            {/* <Divider /> */}
             {/* 워크스페이스 넓이 */}
             <div className="flex items-center justify-between">
               <Typography pretendard="SB" className="flex items-center gap-5">

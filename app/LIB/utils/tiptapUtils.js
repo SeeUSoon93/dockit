@@ -1,6 +1,5 @@
 import { counterStyleMap, styleValueMap } from "../constant/bulletStyleMap";
 
-// TipTap JSON을 페이지 나누기('horizontalRule') 기준으로 잘라주는 함수
 export const generateCssVariables = (bulletStyle) => {
   const variables = {};
 

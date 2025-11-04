@@ -420,6 +420,10 @@ u {
     overflow: visible !important;
     height: auto !important;
     background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* 3. 기본적으로 모든 요소를 숨김 */
@@ -443,9 +447,9 @@ u {
   /* 이제 .printable-area는 @page 규칙으로 생성된 여백을 존중하게 됩니다. */
   .printable-area {
     margin: 0;
+    padding: 0 !important;
     width: 100% !important;
     box-shadow: none;
-    border: none;
   }
 
   /* 6. 내용물이 용지 폭을 넘어가지 않도록 하는 방어 코드들 (유지) */

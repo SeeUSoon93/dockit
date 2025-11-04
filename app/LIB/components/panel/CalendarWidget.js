@@ -13,7 +13,7 @@ import WidgetCard from "./WidgetCard";
 import { useState, useEffect } from "react";
 import { CalendarOutline, Plus, TriangleLeft, TriangleRight } from "sud-icons";
 import dayjs from "dayjs";
-import { locale_ko } from "../../constant/widget_constant";
+import { locale_ko } from "../../constant/locale";
 import { createData, deleteData, fetchDataList } from "../../utils/dataUtils";
 import { API_HKI_URL } from "../../config/config";
 

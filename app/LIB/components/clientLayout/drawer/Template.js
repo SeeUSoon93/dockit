@@ -8,6 +8,7 @@ export default function Template({ open, onClose, title, content }) {
       width="400px"
       divider={false}
       title={title}
+      placement={title === "폴더" ? "left" : "right"}
     >
       {content}
     </Drawer>

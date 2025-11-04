@@ -10,7 +10,6 @@ export function EditorProvider({ children }) {
   const [saveAction, setSaveAction] = useState(null);
   const [downloadPDFAction, setDownloadPDFAction] = useState(null);
   const [downloadDocxAction, setDownloadDocxAction] = useState(null);
-  const [downloadHTMLAction, setDownloadHTMLAction] = useState(null);
   const [printAction, setPrintAction] = useState(null);
   const [selectedObject, setSelectedObject] = useState(null);
   const value = {
@@ -22,8 +21,6 @@ export function EditorProvider({ children }) {
     setDownloadPDFAction,
     downloadDocxAction,
     setDownloadDocxAction,
-    downloadHTMLAction,
-    setDownloadHTMLAction,
     printAction,
     setPrintAction,
     selectedObject,

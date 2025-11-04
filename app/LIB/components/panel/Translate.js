@@ -11,7 +11,7 @@ import WidgetCard from "./WidgetCard";
 import { BsTranslate } from "react-icons/bs";
 import { useState } from "react";
 import { API_BASE_URL } from "../../config/config";
-import { languages } from "../../constant/widget_constant";
+import { languages } from "../../constant/locale";
 import { HiMiniArrowsUpDown } from "react-icons/hi2";
 
 export default function Translate({ dragHandleProps }) {

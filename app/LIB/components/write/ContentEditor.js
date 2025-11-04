@@ -5,139 +5,20 @@ import { useEditorContext } from "../../context/EditorContext";
 import { generateCssVariables } from "../../utils/tiptapUtils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-// Tiptap extensions (Document, Paragraph, etc.)
-import Document from "@tiptap/extension-document";
-import Paragraph from "@tiptap/extension-paragraph";
-import Text from "@tiptap/extension-text";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import Strike from "@tiptap/extension-strike";
-import Underline from "@tiptap/extension-underline";
-import Highlight from "@tiptap/extension-highlight";
-import Blockquote from "@tiptap/extension-blockquote";
-import CodeBlock from "@tiptap/extension-code-block";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import Image from "@tiptap/extension-image";
-import Heading from "@tiptap/extension-heading";
-import {
-  BulletList,
-  ListItem,
-  OrderedList,
-  TaskItem,
-  TaskList
-} from "@tiptap/extension-list";
-import { TableKit } from "@tiptap/extension-table";
-import CustomTable from "../../extensions/CustomTable"; // Assuming CustomTable is correctly defined
-import TextAlign from "@tiptap/extension-text-align";
-import {
-  TextStyle,
-  Color,
-  FontFamily,
-  FontSize,
-  BackgroundColor
-} from "@tiptap/extension-text-style";
-import Placeholder from "@tiptap/extension-placeholder";
-import { UndoRedo } from "@tiptap/extensions";
 import TypeBubble from "./TypeBubble";
-import { FormatPainter } from "../../extensions/FormatPainter";
-import Indent from "../../extensions/Indent";
-import Subscript from "@tiptap/extension-subscript";
-import Superscript from "@tiptap/extension-superscript";
-import Math, { migrateMathStrings } from "@tiptap/extension-mathematics";
-import { ColumnsExtension } from "@tiptap-extend/columns";
-// ✨ props에서 onEditorCreated, editorRef 등 콜백/ref 관련 항목 모두 제거
+import { migrateMathStrings } from "@tiptap/extension-mathematics";
+import { editorExtensions } from "@/app/LIB/constant/editorExtensions";
+import { useDocument } from "../../context/DocumentContext";
+
 export default function ContentEditor({
   value,
   onChange,
   autoFocus = true,
-  bulletStyle
+  bulletStyle,
 }) {
   const [isEditable, setIsEditable] = useState(true);
   const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
-  const CustomDocument = Document.extend({
-    content: `(block | columnBlock)+`
-  });
-  const editorExtensions = useMemo(
-    () => [
-      CustomDocument,
-      Paragraph,
-      Image.configure({ allowBase64: true }),
-      Blockquote,
-      CodeBlock,
-      BulletList,
-      OrderedList,
-      ListItem,
-      TaskList,
-      HorizontalRule,
-      TaskItem.configure({ nested: true }),
-      Highlight.configure({ multicolor: true }),
-      Heading.configure({ levels: [1, 2, 3] }),
-      Text,
-      TextStyle,
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-        defaultAlignment: "left"
-      }),
-      TableKit.configure({ table: { resizable: true } }),
-      Color.configure({ types: ["textStyle"] }),
-      FontFamily.configure({ types: ["textStyle"] }),
-      BackgroundColor.configure({ types: ["textStyle"] }),
-      FontSize.configure({ types: ["textStyle"] }),
-      Bold,
-      Italic,
-      Strike,
-      Indent,
-      CustomTable,
-      Underline,
-      Subscript,
-      Superscript,
-      Placeholder.configure({
-        placeholder: "내용을 입력하세요...",
-        emptyEditorClass: "is-editor-empty"
-      }),
-      UndoRedo.configure({
-        depth: 100,
-        newGroupDelay: 100
-      }),
-      FormatPainter,
-      Math.configure({
-        blockOptions: {
-          onClick: (node, pos) => {
-            const newCalculation = prompt(
-              "Enter new calculation:",
-              node.attrs.latex
-            );
-            if (newCalculation) {
-              editor
-                .chain()
-                .setNodeSelection(pos)
-                .updateBlockMath({ latex: newCalculation })
-                .focus()
-                .run();
-            }
-          }
-        },
-        inlineOptions: {
-          onClick: (node) => {
-            const newCalculation = prompt(
-              "Enter new calculation:",
-              node.attrs.latex
-            );
-            if (newCalculation) {
-              editor
-                .chain()
-                .setNodeSelection(node.pos)
-                .updateInlineMath({ latex: newCalculation })
-                .focus()
-                .run();
-            }
-          }
-        }
-      }),
-      ColumnsExtension
-    ],
-    []
-  );
+  const { docSetting } = useDocument();
 
   const editor = useEditor({
     extensions: editorExtensions,
@@ -146,8 +27,8 @@ export default function ContentEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose-base focus:outline-none w-full "
-      }
+        class: "prose prose-sm sm:prose-base focus:outline-none w-full",
+      },
     },
     onCreate: ({ editor: currentEditor }) => {
       migrateMathStrings(currentEditor);
@@ -158,7 +39,7 @@ export default function ContentEditor({
       } catch (error) {
         console.error("ContentEditor onUpdate error:", error);
       }
-    }
+    },
   });
 
   const editorStyleVariables = useMemo(
@@ -183,7 +64,7 @@ export default function ContentEditor({
             node: node,
             from: pos,
             to: pos + node.nodeSize,
-            type: "table"
+            type: "table",
           };
           break;
         }
