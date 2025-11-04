@@ -10,6 +10,7 @@ import { useEditorContext } from "@/app/LIB/context/EditorContext";
 import { useSetting } from "@/app/LIB/context/SettingContext";
 import { useLayout } from "@/app/LIB/context/LayoutContext";
 import "katex/dist/katex.min.css";
+import { generateCssVariables } from "@/app/LIB/utils/tiptapUtils";
 
 const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL;
 const API_KEY = process.env.NEXT_PUBLIC_PUPPETEER_API_KEY;
@@ -63,6 +64,7 @@ export default function WritePage() {
   const { layoutMode } = useLayout();
   const { setting } = useSetting();
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => setMounted(true), []);
   const debouncedContent = useDebounce(content, setting.autoSaveDelay);
 
@@ -86,13 +88,22 @@ export default function WritePage() {
 
   // PDF 다운로드 핸들러 함수
   const handleDownloadPDF = useCallback(async () => {
-    toast.info("PDF 생성 중입니다. 잠시만 기다려주세요...");
+    toast.info("PDF 생성 중입니다. 생성 후 자동으로 다운로드 됩니다.");
+
     try {
+      const editorStyleVariables = generateCssVariables(bulletStyle);
+      const inlineStyleString = Object.entries(editorStyleVariables)
+        .map(([key, value]) => `${key}: ${value};`)
+        .join(" ");
+
       const styleTags = Array.from(
         window.document.querySelectorAll('style, link[rel="stylesheet"]')
       )
         .map((tag) => tag.outerHTML)
         .join("");
+
+      console.log("inlineStyleString", inlineStyleString);
+      console.log("styleTags", styleTags);
 
       const combinedHtml = `
       <!DOCTYPE html>
@@ -103,7 +114,7 @@ export default function WritePage() {
           ${styleTags}
         </head>
         <body>
-          <div class="tiptap-container">
+          <div class="tiptap-container" style="${inlineStyleString}">
             ${content}
           </div>
         </body>
@@ -151,7 +162,7 @@ export default function WritePage() {
       console.error(error);
       toast.danger("PDF를 다운로드하는 중 오류가 발생했습니다.");
     }
-  }, [content, title, docSetting]);
+  }, [content, title, docSetting, bulletStyle]);
 
   const handlePrint = useCallback(() => {
     window.print();
