@@ -123,7 +123,6 @@ export default function WritePage() {
 
       // 3. <link> 태그로 연결된 외부 CSS 내용을 <style> 태그 안으로 모두 넣어줍니다.
       const finalHtml = await inlineCssStyles(combinedHtml);
-
       // 4. 준비된 HTML을 API로 전송하여 PDF를 생성합니다.
       const response = await fetch(`${NODE_URL}/api/pdf`, {
         method: "POST",
