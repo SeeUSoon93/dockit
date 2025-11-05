@@ -5,6 +5,7 @@ import { inputProps } from "../../constant/uiProps";
 import { useState } from "react";
 import { selectOptions } from "./DataPortalComponent/selectOptions";
 import HEALTH_FOOD_INFO from "./DataPortalComponent/HEALTH_FOOD_INFO";
+import COMPANY_INFO from "./DataPortalComponent/COMPANY_INFO";
 
 export default function DataPortal({ dragHandleProps }) {
   const [selectedData, setSelectedData] = useState(null);
@@ -24,6 +25,7 @@ export default function DataPortal({ dragHandleProps }) {
           searchable
         />
         {selectedData === "HEALTH_FOOD_INFO" && <HEALTH_FOOD_INFO />}
+        {selectedData === "COMPANY_INFO" && <COMPANY_INFO />}
       </div>
     </WidgetCard>
   );
