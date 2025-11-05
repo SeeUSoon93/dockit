@@ -92,15 +92,15 @@ u {
 
 /* 1. 카운터 설정 - .tiptap-container에서도 적용되도록 수정 */
 .tiptap-container {
-  counter-reset: h1;
+  counter-reset: h1 !important;
 }
 .tiptap-container h1 {
   counter-increment: h1;
-  counter-reset: h2;
+  counter-reset: h2 !important;
 }
 .tiptap-container h2 {
   counter-increment: h2;
-  counter-reset: h3;
+  counter-reset: h3 !important;
 }
 .tiptap-container h3 {
   counter-increment: h3;
@@ -108,20 +108,20 @@ u {
 
 /* 2. 제목 ::before 스타일 (번호 표시) */
 .tiptap-container h1::before {
-  content: counter(h1, var(--h1-style, decimal)) ". ";
+  content: counter(h1, var(--h1-style, decimal)) ". " !important;
   margin-right: 0.3em;
   float: none;
 }
 .tiptap-container h2::before {
   content: counter(h1, var(--h1-style, decimal)) "."
-    counter(h2, var(--h2-style, decimal)) ". ";
+    counter(h2, var(--h2-style, decimal)) ". " !important;
   margin-right: 0.3em;
   float: none;
 }
 .tiptap-container h3::before {
   content: counter(h1, var(--h1-style, decimal)) "."
     counter(h2, var(--h2-style, decimal)) "."
-    counter(h3, var(--h3-style, decimal)) ". ";
+    counter(h3, var(--h3-style, decimal)) ". " !important;
   margin-right: 0.3em;
   float: none;
 }
@@ -131,82 +131,82 @@ u {
 /* 1. 모든 리스트 아이템에 flex 레이아웃 설정 */
 .tiptap-container ul:not([data-type="taskList"]) li,
 .tiptap-container ol li {
-  display: flex;
-  align-items: baseline; /* center 대신 baseline으로 변경 */
-  margin: 0.25em 0;
-  padding-left: 0; /* flex로 바꾸면서 padding 제거 */
+  display: flex !important;
+  align-items: baseline !important; /* center 대신 baseline으로 변경 */
+  margin: 0.25em 0 !important;
+  padding-left: 0 !important; /* flex로 바꾸면서 padding 제거 */
 }
 
 .tiptap-container ul:not([data-type="taskList"]) li > p,
 .tiptap-container ol li > p {
-  margin: 0;
-  flex: 1; /* 텍스트가 남은 공간을 모두 차지 */
+  margin: 0 !important;
+  flex: 1 !important; /* 텍스트가 남은 공간을 모두 차지 */
 }
 
 .tiptap-container ul:not([data-type="taskList"]) li::before,
 .tiptap-container ol li::before {
-  margin-right: 0.3em; /* 번호와 텍스트 사이 간격 */
-  line-height: inherit; /* p와 동일한 line-height 사용 */
-  vertical-align: baseline; /* 베이스라인 미세 조정 */
-  position: relative;
-  top: 0.05em; /* 살짝 아래로 미세 조정 */
+  margin-right: 0.3em !important; /* 번호와 텍스트 사이 간격 */
+  line-height: inherit !important; /* p와 동일한 line-height 사용 */
+  vertical-align: baseline !important; /* 베이스라인 미세 조정 */
+  position: relative !important;
+  top: 0.05em !important; /* 살짝 아래로 미세 조정 */
 }
 
 /* 2. 일반 리스트(ul) 스타일 */
 .tiptap-container ul:not([data-type="taskList"]) {
-  list-style: none;
-  padding: 0;
-  margin: 1em 0;
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 1em 0 !important;
 }
 .tiptap-container ul:not([data-type="taskList"]) li::before {
-  content: var(--list-1-content, "•");
+  content: var(--list-1-content, "•") !important;
 }
 
 /* 들여쓰기 레벨별 리스트 스타일 */
 .tiptap-container ul:not([data-type="taskList"]) li[data-indent="16"]::before {
-  content: var(--list-2-content, "•");
+  content: var(--list-2-content, "•") !important;
 }
 .tiptap-container ul:not([data-type="taskList"]) li[data-indent="32"]::before {
-  content: var(--list-3-content, "•");
+  content: var(--list-3-content, "•") !important;
 }
 .tiptap-container ul:not([data-type="taskList"]) li[data-indent="48"]::before {
-  content: var(--list-4-content, "•");
+  content: var(--list-4-content, "•") !important;
 }
 .tiptap-container ul:not([data-type="taskList"]) li[data-indent="64"]::before {
-  content: var(--list-4-content, "•");
+  content: var(--list-4-content, "•") !important;
 }
 
 /* 3. 번호 리스트(ol) 스타일 */
 .tiptap-container ol {
-  list-style: none;
-  padding: 0;
-  margin: 1em 0;
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 1em 0 !important;
   counter-reset: item;
 }
 .tiptap-container ol li {
-  counter-increment: item;
+  counter-increment: item !important;
 }
 .tiptap-container ol li::before {
   content: counter(item, var(--order-list-1-type, decimal))
-    var(--order-list-1-suffix, ". ");
+    var(--order-list-1-suffix, ". ") !important;
 }
 
 /* 들여쓰기 레벨별 순서 리스트 스타일 */
 .tiptap-container ol li[data-indent="16"]::before {
   content: counter(item, var(--order-list-2-type, decimal))
-    var(--order-list-2-suffix, ". ");
+    var(--order-list-2-suffix, ". ") !important;
 }
 .tiptap-container ol li[data-indent="32"]::before {
   content: counter(item, var(--order-list-3-type, decimal))
-    var(--order-list-3-suffix, ". ");
+    var(--order-list-3-suffix, ". ") !important;
 }
 .tiptap-container ol li[data-indent="48"]::before {
   content: counter(item, var(--order-list-4-type, decimal))
-    var(--order-list-4-suffix, ". ");
+    var(--order-list-4-suffix, ". ") !important;
 }
 .tiptap-container ol li[data-indent="64"]::before {
   content: counter(item, var(--order-list-4-type, decimal))
-    var(--order-list-4-suffix, ". ");
+    var(--order-list-4-suffix, ". ") !important;
 }
 
 /* --- 들여쓰기 스타일 --- */
@@ -289,41 +289,41 @@ u {
 
 /* Task 리스트의 각 항목(li)에 flex 레이아웃 적용 (핵심) */
 .tiptap-container ul[data-type="taskList"] li {
-  display: flex;
+  display: flex !important;
   align-items: center;
 }
 
 /* 체크박스 영역(label) 스타일 */
 .tiptap-container ul[data-type="taskList"] li > label {
   flex: 0 0 auto;
-  margin-right: 0.5rem;
-  user-select: none;
+  margin-right: 0.5rem !important;
+  user-select: none !important;
 }
 
 /* 텍스트 영역(div) 스타일 */
 .tiptap-container ul[data-type="taskList"] li > div {
-  flex: 1 1 auto;
+  flex: 1 1 auto !important;
 }
 
 /* 체크박스 커서 스타일 */
 .tiptap-container ul[data-type="taskList"] input[type="checkbox"] {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 /* 중첩된 Task 리스트 마진 제거 */
 .tiptap-container ul[data-type="taskList"] ul[data-type="taskList"] {
-  margin: 0;
+  margin: 0 !important;
 }
 
 /* 체크된 항목 텍스트에 취소선 적용 (기존 스타일 유지) */
 .tiptap-container li[data-checked="true"] > div {
-  text-decoration: line-through;
+  text-decoration: line-through !important;
   opacity: 0.6;
 }
 
 /* 인용(Blockquote) 스타일 */
 .tiptap-container blockquote {
-  border-left: 5px solid #a3a3a3;
+  border-left: 5px solid #a3a3a3 !important ;
   margin: 1.5rem 0;
   padding-left: 0.8rem;
 }
@@ -410,7 +410,7 @@ u {
   grid-auto-flow: column;
   /* 모든 컬럼이 동일한 너비를 갖도록 함 */
   grid-auto-columns: 1fr;
-  gap: 24px; /* 컬럼 사이의 간격 */
+  gap: 12px; /* 컬럼 사이의 간격 */
   padding: 8px 0;
 }
 

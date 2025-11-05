@@ -6,11 +6,16 @@ import {
   FaCalculator,
   FaDice,
   FaNoteSticky,
-  FaWikipediaW
+  FaWikipediaW,
 } from "react-icons/fa6";
 import { MdImageSearch, MdKeyboardCommandKey, MdMuseum } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
-import { TbChartDotsFilled, TbEdit, TbMath } from "react-icons/tb";
+import {
+  TbChartDotsFilled,
+  TbDatabaseSmile,
+  TbEdit,
+  TbMath,
+} from "react-icons/tb";
 import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
 import { CalendarOutline, Korea, Map, TimerOutline } from "sud-icons";
 import { BsMusicPlayerFill, BsTranslate } from "react-icons/bs";
@@ -20,7 +25,7 @@ import { IoSyncCircle } from "react-icons/io5";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer
+  setOpenWidgetDrawer,
 }) {
   const { left, right, toggle } = usePanels();
 
@@ -89,6 +94,7 @@ export default function WidgetDrawer({
               {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
               {renderWidgetItem(GiSouthKorea, "행정지도", "geoJson")}
               {renderWidgetItem(Map, "지도", "map")}
+              {renderWidgetItem(TbDatabaseSmile, "공공데이터", "dataPortal")}
               {/* {renderWidgetItem(FaWikipediaW, "위키", "wikipediaSearch")} */}
             </div>
           </div>

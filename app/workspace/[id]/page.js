@@ -10,43 +10,10 @@ import { useEditorContext } from "@/app/LIB/context/EditorContext";
 import { useSetting } from "@/app/LIB/context/SettingContext";
 import { useLayout } from "@/app/LIB/context/LayoutContext";
 import "katex/dist/katex.min.css";
-import { generateCssVariables } from "@/app/LIB/utils/tiptapUtils";
+import { generateStyleSet, inlineCssStyles } from "@/app/LIB/utils/pdfUtils";
 
 const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL;
 const API_KEY = process.env.NEXT_PUBLIC_PUPPETEER_API_KEY;
-
-// 외부 CSS 파일 내용을 가져와 <style> 태그로 바꿔주는 헬퍼 함수
-export const inlineCssStyles = async (htmlString) => {
-  // DOMParser를 사용해 문자열을 실제 HTML 문서처럼 다룰 수 있게 합니다.
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, "text/html");
-
-  // 문서 안의 모든 <link rel="stylesheet"> 태그를 찾습니다.
-  const links = doc.querySelectorAll('link[rel="stylesheet"]');
-
-  for (const link of links) {
-    const href = link.getAttribute("href");
-    if (href) {
-      try {
-        // CSS 파일의 내용을 fetch로 가져옵니다.
-        // href가 상대경로일 경우를 대비해 절대경로로 만들어줍니다.
-        const response = await fetch(new URL(href, window.location.href));
-        const cssText = await response.text();
-
-        // 새로운 <style> 태그를 만듭니다.
-        const style = doc.createElement("style");
-        style.textContent = cssText;
-
-        // 기존 <link> 태그를 새로운 <style> 태그로 교체합니다.
-        link.parentNode.replaceChild(style, link);
-      } catch (error) {
-        console.error(`CSS 파일을 가져오는 데 실패했습니다: ${href}`, error);
-      }
-    }
-  }
-  // 수정된 문서의 전체 HTML을 문자열로 반환합니다.
-  return doc.documentElement.outerHTML;
-};
 
 export default function WritePage() {
   const {
@@ -91,39 +58,12 @@ export default function WritePage() {
     toast.info("PDF 생성 중입니다. 생성 후 자동으로 다운로드 됩니다.");
 
     try {
-      const editorStyleVariables = generateCssVariables(bulletStyle);
-      const inlineStyleString = Object.entries(editorStyleVariables)
-        .map(([key, value]) => `${key}: ${value};`)
-        .join(" ");
+      const finalHtml = await generateStyleSet(
+        bulletStyle,
+        docSetting,
+        content
+      );
 
-      const styleTags = Array.from(
-        window.document.querySelectorAll('style, link[rel="stylesheet"]')
-      )
-        .map((tag) => tag.outerHTML)
-        .join("");
-
-      console.log("inlineStyleString", inlineStyleString);
-      console.log("styleTags", styleTags);
-
-      const combinedHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <base href="https://dockit.kr/">
-          ${styleTags}
-        </head>
-        <body>
-          <div class="tiptap-container" style="${inlineStyleString}">
-            ${content}
-          </div>
-        </body>
-      </html>
-    `;
-
-      // 3. <link> 태그로 연결된 외부 CSS 내용을 <style> 태그 안으로 모두 넣어줍니다.
-      const finalHtml = await inlineCssStyles(combinedHtml);
-      // 4. 준비된 HTML을 API로 전송하여 PDF를 생성합니다.
       const response = await fetch(`${NODE_URL}/api/pdf`, {
         method: "POST",
         headers: {
@@ -135,10 +75,6 @@ export default function WritePage() {
           settings: {
             pageWidth: docSetting?.pageWidth || 210,
             pageHeight: docSetting?.pageHeight || 297,
-            paddingTop: docSetting?.paddingTop || 25.4,
-            paddingBottom: docSetting?.paddingBottom || 25.4,
-            paddingLeft: docSetting?.paddingLeft || 25.4,
-            paddingRight: docSetting?.paddingRight || 25.4,
           },
         }),
       });

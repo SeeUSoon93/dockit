@@ -8,7 +8,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import TypeBubble from "./TypeBubble";
 import { migrateMathStrings } from "@tiptap/extension-mathematics";
 import { editorExtensions } from "@/app/LIB/constant/editorExtensions";
-import { useDocument } from "../../context/DocumentContext";
 
 export default function ContentEditor({
   value,
@@ -18,7 +17,6 @@ export default function ContentEditor({
 }) {
   const [isEditable, setIsEditable] = useState(true);
   const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
-  const { docSetting } = useDocument();
 
   const editor = useEditor({
     extensions: editorExtensions,

@@ -18,7 +18,7 @@ import {
 } from "react";
 import { fetchData, updateData } from "../utils/dataUtils"; // 데이터 관련 API 함수
 import { auth } from "../config/firebaseConfig";
-import { inlineCssStyles } from "@/app/workspace/[id]/page";
+import { generateStyleSet } from "../utils/pdfUtils";
 
 const DocumentContext = createContext();
 const storage = getStorage(); // Storage 서비스 초기화
@@ -55,29 +55,11 @@ export function DocumentProvider({ children }) {
 
   const generateThumbnail = useCallback(async (htmlContent, docSettings) => {
     try {
-      const styleTags = Array.from(
-        window.document.querySelectorAll('style, link[rel="stylesheet"]')
-      )
-        .map((tag) => tag.outerHTML)
-        .join("");
-
-      const combinedHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <base href="https://dockit.kr/">
-          ${styleTags}
-        </head>
-        <body>
-          <div class="tiptap-container">
-            ${htmlContent}
-          </div>
-        </body>
-      </html>
-    `;
-
-      const finalHtml = await inlineCssStyles(combinedHtml);
+      const finalHtml = await generateStyleSet(
+        bulletStyle,
+        docSetting,
+        content
+      );
 
       const response = await fetch(`${NODE_URL}/api/thumbnail`, {
         method: "POST",
