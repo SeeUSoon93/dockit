@@ -20,12 +20,7 @@ export async function GET(request) {
   if (selectedValue === "HEALTH_FOOD_INFO") {
     const API_URL =
       "https://apis.data.go.kr/1471000/HtfsInfoService03/getHtfsItem01?";
-    if (q) {
-      fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=10&type=json&Prduct=${q}`;
-      console.log("검색 어검색 중");
-    } else {
-      fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=10&type=json`;
-    }
+    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=10&type=json&Prduct=${q}`;
   }
 
   try {

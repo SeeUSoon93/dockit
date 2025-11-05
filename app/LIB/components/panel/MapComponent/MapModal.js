@@ -23,7 +23,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
   };
 
   // 지도 유형
-  const [mapType, setMapType] = useState(isDarkMode ? "Dark" : "Base");
+  const [mapType, setMapType] = useState("White");
   const mapTypeOptions = [
     { label: "기본", value: "White" },
     { label: "위성", value: "Satellite" }
@@ -113,7 +113,7 @@ export default function MapModal({ searchTerm, setSearchTerm }) {
         }
       )
     };
-    return layers[type] || layers.Base;
+    return layers[type] || layers.White;
   };
 
   useEffect(() => {
