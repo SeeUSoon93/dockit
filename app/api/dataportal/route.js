@@ -41,16 +41,19 @@ export async function GET(request) {
     fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=10&searchWrd=${q}`;
   }
   if (selectedValue === "POPULATION_INFO") {
-    // 오늘 날짜를 구하고 한달 전 날짜로 변경 . 202510 형식
+    // 오늘 날짜를 구하고 한달 전 날짜로 변경 . 월까지만 표시
     const today = new Date();
     const oneMonthAgo = new Date(today.setMonth(today.getMonth() - 1));
     const oneMonthAgoString = oneMonthAgo
       .toISOString()
       .split("T")[0]
-      .replace(/-/g, "");
+      .replace(/-/g, "")
+      .slice(0, 6);
     const API_URL =
       "https://apis.data.go.kr/1741000/admmPpltnHhStus/selectAdmmPpltnHhStus?";
-    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=1&admmCd=${subValue.admmCd}&srchFrYm=${oneMonthAgoString}&srchToYm=${oneMonthAgoString}&lv=3&type=json`;
+    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=1&admmCd=${q}&srchFrYm=${oneMonthAgoString}&srchToYm=${oneMonthAgoString}&lv=3&type=json`;
+
+    console.log(fetchUrl);
   }
   if (selectedValue === "COUNTRY_INFO") {
     const API_URL =
