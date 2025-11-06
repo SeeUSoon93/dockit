@@ -88,17 +88,35 @@ export default function MOUNTAIN_INFO() {
                   background={"cool-gray-1"}
                   thumb={thumbnailUrl}
                 >
-                  <div className="flex flex-col">
-                    <Typography pretendard="SB">{i.mntiname}</Typography>
-                    <Typography size="sm">{i.mntidetails}</Typography>
-                    <Divider content="상세정보" />
-                    <Typography size="sm">소재지 : {i.mntiadd}</Typography>
-                    <Typography size="sm">높이 : {i.mntihigh}m</Typography>
-                    <Typography size="sm">관리기관 : {i.mntiadmin}</Typography>
-                    <Typography size="sm">
-                      관리기관전화 : {i.mntiadminnum}
-                    </Typography>
-                  </div>
+                  <Collapse
+                    shadow="none"
+                    items={[
+                      {
+                        key: "detail",
+                        label: (
+                          <Typography pretendard="SB">{i.mntiname}</Typography>
+                        ),
+                        children: (
+                          <div className="flex flex-col">
+                            <Typography size="sm">{i.mntidetails}</Typography>
+                            <Divider content="상세정보" />
+                            <Typography size="sm">
+                              소재지 : {i.mntiadd}
+                            </Typography>
+                            <Typography size="sm">
+                              높이 : {i.mntihigh}m
+                            </Typography>
+                            <Typography size="sm">
+                              관리기관 : {i.mntiadmin}
+                            </Typography>
+                            <Typography size="sm">
+                              관리기관전화 : {i.mntiadminnum}
+                            </Typography>
+                          </div>
+                        ),
+                      },
+                    ]}
+                  />
                 </Card>
               );
             })}
