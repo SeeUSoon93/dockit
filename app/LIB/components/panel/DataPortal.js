@@ -7,6 +7,7 @@ import { selectOptions } from "./DataPortalComponent/selectOptions";
 import HEALTH_FOOD_INFO from "./DataPortalComponent/HEALTH_FOOD_INFO";
 import TOUR_PHOTO from "./DataPortalComponent/TOUR_PHOTO";
 import MOUNTAIN_INFO from "./DataPortalComponent/MOUNTAIN_INFO";
+import HACCP_PRODUCT_INFO from "./DataPortalComponent/HACCP_PRODUCT_INFO";
 
 export default function DataPortal({ dragHandleProps }) {
   const [selectedData, setSelectedData] = useState(null);
@@ -28,6 +29,7 @@ export default function DataPortal({ dragHandleProps }) {
         {selectedData === "HEALTH_FOOD_INFO" && <HEALTH_FOOD_INFO />}
         {selectedData === "TOUR_PHOTO" && <TOUR_PHOTO />}
         {selectedData === "MOUNTAIN_INFO" && <MOUNTAIN_INFO />}
+        {selectedData === "HACCP_PRODUCT_INFO" && <HACCP_PRODUCT_INFO />}
       </div>
     </WidgetCard>
   );

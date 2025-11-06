@@ -8,10 +8,11 @@ import {
   DotSpinner,
   Input,
   Pagination,
+  Tag,
   Typography,
 } from "sud-ui";
 
-export default function HEALTH_FOOD_INFO() {
+export default function HACCP_PRODUCT_INFO() {
   const [mainData, setMainData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,7 +28,7 @@ export default function HEALTH_FOOD_INFO() {
     setTotalCount(0);
     try {
       const res = await fetch(
-        `/api/dataportal?select_value=HEALTH_FOOD_INFO&pageNo=${
+        `/api/dataportal?select_value=HACCP_PRODUCT_INFO&pageNo=${
           isNewSearch ? 1 : page
         }&q=${searchTerm}`
       );
@@ -60,7 +61,7 @@ export default function HEALTH_FOOD_INFO() {
           {...inputProps}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder={"검색할 식품을 입력하세요"}
+          placeholder={"검색할 제품을 입력하세요"}
           onEnter={() => handleSearch(true)}
         />
       </div>
@@ -79,46 +80,23 @@ export default function HEALTH_FOOD_INFO() {
           <div className="flex flex-col gap-10">
             {mainData.items.map((i, idx) => {
               const item = i.item;
-              const formatDate = (date) => {
-                // date format: 20251105
-                // return format: 2025년 11월 05일
-                return `${date.slice(0, 4)}년 ${date.slice(
-                  4,
-                  6
-                )}월 ${date.slice(6, 8)}일`;
-              };
               const collapseItems = [
                 {
                   key: "detail",
                   label: "상세정보",
                   children: (
                     <div className="flex flex-col">
-                      <Divider content="성상" />
+                      <Divider content="영양성분" />
                       <Typography size="sm" style={{ whiteSpace: "pre-line" }}>
-                        {item.SUNGSANG}
+                        {item.nutrient}
                       </Typography>
-                      <Divider content="섭취방법" />
+                      <Divider content="원재료" />
                       <Typography size="sm" style={{ whiteSpace: "pre-line" }}>
-                        {item.SRV_USE}
+                        {item.rawmtrl}
                       </Typography>
-                      <Divider content="기준규격" />
+                      <Divider content="알레르기 유발물질" />
                       <Typography size="sm" style={{ whiteSpace: "pre-line" }}>
-                        {item.BASE_STANDARD}
-                      </Typography>
-                      <Divider content="주된기능성" />
-                      <Typography size="sm" style={{ whiteSpace: "pre-line" }}>
-                        {item.MAIN_FNCTN}
-                      </Typography>
-                      <Divider content="섭취 시 주의사항" />
-                      <Typography size="sm" style={{ whiteSpace: "pre-line" }}>
-                        {item.INTAKE_HINT1}
-                      </Typography>
-                      <Divider content="소비 및 유통" />
-                      <Typography size="sm" style={{ whiteSpace: "pre-line" }}>
-                        {item.DISTB_PD}
-                      </Typography>
-                      <Typography size="sm" style={{ whiteSpace: "pre-line" }}>
-                        {item.PRSRV_PD}
+                        {item.allergy}
                       </Typography>
                     </div>
                   ),
@@ -127,21 +105,23 @@ export default function HEALTH_FOOD_INFO() {
               return (
                 <Card
                   width="100%"
-                  key={item.STTEMNT_NO}
+                  key={item.prdlstReportNo}
                   className="flex flex-col gap-10"
                   shadow="none"
                   background={"cool-gray-1"}
+                  thumb={item.imgurl1}
                 >
                   <div className="flex flex-col">
-                    <Typography pretendard="SB">{item.PRDUCT}</Typography>
-                    <Typography size="sm">{item.ENTRPS}</Typography>
+                    <Typography pretendard="SB">{item.prdlstNm}</Typography>
+                    <Tag>
+                      <Typography size="xs">{item.prdkind}</Typography>
+                    </Tag>
+                    <Typography size="sm">
+                      제조원 : {item.manufacture}
+                    </Typography>
+                    <Typography size="sm">판매원 : {item.seller}</Typography>
                   </div>
                   <Collapse items={collapseItems} size="sm" shadow="none" />
-                  <div className="flex jus-end">
-                    <Typography size="xs">
-                      등록일 : {formatDate(item.REGIST_DT)}
-                    </Typography>
-                  </div>
                 </Card>
               );
             })}
