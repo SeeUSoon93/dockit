@@ -81,7 +81,7 @@ export default function TOUR_PHOTO() {
           {...inputProps}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder={"검색할 식품을 입력하세요"}
+          placeholder={"검색할 키워드를 입력하세요"}
           onEnter={() => handleSearch(true)}
         />
       </div>

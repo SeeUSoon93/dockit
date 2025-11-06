@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { parseString } from "xml2js";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -36,7 +37,8 @@ export async function GET(request) {
   if (selectedValue === "MOUNTAIN_INFO") {
     const API_URL =
       "https://apis.data.go.kr/1400000/service/cultureInfoService2/mntInfoOpenAPI2?";
-    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=10&searchWrd=${q}`;
+
+    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=10&searchWrd=${q}`;
   }
   if (selectedValue === "POPULATION_INFO") {
     // 오늘 날짜를 구하고 한달 전 날짜로 변경 . 202510 형식
@@ -55,11 +57,6 @@ export async function GET(request) {
       "https://apis.data.go.kr/1262000/CountryBasicService/getCountryBasicList?";
     fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=100&countryName=${q}`;
   }
-  // if (selectedValue === "EVENT_INFO") {
-  //   const API_URL =
-  //     "http://apis.data.go.kr/B551011/KorService2/searchFestival2?";
-  //   fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=100&countryName=${q}`;
-  // }
   if (fetchUrl === "") {
     return NextResponse.json(
       { error: "선택된 값이 없습니다." },
@@ -69,7 +66,48 @@ export async function GET(request) {
 
   try {
     const response = await fetch(fetchUrl);
-    const data = await response.json();
+    let data = null;
+    if (selectedValue === "MOUNTAIN_INFO") {
+      const xmlData = await response.text();
+      // XML을 JSON으로 변환
+      data = await new Promise((resolve, reject) => {
+        parseString(xmlData, { explicitArray: false }, (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        });
+      });
+    } else {
+      data = await response.json();
+    }
+
+    if (selectedValue === "MOUNTAIN_INFO") {
+      const items = Array.isArray(data.response.body.items.item)
+        ? data.response.body.items.item
+        : [data.response.body.items.item];
+
+      await Promise.all(
+        items.map(async (item) => {
+          const mntilistno = item.mntilistno;
+          const imageAPI_URL =
+            "https://apis.data.go.kr/1400000/service/cultureInfoService2/mntInfoImgOpenAPI2?";
+          const imageFetchUrl = `${imageAPI_URL}serviceKey=${API_KEY}&mntiListNo=${mntilistno}`;
+          const imageResponse = await fetch(imageFetchUrl);
+          const imageXmlData = await imageResponse.text();
+          const imageData = await new Promise((resolve, reject) => {
+            parseString(
+              imageXmlData,
+              { explicitArray: false },
+              (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+              }
+            );
+          });
+          item.image = imageData;
+        })
+      );
+    }
+
     return NextResponse.json(data);
   } catch (error) {
     console.error(error);
