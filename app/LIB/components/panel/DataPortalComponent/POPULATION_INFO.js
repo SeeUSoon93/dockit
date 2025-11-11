@@ -96,7 +96,53 @@ export default function POPULATION_INFO() {
         throw new Error(`API 오류: ${res.status}`);
       }
       const data = await res.json();
-      setMainData(data.Response.items.item);
+      const items = Array.isArray(data.Response.items.item)
+        ? data.Response.items.item
+        : [data.Response.items.item];
+
+      console.log(items);
+
+      // items는 {
+      //     "hhCnt": 세대수,
+      //     "femlNmprCnt": 여자인구수,
+      //     "totNmprCnt": 총인구수,
+      //     "maleNmprCnt": 남자인구수,
+      //     "ctpvNm": 시도명,
+      //     "sggNm": 시군구명,
+      //     "dongNm": 읍면동명,
+      // }, 형태의 배열임
+      // 세대수, 여자인구수, 총인구수, 남자인구수는 모두 더하고 나머지는 그대로 사용
+      const totNmprCnt = items.reduce(
+        (acc, item) => acc + parseInt(item.totNmprCnt),
+        0
+      );
+      const maleNmprCnt = items.reduce(
+        (acc, item) => acc + parseInt(item.maleNmprCnt),
+        0
+      );
+      const femlNmprCnt = items.reduce(
+        (acc, item) => acc + parseInt(item.femlNmprCnt),
+        0
+      );
+      const hhCnt = items.reduce((acc, item) => acc + parseInt(item.hhCnt), 0);
+      const hhNmpr = items.reduce(
+        (acc, item) => acc + parseInt(item.hhNmpr),
+        0
+      );
+      const ctpvNm = items[0].ctpvNm;
+      const sggNm = items[0].sggNm;
+      const dongNm = items[0].dongNm;
+      const mainData = {
+        totNmprCnt,
+        maleNmprCnt,
+        femlNmprCnt,
+        hhCnt,
+        hhNmpr,
+        ctpvNm,
+        sggNm,
+        dongNm,
+      };
+      setMainData(mainData);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -109,8 +155,6 @@ export default function POPULATION_INFO() {
       handleSearch();
     }
   }, [selectedAdmmCd]);
-
-  console.log(mainData);
 
   // 숫자 3자리마다 쉼표 표시
   const formatNumber = (number) => {
@@ -189,6 +233,7 @@ export default function POPULATION_INFO() {
       },
     },
   };
+  console.log(mainData);
 
   return (
     <div className="w-100 flex flex-col gap-5">
@@ -227,7 +272,11 @@ export default function POPULATION_INFO() {
                   <Typography>
                     ■ 세대 수 : {formatNumber(mainData.hhCnt)}개
                   </Typography>
-                  <Typography>■ 세대 당 인구 : {mainData.hhNmpr}명</Typography>
+                  {/* 총인구수 / 세대수 */}
+                  <Typography>
+                    ■ 세대 당 인구 :{" "}
+                    {(mainData.totNmprCnt / mainData.hhCnt).toFixed(1)}명
+                  </Typography>
                 </div>
                 <Divider content="성별 인구 분포" />
                 <div style={{ height: "150px", width: "100%" }}>

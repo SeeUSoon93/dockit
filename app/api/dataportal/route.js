@@ -51,9 +51,7 @@ export async function GET(request) {
       .slice(0, 6);
     const API_URL =
       "https://apis.data.go.kr/1741000/admmPpltnHhStus/selectAdmmPpltnHhStus?";
-    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=1&admmCd=${q}&srchFrYm=${oneMonthAgoString}&srchToYm=${oneMonthAgoString}&lv=3&type=json`;
-
-    console.log(fetchUrl);
+    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=100&admmCd=${q}&srchFrYm=${oneMonthAgoString}&srchToYm=${oneMonthAgoString}&lv=4&type=json`;
   }
   if (selectedValue === "COUNTRY_INFO") {
     const API_URL =

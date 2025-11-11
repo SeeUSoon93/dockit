@@ -6,7 +6,8 @@ export default function WidgetCard({
   title,
   children,
   dragHandleProps,
-  titleBtn
+  titleBtn,
+  footer,
 }) {
   const Icon = icon;
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -23,6 +24,7 @@ export default function WidgetCard({
       width={"100%"}
       border={false}
       shadow="md"
+      footer={footer}
     >
       <div onClick={(e) => e.stopPropagation()} className="flex flex-col">
         <div
@@ -41,7 +43,7 @@ export default function WidgetCard({
           style={{
             marginTop: isCollapsed ? "0px" : "10px",
             opacity: isCollapsed ? "0" : "1",
-            maxHeight: isCollapsed ? "0px" : "1000px"
+            maxHeight: isCollapsed ? "0px" : "1000px",
           }}
         >
           {children}
