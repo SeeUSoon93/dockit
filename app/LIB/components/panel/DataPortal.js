@@ -52,9 +52,8 @@ export default function DataPortal({ dragHandleProps }) {
       icon={TbDatabaseSmile}
       title="공공데이터"
       dragHandleProps={dragHandleProps}
-      footer={footer()}
     >
-      <div className="w-100 flex flex-col gap-10 max-h-px-350 overflow-y-auto">
+      <div className="w-100 flex flex-col gap-10 max-h-px-400 overflow-y-auto">
         <Select
           {...inputProps}
           options={selectOptions}
@@ -69,6 +68,7 @@ export default function DataPortal({ dragHandleProps }) {
         {selectedData === "POPULATION_INFO" && <POPULATION_INFO />}
         {selectedData === "COUNTRY_INFO" && <COUNTRY_INFO />}
       </div>
+      {footer()}
     </WidgetCard>
   );
 }

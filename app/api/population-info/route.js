@@ -41,17 +41,18 @@ export async function GET(request) {
     "statsYm",
     "admmCd",
     "tong",
-    "ban",
+    "ban"
   ]);
   const COPY_ONLY_KEYS = new Set([
     "ctpvNm",
     "sggNm",
     "dongNm",
     "statsYm",
-    "admmCd",
+    "admmCd"
   ]);
 
   const maleAgeKeys = [
+    "male0AgeNmprCnt",
     "male10AgeNmprCnt",
     "male20AgeNmprCnt",
     "male30AgeNmprCnt",
@@ -61,10 +62,11 @@ export async function GET(request) {
     "male70AgeNmprCnt",
     "male80AgeNmprCnt",
     "male90AgeNmprCnt",
-    "male100AgeNmprCnt",
+    "male100AgeNmprCnt"
   ];
 
   const femlAgeKeys = [
+    "feml0AgeNmprCnt",
     "feml10AgeNmprCnt",
     "feml20AgeNmprCnt",
     "feml30AgeNmprCnt",
@@ -74,7 +76,7 @@ export async function GET(request) {
     "feml70AgeNmprCnt",
     "feml80AgeNmprCnt",
     "feml90AgeNmprCnt",
-    "feml100AgeNmprCnt",
+    "feml100AgeNmprCnt"
   ];
 
   const parseItems = (data) => {
@@ -188,7 +190,7 @@ export async function GET(request) {
     return {
       ...transformed,
       maleAgeArray,
-      femlAgeArray,
+      femlAgeArray
     };
   };
 

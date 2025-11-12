@@ -1,31 +1,25 @@
 import { inputProps } from "@/app/LIB/constant/uiProps";
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Card,
-  Collapse,
-  Divider,
-  DotSpinner,
-  Input,
-  Pagination,
-  Select,
-  Typography,
-} from "sud-ui";
+import { Card, Divider, DotSpinner, Select, Typography } from "sud-ui";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
+  Legend
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
   Legend
@@ -35,6 +29,12 @@ ChartJS.register(
 const valueLabelPlugin = {
   id: "valueLabel",
   afterDatasetsDraw: (chart) => {
+    if (chart.config?.options?.indexAxis === "y") {
+      return;
+    }
+    if (chart.config?.type === "line") {
+      return;
+    }
     const ctx = chart.ctx;
     chart.data.datasets.forEach((dataset, i) => {
       const meta = chart.getDatasetMeta(i);
@@ -47,14 +47,14 @@ const valueLabelPlugin = {
         ctx.textBaseline = "bottom";
         ctx.font = "600 14px sans-serif";
         ctx.fillStyle = "#4B5563";
-        const formattedValue = value
+        const formattedValue = Math.abs(value)
           .toString()
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         ctx.fillText(formattedValue, x, y - 5);
         ctx.restore();
       });
     });
-  },
+  }
 };
 
 ChartJS.register(valueLabelPlugin);
@@ -75,7 +75,7 @@ export default function POPULATION_INFO() {
         // key가 value, value가 label
         const options = Object.keys(dong_dict).map((key) => ({
           label: dong_dict[key],
-          value: key,
+          value: key
         }));
         setAdmmCdOptions(options);
       } catch (error) {
@@ -112,6 +112,8 @@ export default function POPULATION_INFO() {
 
   // 숫자 3자리마다 쉼표 표시
   const formatNumber = (number) => {
+    if (!number) return "-";
+    if (number === 0) return "0";
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
@@ -124,13 +126,13 @@ export default function POPULATION_INFO() {
             label: "인구 수",
             data: [
               parseInt(mainData.maleNmprCnt) || 0,
-              parseInt(mainData.femlNmprCnt) || 0,
+              parseInt(mainData.femlNmprCnt) || 0
             ],
             backgroundColor: ["#36A2EB", "#FF6384"], // 남자 파란색, 여자 빨간색
             borderColor: ["#36A2EB", "#FF6384"],
-            borderWidth: 1,
-          },
-        ],
+            borderWidth: 1
+          }
+        ]
       }
     : null;
 
@@ -147,47 +149,192 @@ export default function POPULATION_INFO() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: false
       },
       tooltip: {
         callbacks: {
           label: function (context) {
             return `${context.label}: ${formatNumber(context.parsed.y)}명`;
-          },
-        },
-      },
+          }
+        }
+      }
     },
     scales: {
       x: {
         ticks: {
           font: {
             size: 14,
-            weight: 400,
-          },
+            weight: 400
+          }
         },
         grid: {
-          display: false,
+          display: false
         },
         border: {
-          display: false,
-        },
+          display: false
+        }
       },
       y: {
         beginAtZero: true,
         max: maxValue,
         ticks: {
-          display: false,
+          display: false
         },
         grid: {
-          display: false,
+          display: false
         },
         border: {
-          display: false,
-        },
-      },
-    },
+          display: false
+        }
+      }
+    }
   };
-  console.log(mainData);
+
+  const ageLabels = [
+    "0-9세",
+    "10대",
+    "20대",
+    "30대",
+    "40대",
+    "50대",
+    "60대",
+    "70대",
+    "80대",
+    "90대",
+    "100세 이상"
+  ];
+
+  const maleAgeCounts = Array.isArray(mainData?.maleAgeArray)
+    ? mainData.maleAgeArray.map((value) => parseInt(value, 10) || 0)
+    : null;
+
+  const femaleAgeCounts = Array.isArray(mainData?.femlAgeArray)
+    ? mainData.femlAgeArray.map((value) => parseInt(value, 10) || 0)
+    : null;
+
+  const maleAgePoints =
+    maleAgeCounts && maleAgeCounts.length === ageLabels.length
+      ? ageLabels.map((label, index) => ({
+          x: maleAgeCounts[index] || 0,
+          y: label
+        }))
+      : null;
+
+  const femaleAgePoints =
+    femaleAgeCounts && femaleAgeCounts.length === ageLabels.length
+      ? ageLabels.map((label, index) => ({
+          x: femaleAgeCounts[index] || 0,
+          y: label
+        }))
+      : null;
+
+  const populationLineData =
+    maleAgePoints && femaleAgePoints
+      ? {
+          datasets: [
+            {
+              label: "남자",
+              data: maleAgePoints,
+              borderColor: "#36A2EB",
+              backgroundColor: "rgba(54, 162, 235, 0.15)",
+              pointBackgroundColor: "#36A2EB",
+              pointBorderColor: "#36A2EB",
+              pointRadius: 4,
+              tension: 0.3,
+              fill: false,
+              parsing: {
+                xAxisKey: "x",
+                yAxisKey: "y"
+              }
+            },
+            {
+              label: "여자",
+              data: femaleAgePoints,
+              borderColor: "#FF6384",
+              backgroundColor: "rgba(255, 99, 132, 0.15)",
+              pointBackgroundColor: "#FF6384",
+              pointBorderColor: "#FF6384",
+              pointRadius: 4,
+              tension: 0.3,
+              fill: false,
+              parsing: {
+                xAxisKey: "x",
+                yAxisKey: "y"
+              }
+            }
+          ]
+        }
+      : null;
+
+  const lineMaxValue =
+    maleAgePoints && femaleAgePoints
+      ? Math.max(
+          ...maleAgePoints.map((point) => point.x || 0),
+          ...femaleAgePoints.map((point) => point.x || 0)
+        )
+      : 0;
+
+  const lineAxisMax =
+    lineMaxValue > 0 ? Math.ceil(lineMaxValue / 500) * 500 : 500;
+
+  const populationLineOptions = populationLineData
+    ? {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: "index",
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              usePointStyle: true,
+              boxWidth: 6,
+              padding: 16
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const { x, y } = context.parsed;
+                return `${context.dataset.label}, ${y} : ${formatNumber(x)}명`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: "linear",
+            grid: {
+              display: false
+            },
+            ticks: {
+              callback: (value) => formatNumber(value),
+              font: {
+                size: 12
+              }
+            },
+            min: 0,
+            suggestedMax: lineAxisMax
+          },
+          y: {
+            type: "category",
+            labels: ageLabels,
+            reverse: true,
+            beginAtZero: true,
+            ticks: {
+              font: {
+                size: 12
+              }
+            },
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    : null;
   return (
     <div className="w-100 flex flex-col gap-5">
       <div className="flex jus-bet gap-5">
@@ -216,6 +363,10 @@ export default function POPULATION_INFO() {
                   <Typography pretendard="SB" size="lg">
                     {mainData.ctpvNm} {mainData.sggNm} {mainData.dongNm}
                   </Typography>
+                  <Typography size="xs">
+                    (기준날짜 : {mainData.statsYm.slice(0, 4)}년{" "}
+                    {mainData.statsYm.slice(4, 6)}월)
+                  </Typography>
                 </div>
                 <Divider content="인구 정보" />
                 <Typography>
@@ -231,6 +382,8 @@ export default function POPULATION_INFO() {
                     {(mainData.totNmprCnt / mainData.hhCnt).toFixed(1)}명
                   </Typography>
                 </div>
+
+                {/* 성별 인구 분포 */}
                 <Divider content="성별 인구 분포" />
                 <div style={{ height: "150px", width: "100%" }}>
                   {chartData && <Bar data={chartData} options={chartOptions} />}
@@ -247,6 +400,24 @@ export default function POPULATION_INFO() {
                       : "-"}{" "}
                     명
                   </Typography>
+                </div>
+
+                {/* 연령별 인구 분포 */}
+                <Divider content="연령별 인구 분포" />
+                {/* 연령대별 추이 선형 차트 */}
+                <div style={{ height: "320px", width: "100%" }}>
+                  {populationLineData && populationLineOptions ? (
+                    <Line
+                      data={populationLineData}
+                      options={populationLineOptions}
+                    />
+                  ) : (
+                    <div className="flex jus-cen item-cen h-100">
+                      <Typography color="cool-gray-7" size="sm">
+                        연령별 인구 데이터를 찾을 수 없습니다.
+                      </Typography>
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>
