@@ -12,7 +12,7 @@ import {
   Pagination,
   Select,
   Table,
-  Typography,
+  Typography
 } from "sud-ui";
 
 export default function COUNTRY_INFO() {
@@ -30,7 +30,7 @@ export default function COUNTRY_INFO() {
       const data = await res.json();
       const options = Object.keys(data).map((key) => ({
         label: data[key],
-        value: key,
+        value: key
       }));
       setCountryList(options);
     };
@@ -67,8 +67,6 @@ export default function COUNTRY_INFO() {
     if (number === 0) return "0";
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
-
-  console.log(mainData);
 
   return (
     <div className="w-100 flex flex-col gap-5">
@@ -114,7 +112,7 @@ export default function COUNTRY_INFO() {
                   <Table
                     columns={[
                       { key: "key", title: "항목", align: "center", col: 1 },
-                      { key: "content", title: "내용", align: "left", col: 4 },
+                      { key: "content", title: "내용", align: "left", col: 4 }
                     ]}
                     dataSource={[
                       { key: "수도", content: mainData.general[0].capital },
@@ -122,19 +120,19 @@ export default function COUNTRY_INFO() {
                         key: "인구",
                         content: `${formatNumber(
                           mainData.general[0].population
-                        )}명 ${mainData.general[0].population_desc}`,
+                        )}명 ${mainData.general[0].population_desc}`
                       },
                       {
                         key: "면적",
                         content: `${formatNumber(
                           mainData.general[0].area
-                        )}km² ${mainData.general[0].area_desc}`,
+                        )}km² ${mainData.general[0].area_desc}`
                       },
                       { key: "언어", content: mainData.general[0].lang },
                       { key: "종교", content: mainData.general[0].religion },
                       { key: "민족", content: mainData.general[0].ethnic },
                       { key: "기후", content: mainData.general[0].climate },
-                      { key: "건국", content: mainData.general[0].establish },
+                      { key: "건국", content: mainData.general[0].establish }
                     ]}
                     size="sm"
                   />
@@ -144,63 +142,63 @@ export default function COUNTRY_INFO() {
                   <Table
                     columns={[
                       { key: "key", title: "항목", align: "center", col: 1 },
-                      { key: "content", title: "내용", align: "left", col: 2 },
+                      { key: "content", title: "내용", align: "left", col: 2 }
                     ]}
                     dataSource={[
                       {
                         key: "GDP",
                         content: `${formatNumber(mainData.economic[0].gdp)} ${
                           mainData.economic[0].gdp_desc
-                        } (USD)`,
+                        } (USD)`
                       },
                       {
                         key: "1인당 GDP",
                         content: `${formatNumber(
                           mainData.economic[0].gdp_per_capita
-                        )} USD`,
+                        )} USD`
                       },
                       {
                         key: "경제성장률",
                         content: `${
                           mainData.economic[0].gdp_growth_rate ?? ""
-                        }% ${mainData.economic[0].gdp_growth_rate_desc ?? ""}`,
+                        }% ${mainData.economic[0].gdp_growth_rate_desc ?? ""}`
                       },
                       {
                         key: "물가상승률",
                         content: `${
                           mainData.economic[0].inflation_rate ?? ""
-                        }% ${mainData.economic[0].gdp_growth_rate_desc ?? ""}`,
+                        }% ${mainData.economic[0].gdp_growth_rate_desc ?? ""}`
                       },
                       {
                         key: "실업률",
                         content: `${
                           mainData.economic[0].unemployment_rate ?? ""
-                        }% ${mainData.economic[0].unemployment_desc ?? ""}`,
+                        }% ${mainData.economic[0].unemployment_desc ?? ""}`
                       },
                       {
                         key: "화폐 단위",
-                        content: mainData.economic[0].currency_unit,
+                        content: mainData.economic[0].currency_unit
                       },
                       {
                         key: "주요 자원",
-                        content: mainData.economic[0].main_resource,
+                        content: mainData.economic[0].main_resource
                       },
                       {
                         key: "주요 산업",
-                        content: mainData.economic[0].main_industry,
+                        content: mainData.economic[0].main_industry
                       },
                       {
                         key: "수출액",
                         content: `${formatNumber(
                           mainData.economic[0].export_amount
-                        )} USD`,
+                        )} USD`
                       },
                       {
                         key: "수입액",
                         content: `${formatNumber(
                           mainData.economic[0].import_amount
-                        )} USD`,
-                      },
+                        )} USD`
+                      }
                     ]}
                   />
                 )}
@@ -209,12 +207,12 @@ export default function COUNTRY_INFO() {
                   <Table
                     columns={[
                       { key: "key", title: "항목", align: "center", col: 1 },
-                      { key: "content", title: "내용", align: "left", col: 1 },
+                      { key: "content", title: "내용", align: "left", col: 1 }
                     ]}
                     dataSource={[
                       {
                         key: "현재 여행경보",
-                        content: mainData.security[0].current_travel_alarm,
+                        content: mainData.security[0].current_travel_alarm
                       },
                       {
                         key: "자살 사망률",
@@ -222,8 +220,8 @@ export default function COUNTRY_INFO() {
                           mainData.security[0].suicide_death_rate ?? "-"
                         }% (${
                           mainData.security[0].suicide_death_rate_year ?? ""
-                        })`,
-                      },
+                        })`
+                      }
                     ]}
                   />
                 )}
@@ -232,7 +230,7 @@ export default function COUNTRY_INFO() {
                   <Table
                     columns={[
                       { key: "key", title: "항목", align: "center", col: 3 },
-                      { key: "content", title: "내용", align: "left", col: 1 },
+                      { key: "content", title: "내용", align: "left", col: 1 }
                     ]}
                     dataSource={[
                       {
@@ -241,7 +239,7 @@ export default function COUNTRY_INFO() {
                           mainData.security[0].clean_water_use_rate ?? "-"
                         }% (${
                           mainData.security[0].clean_water_use_rate_year ?? ""
-                        })`,
+                        })`
                       },
                       {
                         key: "결핵 10만명 당 발병률",
@@ -251,8 +249,8 @@ export default function COUNTRY_INFO() {
                         }% (${
                           mainData.security[0]
                             .tuber_pr_hndrd_thsnd_ppl_outbreak_rate_year ?? ""
-                        })`,
-                      },
+                        })`
+                      }
                     ]}
                   />
                 )}
@@ -261,41 +259,41 @@ export default function COUNTRY_INFO() {
                   <Table
                     columns={[
                       { key: "key", title: "항목", align: "center", col: 1 },
-                      { key: "content", title: "내용", align: "left", col: 3 },
+                      { key: "content", title: "내용", align: "left", col: 3 }
                     ]}
                     dataSource={[
                       {
                         key: "외교 관계",
-                        content: mainData.relation[0].diplomatic_relations,
+                        content: mainData.relation[0].diplomatic_relations
                       },
                       {
                         key: "공관 현황",
-                        content: mainData.relation[0].mission_status,
+                        content: mainData.relation[0].mission_status
                       },
                       {
                         key: "투자 현황",
-                        content: mainData.relation[0].investment_status,
+                        content: mainData.relation[0].investment_status
                       },
                       {
                         key: "교민 현황",
-                        content: mainData.relation[0].oks_status,
+                        content: mainData.relation[0].oks_status
                       },
                       {
                         key: "ODA현황",
-                        content: mainData.relation[0].oda_status,
+                        content: mainData.relation[0].oda_status
                       },
                       {
                         key: "수출액",
                         content: formatNumber(
                           mainData.relation[0].export_amount
-                        ),
+                        )
                       },
                       {
                         key: "수입액",
                         content: formatNumber(
                           mainData.relation[0].import_amount
-                        ),
-                      },
+                        )
+                      }
                     ]}
                     size="sm"
                   />
