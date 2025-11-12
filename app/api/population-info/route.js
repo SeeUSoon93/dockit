@@ -3,22 +3,13 @@ import { NextResponse } from "next/server";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q");
+  const srchFrYm = searchParams.get("srchFrYm");
   if (!q) {
     return NextResponse.json(
       { error: "q (admmCd) 파라미터가 필요합니다." },
       { status: 400 }
     );
   }
-
-  // 오늘 날짜를 구하고 한달 전 날짜로 변경 . 월까지만 표시
-  const today = new Date();
-  const oneMonthAgo = new Date(today);
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-  const oneMonthAgoString = oneMonthAgo
-    .toISOString()
-    .split("T")[0]
-    .replace(/-/g, "")
-    .slice(0, 6);
 
   const API_KEY = process.env.DATA_API_KEY;
   if (!API_KEY) {
@@ -209,7 +200,7 @@ export async function GET(request) {
     try {
       aggregatedAge = await fetchAggregatedData(
         (pageNo) =>
-          `${AGE_API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=${NUM_OF_ROWS}&admmCd=${q}&srchFrYm=${oneMonthAgoString}&srchToYm=${oneMonthAgoString}&lv=4&type=json`
+          `${AGE_API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=${NUM_OF_ROWS}&admmCd=${q}&srchFrYm=${srchFrYm}&srchToYm=${srchFrYm}&lv=4&type=json`
       );
     } catch (error) {
       console.error("연령별 인구 API 호출 실패:", error);
@@ -218,7 +209,7 @@ export async function GET(request) {
     try {
       aggregatedHousehold = await fetchAggregatedData(
         (pageNo) =>
-          `${HOUSEHOLD_API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=${NUM_OF_ROWS}&admmCd=${q}&srchFrYm=${oneMonthAgoString}&srchToYm=${oneMonthAgoString}&lv=4&type=json`
+          `${HOUSEHOLD_API_URL}serviceKey=${API_KEY}&pageNo=${pageNo}&numOfRows=${NUM_OF_ROWS}&admmCd=${q}&srchFrYm=${srchFrYm}&srchToYm=${srchFrYm}&lv=4&type=json`
       );
     } catch (error) {
       console.error("세대별 인구 API 호출 실패:", error);

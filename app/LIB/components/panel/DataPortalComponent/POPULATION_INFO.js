@@ -1,6 +1,6 @@
 import { inputProps } from "@/app/LIB/constant/uiProps";
 import { useEffect, useState } from "react";
-import { Card, Divider, DotSpinner, Select, Typography } from "sud-ui";
+import { Card, Divider, DotSpinner, Input, Select, Typography } from "sud-ui";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -65,6 +65,7 @@ export default function POPULATION_INFO() {
   const [error, setError] = useState(null);
   const [selectedAdmmCd, setSelectedAdmmCd] = useState(null);
   const [admmCdOptions, setAdmmCdOptions] = useState([]);
+  const [srchFrYm, setSrchFrYm] = useState(null);
 
   // dong_dict.json 로드
   useEffect(() => {
@@ -85,12 +86,26 @@ export default function POPULATION_INFO() {
     loadDongDict();
   }, []);
 
+  useEffect(() => {
+    const today = new Date();
+    const oneMonthAgo = new Date(today);
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const oneMonthAgoString = oneMonthAgo
+      .toISOString()
+      .split("T")[0]
+      .replace(/-/g, "")
+      .slice(0, 6);
+    setSrchFrYm(oneMonthAgoString);
+  }, []);
+
   const handleSearch = async () => {
     setLoading(true);
     setMainData(null);
     setError(null);
     try {
-      const response = await fetch(`/api/population-info?q=${selectedAdmmCd}`);
+      const response = await fetch(
+        `/api/population-info?q=${selectedAdmmCd}&srchFrYm=${srchFrYm}`
+      );
       if (!response.ok) {
         throw new Error(`API 오류: ${response.status}`);
       }
@@ -335,9 +350,38 @@ export default function POPULATION_INFO() {
         }
       }
     : null;
+
+  // (srchFrYm이 이 함수 스코프에서 접근 가능하다고 가정)
+
+  const inputError = () => {
+    const minDate = 202210;
+    const today = new Date();
+    const todayString = today
+      .toISOString()
+      .split("T")[0]
+      .replace(/-/g, "")
+      .slice(0, 6); // "202511"
+    const maxDateLimit = parseInt(todayString, 10);
+    if (srchFrYm < minDate || srchFrYm >= maxDateLimit) {
+      return true; // 에러 발생
+    }
+
+    // 6글자가 아니면 에러
+    if (srchFrYm.length !== 6) {
+      return true;
+    }
+
+    // 숫자가 아니면 에러
+    if (isNaN(srchFrYm)) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <div className="w-100 flex flex-col gap-5">
-      <div className="flex jus-bet gap-5">
+      <div className="grid gap-5" style={{ gridTemplateColumns: "2fr 1fr" }}>
         <Select
           {...inputProps}
           value={selectedAdmmCd}
@@ -346,7 +390,27 @@ export default function POPULATION_INFO() {
           options={admmCdOptions}
           searchable
         />
+        <Input
+          {...inputProps}
+          value={srchFrYm}
+          onChange={(e) => setSrchFrYm(e.target.value)}
+          placeholder={"검색할 기준 월을 입력하세요"}
+          onEnter={() => {
+            if (!inputError()) {
+              handleSearch();
+            }
+          }}
+          error={inputError()}
+        />
       </div>
+
+      {inputError() && (
+        <div className="flex jus-end item-cen">
+          <Typography color="red-6" size="xs">
+            ※ 2022년 10월부터 현재 기준 이전 월까지만 가능합니다.
+          </Typography>
+        </div>
+      )}
       {loading ? (
         <DotSpinner text="검색 중입니다..." />
       ) : mainData ? (
