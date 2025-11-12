@@ -88,61 +88,15 @@ export default function POPULATION_INFO() {
   const handleSearch = async () => {
     setLoading(true);
     setMainData(null);
+    setError(null);
     try {
-      const res = await fetch(
-        `/api/dataportal?select_value=POPULATION_INFO&q=${selectedAdmmCd}`
-      );
-      if (!res.ok) {
-        throw new Error(`API 오류: ${res.status}`);
+      const response = await fetch(`/api/population-info?q=${selectedAdmmCd}`);
+      if (!response.ok) {
+        throw new Error(`API 오류: ${response.status}`);
       }
-      const data = await res.json();
-      const items = Array.isArray(data.Response.items.item)
-        ? data.Response.items.item
-        : [data.Response.items.item];
+      const data = await response.json();
 
-      console.log(items);
-
-      // items는 {
-      //     "hhCnt": 세대수,
-      //     "femlNmprCnt": 여자인구수,
-      //     "totNmprCnt": 총인구수,
-      //     "maleNmprCnt": 남자인구수,
-      //     "ctpvNm": 시도명,
-      //     "sggNm": 시군구명,
-      //     "dongNm": 읍면동명,
-      // }, 형태의 배열임
-      // 세대수, 여자인구수, 총인구수, 남자인구수는 모두 더하고 나머지는 그대로 사용
-      const totNmprCnt = items.reduce(
-        (acc, item) => acc + parseInt(item.totNmprCnt),
-        0
-      );
-      const maleNmprCnt = items.reduce(
-        (acc, item) => acc + parseInt(item.maleNmprCnt),
-        0
-      );
-      const femlNmprCnt = items.reduce(
-        (acc, item) => acc + parseInt(item.femlNmprCnt),
-        0
-      );
-      const hhCnt = items.reduce((acc, item) => acc + parseInt(item.hhCnt), 0);
-      const hhNmpr = items.reduce(
-        (acc, item) => acc + parseInt(item.hhNmpr),
-        0
-      );
-      const ctpvNm = items[0].ctpvNm;
-      const sggNm = items[0].sggNm;
-      const dongNm = items[0].dongNm;
-      const mainData = {
-        totNmprCnt,
-        maleNmprCnt,
-        femlNmprCnt,
-        hhCnt,
-        hhNmpr,
-        ctpvNm,
-        sggNm,
-        dongNm,
-      };
-      setMainData(mainData);
+      setMainData(data);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -234,7 +188,6 @@ export default function POPULATION_INFO() {
     },
   };
   console.log(mainData);
-
   return (
     <div className="w-100 flex flex-col gap-5">
       <div className="flex jus-bet gap-5">
