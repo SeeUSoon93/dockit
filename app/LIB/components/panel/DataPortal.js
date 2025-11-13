@@ -11,6 +11,9 @@ import HACCP_PRODUCT_INFO from "./DataPortalComponent/HACCP_PRODUCT_INFO";
 import POPULATION_INFO from "./DataPortalComponent/POPULATION_INFO";
 import COUNTRY_INFO from "./DataPortalComponent/COUNTRY_INFO";
 import NK_TV_SCHEDULE from "./DataPortalComponent/NK_TV_SCHEDULE";
+import CULTURE_INFO from "./DataPortalComponent/CULTURE_INFO";
+import FESTIVAL_INFO from "./DataPortalComponent/FESTIVAL_INFO";
+import SOCIAL_ENTERPRISE_INFO from "./DataPortalComponent/SOCIAL_ENTERPRISE_INFO";
 
 export default function DataPortal({ dragHandleProps }) {
   const [selectedData, setSelectedData] = useState(null);
@@ -39,7 +42,12 @@ export default function DataPortal({ dragHandleProps }) {
       if (selectedData === "NK_TV_SCHEDULE") {
         footerText = "통일부";
       }
-
+      if (selectedData === "CULTURE_INFO" || selectedData === "FESTIVAL_INFO") {
+        footerText = "문화체육관광부";
+      }
+      if (selectedData === "SOCIAL_ENTERPRISE_INFO") {
+        footerText = "한국사회적기업진흥원";
+      }
       return (
         <div className="flex jus-end">
           <Typography size="xs" color="cool-gray-7">
@@ -72,6 +80,11 @@ export default function DataPortal({ dragHandleProps }) {
         {selectedData === "POPULATION_INFO" && <POPULATION_INFO />}
         {selectedData === "COUNTRY_INFO" && <COUNTRY_INFO />}
         {selectedData === "NK_TV_SCHEDULE" && <NK_TV_SCHEDULE />}
+        {selectedData === "CULTURE_INFO" && <CULTURE_INFO />}
+        {selectedData === "FESTIVAL_INFO" && <FESTIVAL_INFO />}
+        {selectedData === "SOCIAL_ENTERPRISE_INFO" && (
+          <SOCIAL_ENTERPRISE_INFO />
+        )}
       </div>
       {footer()}
     </WidgetCard>

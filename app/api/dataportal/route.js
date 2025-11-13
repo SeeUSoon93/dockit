@@ -9,6 +9,8 @@ export async function GET(request) {
   const subValue = searchParams.get("sub_value");
 
   const API_KEY = process.env.DATA_API_KEY;
+  const CULTURE_API_KEY = process.env.CULTURE_API_KEY;
+  const FESTIVAL_API_KEY = process.env.FESTIVAL_API_KEY;
 
   if (!selectedValue) {
     return NextResponse.json(
@@ -44,6 +46,20 @@ export async function GET(request) {
     const API_URL = "https://apis.data.go.kr/1250000/tvprgm/getTvprgm?";
     fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=100&bgng_ymd=${subValue}&end_ymd=${subValue}`;
   }
+  if (selectedValue === "CULTURE_INFO") {
+    const API_URL = "https://api.kcisa.kr/openapi/CNV_060/request?";
+    fetchUrl = `${API_URL}serviceKey=${CULTURE_API_KEY}&pageNo=${pageNo}&numOfRows=10&dtype=${subValue}&title=${q}`;
+  }
+  if (selectedValue === "FESTIVAL_INFO") {
+    const API_URL =
+      "https://api.kcisa.kr/openapi/service/rest/meta4/getKCPG0504?";
+    fetchUrl = `${API_URL}serviceKey=${FESTIVAL_API_KEY}&pageNo=${pageNo}&numOfRows=10`;
+  }
+  if (selectedValue === "SOCIAL_ENTERPRISE_INFO") {
+    const API_URL =
+      "https://api.odcloud.kr/api/socialEnterpriseList/v1/authCompanyList?";
+    fetchUrl = `${API_URL}serviceKey=${API_KEY}&page=${pageNo}&perPage=10&returnType=json&keyword=${q}`;
+  }
 
   if (fetchUrl === "") {
     return NextResponse.json(
@@ -53,7 +69,16 @@ export async function GET(request) {
   }
 
   try {
-    const response = await fetch(fetchUrl);
+    let response = null;
+    if (selectedValue === "CULTURE_INFO" || selectedValue === "FESTIVAL_INFO") {
+      response = await fetch(fetchUrl, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+    } else {
+      response = await fetch(fetchUrl);
+    }
     let data = null;
     if (selectedValue === "MOUNTAIN_INFO") {
       const xmlData = await response.text();
