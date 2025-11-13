@@ -40,6 +40,10 @@ export async function GET(request) {
 
     fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=10&searchWrd=${q}`;
   }
+  if (selectedValue === "NK_TV_SCHEDULE") {
+    const API_URL = "https://apis.data.go.kr/1250000/tvprgm/getTvprgm?";
+    fetchUrl = `${API_URL}serviceKey=${API_KEY}&pageNo=1&numOfRows=100&bgng_ymd=${subValue}&end_ymd=${subValue}`;
+  }
 
   if (fetchUrl === "") {
     return NextResponse.json(

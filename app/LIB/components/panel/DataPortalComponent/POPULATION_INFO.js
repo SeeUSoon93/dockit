@@ -10,7 +10,7 @@ import {
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
 
@@ -54,7 +54,7 @@ const valueLabelPlugin = {
         ctx.restore();
       });
     });
-  }
+  },
 };
 
 ChartJS.register(valueLabelPlugin);
@@ -65,7 +65,7 @@ export default function POPULATION_INFO() {
   const [error, setError] = useState(null);
   const [selectedAdmmCd, setSelectedAdmmCd] = useState(null);
   const [admmCdOptions, setAdmmCdOptions] = useState([]);
-  const [srchFrYm, setSrchFrYm] = useState(null);
+  const [srchFrYm, setSrchFrYm] = useState("");
 
   // dong_dict.json 로드
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function POPULATION_INFO() {
         // key가 value, value가 label
         const options = Object.keys(dong_dict).map((key) => ({
           label: dong_dict[key],
-          value: key
+          value: key,
         }));
         setAdmmCdOptions(options);
       } catch (error) {
@@ -141,13 +141,13 @@ export default function POPULATION_INFO() {
             label: "인구 수",
             data: [
               parseInt(mainData.maleNmprCnt) || 0,
-              parseInt(mainData.femlNmprCnt) || 0
+              parseInt(mainData.femlNmprCnt) || 0,
             ],
             backgroundColor: ["#36A2EB", "#FF6384"], // 남자 파란색, 여자 빨간색
             borderColor: ["#36A2EB", "#FF6384"],
-            borderWidth: 1
-          }
-        ]
+            borderWidth: 1,
+          },
+        ],
       }
     : null;
 
@@ -164,45 +164,45 @@ export default function POPULATION_INFO() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
       tooltip: {
         callbacks: {
           label: function (context) {
             return `${context.label}: ${formatNumber(context.parsed.y)}명`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
     scales: {
       x: {
         ticks: {
           font: {
             size: 14,
-            weight: 400
-          }
+            weight: 400,
+          },
         },
         grid: {
-          display: false
+          display: false,
         },
         border: {
-          display: false
-        }
+          display: false,
+        },
       },
       y: {
         beginAtZero: true,
         max: maxValue,
         ticks: {
-          display: false
+          display: false,
         },
         grid: {
-          display: false
+          display: false,
         },
         border: {
-          display: false
-        }
-      }
-    }
+          display: false,
+        },
+      },
+    },
   };
 
   const ageLabels = [
@@ -216,7 +216,7 @@ export default function POPULATION_INFO() {
     "70대",
     "80대",
     "90대",
-    "100세 이상"
+    "100세 이상",
   ];
 
   const maleAgeCounts = Array.isArray(mainData?.maleAgeArray)
@@ -231,7 +231,7 @@ export default function POPULATION_INFO() {
     maleAgeCounts && maleAgeCounts.length === ageLabels.length
       ? ageLabels.map((label, index) => ({
           x: maleAgeCounts[index] || 0,
-          y: label
+          y: label,
         }))
       : null;
 
@@ -239,7 +239,7 @@ export default function POPULATION_INFO() {
     femaleAgeCounts && femaleAgeCounts.length === ageLabels.length
       ? ageLabels.map((label, index) => ({
           x: femaleAgeCounts[index] || 0,
-          y: label
+          y: label,
         }))
       : null;
 
@@ -259,8 +259,8 @@ export default function POPULATION_INFO() {
               fill: false,
               parsing: {
                 xAxisKey: "x",
-                yAxisKey: "y"
-              }
+                yAxisKey: "y",
+              },
             },
             {
               label: "여자",
@@ -274,10 +274,10 @@ export default function POPULATION_INFO() {
               fill: false,
               parsing: {
                 xAxisKey: "x",
-                yAxisKey: "y"
-              }
-            }
-          ]
+                yAxisKey: "y",
+              },
+            },
+          ],
         }
       : null;
 
@@ -298,7 +298,7 @@ export default function POPULATION_INFO() {
         maintainAspectRatio: false,
         interaction: {
           mode: "index",
-          intersect: false
+          intersect: false,
         },
         plugins: {
           legend: {
@@ -306,32 +306,32 @@ export default function POPULATION_INFO() {
             labels: {
               usePointStyle: true,
               boxWidth: 6,
-              padding: 16
-            }
+              padding: 16,
+            },
           },
           tooltip: {
             callbacks: {
               label: (context) => {
                 const { x, y } = context.parsed;
                 return `${context.dataset.label}, ${y} : ${formatNumber(x)}명`;
-              }
-            }
-          }
+              },
+            },
+          },
         },
         scales: {
           x: {
             type: "linear",
             grid: {
-              display: false
+              display: false,
             },
             ticks: {
               callback: (value) => formatNumber(value),
               font: {
-                size: 12
-              }
+                size: 12,
+              },
             },
             min: 0,
-            suggestedMax: lineAxisMax
+            suggestedMax: lineAxisMax,
           },
           y: {
             type: "category",
@@ -340,14 +340,14 @@ export default function POPULATION_INFO() {
             beginAtZero: true,
             ticks: {
               font: {
-                size: 12
-              }
+                size: 12,
+              },
             },
             grid: {
-              display: false
-            }
-          }
-        }
+              display: false,
+            },
+          },
+        },
       }
     : null;
 

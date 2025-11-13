@@ -10,6 +10,7 @@ import MOUNTAIN_INFO from "./DataPortalComponent/MOUNTAIN_INFO";
 import HACCP_PRODUCT_INFO from "./DataPortalComponent/HACCP_PRODUCT_INFO";
 import POPULATION_INFO from "./DataPortalComponent/POPULATION_INFO";
 import COUNTRY_INFO from "./DataPortalComponent/COUNTRY_INFO";
+import NK_TV_SCHEDULE from "./DataPortalComponent/NK_TV_SCHEDULE";
 
 export default function DataPortal({ dragHandleProps }) {
   const [selectedData, setSelectedData] = useState(null);
@@ -34,6 +35,9 @@ export default function DataPortal({ dragHandleProps }) {
       }
       if (selectedData === "COUNTRY_INFO") {
         footerText = "외교부";
+      }
+      if (selectedData === "NK_TV_SCHEDULE") {
+        footerText = "통일부";
       }
 
       return (
@@ -67,6 +71,7 @@ export default function DataPortal({ dragHandleProps }) {
         {selectedData === "HACCP_PRODUCT_INFO" && <HACCP_PRODUCT_INFO />}
         {selectedData === "POPULATION_INFO" && <POPULATION_INFO />}
         {selectedData === "COUNTRY_INFO" && <COUNTRY_INFO />}
+        {selectedData === "NK_TV_SCHEDULE" && <NK_TV_SCHEDULE />}
       </div>
       {footer()}
     </WidgetCard>
