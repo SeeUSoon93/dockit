@@ -6,11 +6,12 @@ import {
   ref,
   storage,
 } from "../../config/firebaseConfig";
-import { Button, DotSpinner, Select, toast } from "sud-ui";
+import { Button, DotSpinner, Input, Select, toast, Typography } from "sud-ui";
 import { useEffect, useState } from "react";
 import { Download } from "sud-icons";
 import GeoJsonToSvg from "./GeoComponent/GeoJsonToSvg";
 import { IoCopyOutline } from "react-icons/io5";
+import { inputProps } from "../../constant/uiProps";
 
 export default function GeoJson({ dragHandleProps }) {
   const [regionList, setRegionList] = useState([]);
@@ -18,6 +19,7 @@ export default function GeoJson({ dragHandleProps }) {
   const [loading, setLoading] = useState(false);
   const [geojsonData, setGeojsonData] = useState(null);
   const [svgElement, setSvgElement] = useState(null);
+  const [scale, setScale] = useState(1);
 
   // 지역 목록 가져오기
   useEffect(() => {
@@ -33,6 +35,11 @@ export default function GeoJson({ dragHandleProps }) {
     };
     fetchFiles();
   }, []);
+
+  useEffect(() => {
+    if (scale < 0) setScale(0);
+    if (scale > 100) setScale(100);
+  }, [scale]);
 
   useEffect(() => {
     const fetchGeoJson = async () => {
@@ -164,10 +171,25 @@ export default function GeoJson({ dragHandleProps }) {
           <DotSpinner />
         ) : geojsonData ? (
           <>
+            <div className="flex items-center jus-end">
+              <Typography size="sm">※ 전체 크기 대비</Typography>
+              <Input
+                {...inputProps}
+                value={scale}
+                onChange={(e) => setScale(e.target.value)}
+                size="sm"
+                style={{ width: 40 }}
+                type="number"
+                border={false}
+              />
+              <Typography size="sm">% 이하 면적 필터링</Typography>
+            </div>
             <GeoJsonToSvg
               geojson={geojsonData}
               setSvgRef={setSvgElement}
               region={region}
+              scale={scale}
+              setScale={setScale}
             />
             <div className="flex justify-center gap-10">
               <Button
