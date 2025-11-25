@@ -58,8 +58,10 @@ export function DocumentProvider({ children }) {
       const finalHtml = await generateStyleSet(
         bulletStyle,
         docSetting,
-        content
+        htmlContent
       );
+
+      console.log(finalHtml);
 
       const response = await fetch(`${NODE_URL}/api/thumbnail`, {
         method: "POST",
