@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
+import { useUser } from "./UserContext";
 
 const MusicContext = createContext();
 
@@ -10,6 +11,7 @@ export function MusicProvider({ children }) {
   const [musicList, setMusicList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { user, userLoading } = useUser();
 
   // Firebase Storage에서 음악 파일 목록 가져오기
   const fetchMusicFiles = async (category) => {
@@ -21,6 +23,21 @@ export function MusicProvider({ children }) {
       const categoryRef = ref(storage, `music/${category}`);
 
       const result = await listAll(categoryRef);
+
+      // 이미지 파일 목록을 미리 생성 (썸네일 존재 여부 확인용)
+      const imageFiles = new Set();
+      result.items.forEach((itemRef) => {
+        const name = itemRef.name.toLowerCase();
+        if (
+          name.endsWith(".jpg") ||
+          name.endsWith(".jpeg") ||
+          name.endsWith(".png")
+        ) {
+          // 확장자 제거한 파일명으로 저장
+          const fileNameWithoutExt = itemRef.name.replace(/\.[^/.]+$/, "");
+          imageFiles.add(fileNameWithoutExt.toLowerCase());
+        }
+      });
 
       const musicFiles = await Promise.all(
         result.items.map(async (itemRef) => {
@@ -35,16 +52,23 @@ export function MusicProvider({ children }) {
 
           const downloadURL = await getDownloadURL(itemRef);
 
-          // 같은 이름의 jpg 파일 찾기
+          // 같은 이름의 jpg 파일 찾기 (목록에 있는 경우에만 요청)
           let thumbnailUrl = null;
-          try {
-            const fileName = itemRef.name.replace(/\.[^/.]+$/, ""); // 확장자 제거
-            const thumbnailRef = ref(
-              storage,
-              `music/${category}/${fileName}.jpg`
-            );
-            thumbnailUrl = await getDownloadURL(thumbnailRef);
-          } catch (error) {}
+          const fileName = itemRef.name.replace(/\.[^/.]+$/, ""); // 확장자 제거
+
+          // 썸네일이 실제로 존재하는지 확인 후에만 다운로드 URL 가져오기
+          if (imageFiles.has(fileName.toLowerCase())) {
+            try {
+              const thumbnailRef = ref(
+                storage,
+                `music/${category}/${fileName}.jpg`
+              );
+              thumbnailUrl = await getDownloadURL(thumbnailRef);
+            } catch (error) {
+              // 파일 목록에는 있지만 다운로드 실패한 경우 (드물게 발생)
+              console.warn(`썸네일 다운로드 실패: ${fileName}.jpg`, error);
+            }
+          }
 
           return {
             name: itemRef.name,
@@ -85,8 +109,9 @@ export function MusicProvider({ children }) {
 
   // 컴포넌트 마운트 시 음악 파일 로드
   useEffect(() => {
+    if (!user || userLoading) return;
     loadAllMusic();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, userLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value = {
     natureMusic,
