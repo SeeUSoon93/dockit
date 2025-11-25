@@ -33,7 +33,12 @@ const inlineCssStyles = async (htmlString) => {
   return doc.documentElement.outerHTML;
 };
 
-export const generateStyleSet = async (bulletStyle, docSetting, content) => {
+export const generateStyleSet = async (
+  bulletStyle,
+  docSetting,
+  content,
+  idReadonly = false
+) => {
   const editorStyleVariables = generateCssVariables(bulletStyle);
   const variableStyleString = `
   :root {
@@ -53,8 +58,14 @@ export const generateStyleSet = async (bulletStyle, docSetting, content) => {
       }
       
       /* 3b. (핵심!) 첫 페이지만 상단 여백을 0으로 덮어쓰기 */
+      ${
+        idReadonly
+          ? ""
+          : `
       @page :first {
         margin-top: 0mm;
+      }
+      `
       }
       /* 빈 <p> 태그가 높이를 갖도록 강제 (줄바꿈 문제 해결) */
       .prose p:empty {

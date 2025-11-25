@@ -10,7 +10,7 @@ import { useEditorContext } from "@/app/LIB/context/EditorContext";
 import { useSetting } from "@/app/LIB/context/SettingContext";
 import { useLayout } from "@/app/LIB/context/LayoutContext";
 import "katex/dist/katex.min.css";
-import { generateStyleSet, inlineCssStyles } from "@/app/LIB/utils/pdfUtils";
+import { generateStyleSet } from "@/app/LIB/utils/pdfUtils";
 
 const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL;
 const API_KEY = process.env.NEXT_PUBLIC_PUPPETEER_API_KEY;
