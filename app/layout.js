@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="manifest" href="/manifest.json" />
         {/* mint-6 */}
-        <meta name="theme-color" content="#13c2c2" />
+        <meta name="theme-color" content="#e6fff9" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
