@@ -78,6 +78,8 @@ export function DocumentProvider({ children }) {
       }
 
       const data = await response.json();
+
+      console.log(data);
       return data.thumbnail;
     } catch (error) {
       console.error("썸네일 생성 오류:", error);
