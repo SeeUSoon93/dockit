@@ -61,8 +61,6 @@ export function DocumentProvider({ children }) {
         htmlContent
       );
 
-      console.log(finalHtml);
-
       const response = await fetch(`${NODE_URL}/api/thumbnail`, {
         method: "POST",
         headers: {
@@ -81,7 +79,6 @@ export function DocumentProvider({ children }) {
 
       const data = await response.json();
 
-      console.log(data);
       return data.thumbnail;
     } catch (error) {
       console.error("썸네일 생성 오류:", error);
