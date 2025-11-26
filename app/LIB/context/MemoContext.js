@@ -17,7 +17,7 @@ export function MemoProvider({ children }) {
     loading: memoLoading,
     isSaving,
     error,
-  } = useDataManagement("memo", DEFAULT_MEMO, "memo", 2000);
+  } = useDataManagement("memo", DEFAULT_MEMO, "dockit.memo.v1", 2000);
 
   const value = useMemo(
     () => ({

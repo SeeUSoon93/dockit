@@ -5,9 +5,10 @@ import {
   signInWithPopup,
   signOut,
   deleteUser,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../config/firebaseConfig";
-import { callApi } from "./apiUtils";
+import { callApi, getIdToken } from "./apiUtils";
 
 // 1. 구글 로그인 or 가입
 export const handleGoogleAuth = async () => {
@@ -58,4 +59,31 @@ export const refreshUserPoint = async (data) => {
     method: "PUT",
     body: JSON.stringify(data),
   });
+};
+
+// 6. 테스트 계정 자동로그인(설정한 이메일과 비밀번호)
+export const handleLogin = async () => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      "test@dockit.kr",
+      "dockit"
+    );
+
+    const { uid, email: userEmail } = userCredential.user;
+    const displayName = userCredential.user.displayName || "테스터";
+
+    // 3. callApi 사용 (토큰 추출, 헤더 설정 자동화)
+    return await callApi(`${API_BASE_URL}/users/test_login`, {
+      method: "POST",
+      body: JSON.stringify({
+        uid,
+        email: userEmail,
+        display_name: displayName,
+      }),
+    });
+  } catch (e) {
+    console.error("테스트 로그인 실패:", e);
+    throw e;
+  }
 };

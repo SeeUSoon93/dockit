@@ -40,6 +40,7 @@ export function useDataManagement(
       const response = await fetchDataList(endpoint);
 
       if (response && response.content && response.content.length > 0) {
+        // 1. 불러오기 성공 시
         const userData = response.content[0];
         setDataState(userData);
         if (localStorageKey) {
@@ -50,15 +51,16 @@ export function useDataManagement(
           ...defaultData,
           userId: user.uid,
         };
-        const newDoc = await createData(endpoint);
-        const finalNewData = await updateData(
-          endpoint,
-          newDoc._id,
-          newDataPayload
-        );
-        setDataState(finalNewData);
+        // [수정 핵심 1] createData에 payload를 바로 넘겨서 생성과 동시에 데이터 저장
+        // createData 정의: (contentType, parentId = null, data = {})
+        const createResponse = await createData(endpoint, null, newDataPayload);
+        // [수정 핵심 2] 백엔드가 {"content": ...} 로 주므로 .content를 벗겨내야 함
+        const createdDoc = createResponse.content || createResponse;
+        // 이제 createdDoc에는 _id가 확실히 들어있음
+        setDataState(createdDoc);
+
         if (localStorageKey) {
-          localStorage.setItem(localStorageKey, JSON.stringify(finalNewData));
+          localStorage.setItem(localStorageKey, JSON.stringify(createdDoc));
         }
       }
     } catch (e) {

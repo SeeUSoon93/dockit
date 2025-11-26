@@ -1,86 +1,162 @@
 "use client";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback
-} from "react";
+import { createContext, useContext, useCallback, useMemo } from "react";
+import { useDataManagement } from "../hook/useDataManagement";
 
 const PanelContext = createContext();
 
-export function PanelProvider({ children, storageKey = "dockit.panels.v1" }) {
-  const [mounted, setMounted] = useState(false);
-  const [left, setLeft] = useState([]);
-  const [right, setRight] = useState([]);
+const DEFAULT_PANELS = {
+  panels: {
+    left: [],
+    right: [],
+  },
+};
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export function PanelProvider({ children }) {
+  const {
+    data, // 변수명 명확화를 위해 data 그대로 사용 (실제로는 panels 전체 객체)
+    setData: setPanelsData,
+    saveData: savePanels, // ✅ 수동 저장을 위해 추가
+    loading,
+    isSaving, // ✅ 저장 중 상태 추가
+    error, // ✅ 에러 상태 추가
+  } = useDataManagement("panels", DEFAULT_PANELS, "dockit.panels.v1", 1000);
 
-  // 복원 로직 (변경 없음)
-  useEffect(() => {
-    if (!mounted) return;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      if (Array.isArray(data.left)) setLeft(data.left);
-      if (Array.isArray(data.right)) setRight(data.right);
-    } catch (err) {
-      console.error("Failed to restore panel state:", err);
-    }
-  }, [mounted, storageKey]);
+  // 2. 기존 코드 호환성을 위한 setLeft 어댑터
+  const setLeft = useCallback(
+    (action) => {
+      setPanelsData((prev) => {
+        // prev.panels가 없는 경우를 대비해 안전장치 추가
+        const currentPanels = prev.panels || { left: [], right: [] };
 
-  // 저장 로직 (변경 없음)
-  useEffect(() => {
-    if (!mounted) return;
-    try {
-      const data = { left, right };
-      localStorage.setItem(storageKey, JSON.stringify(data));
-    } catch (err) {
-      console.error("Failed to save panel state:", err);
-    }
-  }, [mounted, left, right, storageKey]);
+        const newLeft =
+          typeof action === "function"
+            ? action(currentPanels.left || [])
+            : action;
 
-  // --- 패널 추가/삭제 관련 유틸 함수 (DnD와 무관하므로 유지) ---
-
-  const exists = useCallback(
-    (type) => left.includes(type) || right.includes(type),
-    [left, right]
+        return {
+          ...prev,
+          panels: {
+            ...currentPanels,
+            left: newLeft,
+          },
+        };
+      });
+    },
+    [setPanelsData]
   );
 
-  const remove = useCallback((type) => {
-    setLeft((prev) => prev.filter((t) => t !== type));
-    setRight((prev) => prev.filter((t) => t !== type));
-  }, []);
+  // 3. 기존 코드 호환성을 위한 setRight 어댑터
+  const setRight = useCallback(
+    (action) => {
+      setPanelsData((prev) => {
+        const currentPanels = prev.panels || { left: [], right: [] };
+
+        const newRight =
+          typeof action === "function"
+            ? action(currentPanels.right || [])
+            : action;
+
+        return {
+          ...prev,
+          panels: {
+            ...currentPanels,
+            right: newRight,
+          },
+        };
+      });
+    },
+    [setPanelsData]
+  );
+
+  // 4. 유틸리티 함수들
+  const exists = useCallback(
+    (type) => {
+      const currentLeft = data?.panels?.left || [];
+      const currentRight = data?.panels?.right || [];
+      return currentLeft.includes(type) || currentRight.includes(type);
+    },
+    [data]
+  );
+
+  const remove = useCallback(
+    (type) => {
+      setPanelsData((prev) => {
+        const currentPanels = prev.panels || { left: [], right: [] };
+        return {
+          ...prev,
+          panels: {
+            left: (currentPanels.left || []).filter((t) => t !== type),
+            right: (currentPanels.right || []).filter((t) => t !== type),
+          },
+        };
+      });
+    },
+    [setPanelsData]
+  );
 
   const toggle = useCallback(
     (type) => {
-      if (exists(type)) {
-        remove(type);
-      } else {
-        // 기본적으로 오른쪽 패널에 추가
-        setRight((prev) => [...prev, type]);
-      }
+      setPanelsData((prev) => {
+        const currentPanels = prev.panels || { left: [], right: [] };
+        const currentLeft = currentPanels.left || [];
+        const currentRight = currentPanels.right || [];
+
+        const isExist =
+          currentLeft.includes(type) || currentRight.includes(type);
+
+        if (isExist) {
+          // 제거
+          return {
+            ...prev,
+            panels: {
+              left: currentLeft.filter((t) => t !== type),
+              right: currentRight.filter((t) => t !== type),
+            },
+          };
+        } else {
+          // 추가 (기본 오른쪽)
+          return {
+            ...prev,
+            panels: {
+              ...currentPanels,
+              right: [...currentRight, type],
+            },
+          };
+        }
+      });
     },
-    [exists, remove]
+    [setPanelsData]
   );
 
+  const value = useMemo(
+    () => ({
+      left: data?.panels?.left || [],
+      right: data?.panels?.right || [],
+      setLeft,
+      setRight,
+      toggle,
+      remove,
+      exists,
+      savePanels,
+      loading,
+      isSaving,
+      error,
+    }),
+    [
+      data,
+      setLeft,
+      setRight,
+      toggle,
+      remove,
+      exists,
+      savePanels,
+      loading,
+      isSaving,
+      error,
+    ]
+  );
   return (
-    <PanelContext.Provider
-      value={{
-        left,
-        right,
-        setLeft, // Workspace의 dnd-kit 핸들러가 직접 사용
-        setRight, // Workspace의 dnd-kit 핸들러가 직접 사용
-        toggle,
-        remove,
-        exists
-      }}
-    >
-      {children}
-    </PanelContext.Provider>
+    <PanelContext.Provider value={value}>{children}</PanelContext.Provider>
   );
 }
 

@@ -1,14 +1,13 @@
 import Template from "./Template";
-import { Button, Div, Drawer, Tag, Typography } from "sud-ui";
+import { Button, Div, Typography } from "sud-ui";
 
 import {
   FaBookBookmark,
   FaCalculator,
   FaDice,
   FaNoteSticky,
-  FaWikipediaW,
 } from "react-icons/fa6";
-import { MdImageSearch, MdKeyboardCommandKey, MdMuseum } from "react-icons/md";
+import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import {
   TbChartDotsFilled,
@@ -16,12 +15,11 @@ import {
   TbEdit,
   TbMath,
 } from "react-icons/tb";
-import { PiListNumbersFill, PiTreeViewBold } from "react-icons/pi";
-import { CalendarOutline, Korea, Map, TimerOutline } from "sud-icons";
+import { PiListNumbersFill } from "react-icons/pi";
+import { CalendarOutline, Map, TimerOutline } from "sud-icons";
 import { BsMusicPlayerFill, BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
 import { GiSouthKorea, GiStarSattelites } from "react-icons/gi";
-import { IoSyncCircle } from "react-icons/io5";
 
 export default function WidgetDrawer({
   openWidgetDrawer,

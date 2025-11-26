@@ -87,14 +87,14 @@ export default function AiChat({ dragHandleProps }) {
         <div className="w-30 justify-end flex" style={{ minWidth: "100px" }}>
           <div className="grid col-2 gap-5 items-center">
             <Progress
-              value={user.ai_beta_points || 0}
+              value={user?.ai_beta_points || 0}
               max={2000}
               valuePosition="outside-right"
               color="mint-7"
               showText={false}
             />
             <Typography size="sm" pretendard="SB" color="mint-7">
-              {user.ai_beta_points}P
+              {user?.ai_beta_points}P
             </Typography>
           </div>
         </div>
