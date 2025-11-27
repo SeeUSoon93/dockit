@@ -5,7 +5,7 @@ import {
   FaBookBookmark,
   FaCalculator,
   FaDice,
-  FaNoteSticky,
+  FaNoteSticky
 } from "react-icons/fa6";
 import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
@@ -13,7 +13,7 @@ import {
   TbChartDotsFilled,
   TbDatabaseSmile,
   TbEdit,
-  TbMath,
+  TbMath
 } from "react-icons/tb";
 import { PiListNumbersFill } from "react-icons/pi";
 import { CalendarOutline, Map, TimerOutline } from "sud-icons";
@@ -23,11 +23,11 @@ import { GiSouthKorea, GiStarSattelites } from "react-icons/gi";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer,
+  setOpenWidgetDrawer
 }) {
   const { left, right, toggle } = usePanels();
 
-  // 위젯 등록
+  // 툴킷 등록
   const registerWidget = (type) => {
     toggle(type);
   };
@@ -56,7 +56,7 @@ export default function WidgetDrawer({
     <Template
       open={openWidgetDrawer}
       onClose={() => setOpenWidgetDrawer(false)}
-      title="위젯"
+      title="툴킷"
       content={
         <div className="flex flex-col gap-30 overflow-y-auto max-h-[calc(100dvh-100px)]">
           <div className="flex flex-col gap-10">

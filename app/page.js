@@ -158,7 +158,7 @@ export default function Home() {
   const renderWidgetList = [
     {
       icon: RiAiGenerate2,
-      title: "AI 위젯",
+      title: "AI 툴킷",
       video: "/video/ai-widget.webm",
       detail: [
         "문서 작업 중, 똑똑한 AI 조수에게 바로 질문하고 답변을 얻으세요.",
@@ -196,7 +196,7 @@ export default function Home() {
     },
     {
       icon: RiToolsFill,
-      title: "편의 기능", // (또는 "다양한 위젯")
+      title: "편의 기능", // (또는 "다양한 툴킷")
       video: "/video/etc.webm",
       detail: [
         "업무에 필요한 번역기, 계산기, 타이머는 물론, 아이디어를 기록할 메모장까지.",
@@ -336,7 +336,7 @@ export default function Home() {
             pretendard="SB"
             style={{ fontSize: layoutMode === "desktop" ? 32 : 24 }}
           >
-            문서 작성을 돕는 다양한 위젯
+            문서 작성을 돕는 다양한 툴킷
           </Typography>
           <div className="flex flex-col gap-200">
             {renderWidgetList.map((item, index) =>

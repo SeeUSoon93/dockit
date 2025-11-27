@@ -7,7 +7,7 @@ import {
   MoonOutline,
   SettingOutline,
   SunOutline,
-  UserOutline,
+  UserOutline
 } from "sud-icons";
 import { Button, Div, Tooltip, Typography } from "sud-ui";
 import { logoutUser } from "../../utils/authUtils";
@@ -28,7 +28,7 @@ export default function Header({
   isDarkMode,
   setIsDarkMode,
   isEditPage,
-  document,
+  document
 }) {
   const router = useRouter();
   const { setting } = useSetting();
@@ -40,7 +40,7 @@ export default function Header({
     setOpenLeftDrawer,
     setOpenWidgetDrawer,
     setOpenSettingsDrawer,
-    setOpenUserDrawer,
+    setOpenUserDrawer
   } = useDrawerContext();
 
   // ■■■■■■■■■ 제목 ■■■■■■■■■■■■■■■■
@@ -62,26 +62,26 @@ export default function Header({
         router.back();
       },
       icon: AngleLeft,
-      disabled: pathname === "/workspace",
+      disabled: pathname === "/workspace"
     },
     {
       tooltip: "워크스페이스 홈",
       onClick: () => router.push("/workspace"),
       icon: HomeOutline,
-      disabled: pathname === "/workspace",
+      disabled: pathname === "/workspace"
     },
     {
       tooltip: "메뉴",
       onClick: () => setOpenLeftDrawer(true),
-      icon: MenuHamburger,
-    },
+      icon: MenuHamburger
+    }
   ];
   // 오른쪽 아이콘
   const rightIcons = [
     {
-      tooltip: "위젯 설정",
+      tooltip: "툴킷 설정",
       onClick: () => setOpenWidgetDrawer(true),
-      icon: GridFourDiaOutline,
+      icon: GridFourDiaOutline
     },
     // {
     //   tooltip: "설정",
@@ -91,12 +91,12 @@ export default function Header({
     {
       tooltip: "테마 변경",
       onClick: () => setIsDarkMode(!isDarkMode),
-      icon: isDarkMode ? SunOutline : MoonOutline,
+      icon: isDarkMode ? SunOutline : MoonOutline
     },
     {
       tooltip: "회원 설정",
       onClick: () => setOpenUserDrawer(true),
-      icon: UserOutline,
+      icon: UserOutline
     },
     {
       tooltip: "로그아웃",
@@ -104,8 +104,8 @@ export default function Header({
         router.push("/");
         await logoutUser();
       },
-      icon: LogoutCircle,
-    },
+      icon: LogoutCircle
+    }
   ];
   //   아이콘 렌더링
   const renderBtn = (data) => {
