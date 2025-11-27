@@ -13,7 +13,7 @@ export default function ContentEditor({
   value,
   onChange,
   autoFocus = true,
-  bulletStyle,
+  bulletStyle
 }) {
   const [isEditable, setIsEditable] = useState(true);
   const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
@@ -25,8 +25,8 @@ export default function ContentEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose-base focus:outline-none w-full",
-      },
+        class: "prose prose-sm sm:prose-base focus:outline-none w-full"
+      }
     },
     onCreate: ({ editor: currentEditor }) => {
       migrateMathStrings(currentEditor);
@@ -37,7 +37,7 @@ export default function ContentEditor({
       } catch (error) {
         console.error("ContentEditor onUpdate error:", error);
       }
-    },
+    }
   });
 
   const editorStyleVariables = useMemo(
@@ -62,7 +62,7 @@ export default function ContentEditor({
             node: node,
             from: pos,
             to: pos + node.nodeSize,
-            type: "table",
+            type: "table"
           };
           break;
         }
@@ -91,25 +91,25 @@ export default function ContentEditor({
     let allStyles = "";
 
     // 1. 헤딩 개별 처리 - 성공했던 방식 사용
-    const headings = editorElement.querySelectorAll("h1, h2, h3");
+    ["h1", "h2", "h3"].forEach((tagName) => {
+      const headings = editorElement.querySelectorAll(tagName); // h1만, h2만 따로 수집
 
-    headings.forEach((heading, index) => {
-      const span = heading.querySelector("span");
-      if (span) {
-        const computedStyle = window.getComputedStyle(span);
+      headings.forEach((heading, index) => {
+        const span = heading.querySelector("span");
+        if (span) {
+          const computedStyle = window.getComputedStyle(span);
 
-        // 각 헤딩별로 전역 스타일 생성
-        allStyles += `
-.tiptap-container ${heading.tagName.toLowerCase()}:nth-of-type(${
-          index + 1
-        })::before {
-  font-family: ${computedStyle.fontFamily} !important;
-  font-size: ${computedStyle.fontSize} !important;
-  font-weight: ${computedStyle.fontWeight} !important;
-  color: ${computedStyle.color} !important;
-}
-        `;
-      }
+          // 여기서 index는 이제 '해당 태그 내에서의 순서'니까 nth-of-type과 정확히 일치해!
+          allStyles += `
+            .tiptap-container ${tagName}:nth-of-type(${index + 1})::before {
+              font-family: ${computedStyle.fontFamily} !important;
+              font-size: ${computedStyle.fontSize} !important;
+              font-weight: ${computedStyle.fontWeight} !important;
+              color: ${computedStyle.color} !important;
+            }
+          `;
+        }
+      });
     });
 
     const listItems = editorElement.querySelectorAll(

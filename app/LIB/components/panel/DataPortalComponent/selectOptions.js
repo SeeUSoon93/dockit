@@ -6,9 +6,9 @@ export const selectOptions = [
   { label: "행정동별 인구 정보", value: "POPULATION_INFO" },
   { label: "국가별 정보", value: "COUNTRY_INFO" },
   { label: "북한 TV 편성표", value: "NK_TV_SCHEDULE" },
-  { label: "문화예술공연 프로그램 정보", value: "CULTURE_INFO" },
+  { label: "문화예술공연 프로그램 정보", value: "CULTURE_INFO" }
   // { label: "지역축제 정보", value: "FESTIVAL_INFO" },
-  { label: "사회적기업 정보", value: "SOCIAL_ENTERPRISE_INFO" },
+  // { label: "사회적기업 정보", value: "SOCIAL_ENTERPRISE_INFO" },
   // { label: "", value: "" },
   // { label: "", value: "" },
   // { label: "", value: "" },
