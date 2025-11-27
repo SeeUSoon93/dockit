@@ -98,7 +98,7 @@ export default function ContentEditor({
       if (span) {
         const computedStyle = window.getComputedStyle(span);
 
-        // 각 헤딩별로 전역 스타일 생성 (성공했던 방식)
+        // 각 헤딩별로 전역 스타일 생성
         allStyles += `
 .tiptap-container ${heading.tagName.toLowerCase()}:nth-of-type(${
           index + 1
