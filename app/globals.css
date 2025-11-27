@@ -464,6 +464,17 @@ u {
     display: none;
   }
 
+  .dockit-panel {
+    display: none;
+  }
+  .ant-splitter-bar {
+    display: none;
+  }
+  /* 패널 스크롤 삭제 */
+  .ant-splitter-panel {
+    overflow: hidden !important;
+  }
+
   /* 2. 스크롤을 유발하는 부모 컨테이너 제한 해제 */
   body,
   #__next,

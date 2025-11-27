@@ -11,17 +11,17 @@ const useStyles = createStyles(({ token }) => ({
   dragger: {
     "&::before": {
       backgroundColor: "transparent !important",
-      border: `1px solid transparent`,
+      border: `1px solid transparent`
     },
     "&:hover::before": {
-      border: `1px solid #e0e0e0`,
-    },
+      border: `1px solid #e0e0e0`
+    }
   },
   draggerActive: {
     "&::before": {
-      border: `1px solid #e0e0e0`,
-    },
-  },
+      border: `1px solid #e0e0e0`
+    }
+  }
 }));
 
 export default function Content({
@@ -30,7 +30,7 @@ export default function Content({
   children,
   overContainerId,
   containerRef,
-  scale,
+  scale
 }) {
   const { layoutMode, showLeftPanel, showRightPanel } = useLayout();
   const { document } = useDocument();
@@ -47,23 +47,26 @@ export default function Content({
   if (isWorkspace) {
     if (isDocument) {
       return (
-        <Div className="flex w-full h-full" background="white-9">
+        <Div
+          className="flex w-full h-full"
+          background="white-9"
+          ref={containerRef}
+        >
           <Splitter
-            ref={containerRef}
             onResizeEnd={(size) => {
               const leftPanelWidth = parseFloat(size[0]);
               const rightPanelWidth = parseFloat(size[2]);
               setSetting({
                 ...setting,
                 panelLeft: leftPanelWidth,
-                panelRight: rightPanelWidth,
+                panelRight: rightPanelWidth
               });
             }}
             classNames={{
               dragger: {
                 default: styles.dragger,
-                active: styles.draggerActive,
-              },
+                active: styles.draggerActive
+              }
             }}
             style={{ width: "100%" }}
           >
@@ -73,11 +76,12 @@ export default function Content({
                 collapsible={{
                   start: true,
                   end: true,
-                  showCollapsibleIcon: "auto",
+                  showCollapsibleIcon: "auto"
                 }}
                 defaultSize={setting.panelLeft}
                 max={"25%"}
                 style={{ overflowX: "hidden" }}
+                className="dockit-panel"
               >
                 <PanelContainer
                   side="left"
@@ -92,16 +96,11 @@ export default function Content({
               collapsible={{
                 start: true,
                 end: true,
-                showCollapsibleIcon: "auto",
+                showCollapsibleIcon: "auto"
               }}
               min="50%"
             >
-              <Div
-                className="overflow-y-auto flex justify-center w-full min-h-full"
-                background="white-9"
-              >
-                {children}
-              </Div>
+              {children}
             </Splitter.Panel>
 
             {/* 오른쪽 패널 */}
@@ -110,11 +109,12 @@ export default function Content({
                 collapsible={{
                   start: true,
                   end: true,
-                  showCollapsibleIcon: "auto",
+                  showCollapsibleIcon: "auto"
                 }}
                 defaultSize={setting.panelRight}
                 max={"25%"}
                 style={{ overflowX: "hidden" }}
+                className="dockit-panel"
               >
                 <PanelContainer
                   side="right"
