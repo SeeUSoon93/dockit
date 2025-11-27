@@ -8,7 +8,7 @@ import {
   Image,
   Tag,
   toast,
-  Typography,
+  Typography
 } from "sud-ui";
 import { handleGoogleAuth, handleLogin } from "./LIB/utils/authUtils";
 import { useUser } from "./LIB/context/UserContext";
@@ -72,18 +72,18 @@ export default function Home() {
     {
       icon: TbBrowserCheck,
       title: "웹 브라우저만 있으면 끝!",
-      description: "스마트폰, 태블릿, 데스크탑에서 빠르게 문서를 작성하세요.",
+      description: "스마트폰, 태블릿, 데스크탑에서 빠르게 문서를 작성하세요."
     },
     {
       icon: RiFilePaper2Line,
       title: "제한 없는 콘텐츠 작성",
-      description: "페이지 나눔 없이 콘텐츠를 끊김 없이 작성하세요.",
+      description: "페이지 나눔 없이 콘텐츠를 끊김 없이 작성하세요."
     },
     {
       icon: AiOutlineCloudSync,
       title: "클라우드 자동 저장",
-      description: "자동 백업으로 중요한 내용을 안전하게 보관하세요.",
-    },
+      description: "자동 백업으로 중요한 내용을 안전하게 보관하세요."
+    }
   ];
 
   const widgetCardRender = (item, index) => {
@@ -117,7 +117,7 @@ export default function Home() {
             style={{
               width: "100%",
               height: "auto",
-              objectFit: "cover",
+              objectFit: "cover"
             }}
           />
         }
@@ -131,7 +131,7 @@ export default function Home() {
             className="gap-10 w-100 items-center"
             style={{
               display: "grid",
-              gridTemplateColumns: isEven ? "3fr 1fr" : "1fr 3fr",
+              gridTemplateColumns: isEven ? "3fr 1fr" : "1fr 3fr"
             }}
           >
             {isEven && videoCard}
@@ -164,8 +164,8 @@ export default function Home() {
         "문서 작업 중, 똑똑한 AI 조수에게 바로 질문하고 답변을 얻으세요.",
         "단순한 텍스트 입력만으로, 아이디어를 생생한 이미지로 만들어보세요.",
         <br key={"br"} />,
-        "Dockit 안에서, 생각의 흐름을 끊지 않고 창의력을 발휘하세요.",
-      ],
+        "Dockit 안에서, 생각의 흐름을 끊지 않고 창의력을 발휘하세요."
+      ]
     },
     {
       icon: TbWriting,
@@ -177,8 +177,8 @@ export default function Home() {
         "문서의 헤딩을 분석해 클릭 가능한 목차를 자동으로 생성합니다.",
         "복잡한 표 데이터를 선택 즉시 시각적인 차트로 변환하세요.",
         <br key={"br"} />,
-        "단순 작업은 Dockit에게 맡기고, 가장 중요한 본질에만 집중하세요.",
-      ],
+        "단순 작업은 Dockit에게 맡기고, 가장 중요한 본질에만 집중하세요."
+      ]
     },
     {
       icon: MdScreenSearchDesktop,
@@ -189,9 +189,10 @@ export default function Home() {
         "고품질의 이미지를 검색하고 문서에 바로 삽입하여 완성도를 높이세요.",
         "지도 위에서 편집·분석한 내용을 이미지로 변환하여 문서 자료로 활용하세요.",
         "대한민국 행정구역 지도 도형 이미지를 손쉽게 삽입하세요.",
+        "공공데이터 포털에서 제공하는 다양한 데이터를 활용하세요.",
         <br key={"br"} />,
-        "자료 조사를 위해 더 이상 화면을 전환할 필요 없습니다. 문서 안에서 모든 것을 해결하세요.",
-      ],
+        "자료 조사를 위해 더 이상 화면을 전환할 필요 없습니다. 문서 안에서 모든 것을 해결하세요."
+      ]
     },
     {
       icon: RiToolsFill,
@@ -200,9 +201,9 @@ export default function Home() {
       detail: [
         "업무에 필요한 번역기, 계산기, 타이머는 물론, 아이디어를 기록할 메모장까지.",
         "일정 관리를 위한 캘린더부터, 잠시 머리를 식힐 음악 플레이어, 띠별 운세까지.",
-        "문서 작업에 필요한 모든 편의 기능을 Dockit 한 곳에서 만나보세요.",
-      ],
-    },
+        "문서 작업에 필요한 모든 편의 기능을 Dockit 한 곳에서 만나보세요."
+      ]
+    }
   ];
 
   return (
