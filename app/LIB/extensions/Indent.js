@@ -11,9 +11,9 @@ const Indent = Extension.create({
         "blockquote",
         "listItem",
         "table",
-        "taskItem"
+        "taskItem",
       ],
-      indentLevels: [0, 16, 32, 48, 64, 80, 96, 112, 128]
+      indentLevels: [0, 16, 32, 48, 64, 80, 96, 112, 128],
     };
   },
 
@@ -30,7 +30,7 @@ const Indent = Extension.create({
               }
               // 리스트 아이템과 일반 요소 구분해서 처리
               return {
-                "data-indent": attributes.indent
+                "data-indent": attributes.indent,
               };
             },
             parseHTML: (element) => {
@@ -43,17 +43,17 @@ const Indent = Extension.create({
               const paddingLeft = parseInt(element.style.paddingLeft, 10);
               const marginLeft = parseInt(element.style.marginLeft, 10);
               return paddingLeft || marginLeft || 0;
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     ];
   },
 
   addKeyboardShortcuts() {
     return {
       Tab: () => this.editor.commands.indent(),
-      "Shift-Tab": () => this.editor.commands.outdent()
+      "Shift-Tab": () => this.editor.commands.outdent(),
     };
   },
 
@@ -89,13 +89,6 @@ const Indent = Extension.create({
               ) {
                 console.log("taskItem 내부의 paragraph에 indent 적용");
                 // Task List의 paragraph에 indent 적용 (CSS에서 전체 li 이동)
-              } else if (
-                parentNode.type.name === "listItem" &&
-                node.type.name !== "listItem"
-              ) {
-                console.log("일반 리스트의 자식 요소 건너뛰기");
-                // 일반 리스트의 자식 요소는 들여쓰기 안함
-                return;
               }
 
               const currentIndent = node.attrs.indent || 0;
@@ -110,11 +103,12 @@ const Indent = Extension.create({
                   node.type.name,
                   currentIndent,
                   "->",
-                  newIndent
+                  newIndent,
+                  "--------------------------------"
                 );
                 tr.setNodeMarkup(pos, undefined, {
                   ...node.attrs,
-                  indent: newIndent
+                  indent: newIndent,
                 });
               }
             }
@@ -147,12 +141,6 @@ const Indent = Extension.create({
                 node.type.name === "paragraph"
               ) {
                 // Task List의 paragraph에 indent 적용 (CSS에서 전체 li 이동)
-              } else if (
-                parentNode.type.name === "listItem" &&
-                node.type.name !== "listItem"
-              ) {
-                // 일반 리스트의 자식 요소는 들여쓰기 안함
-                return;
               }
 
               const currentIndent = node.attrs.indent || 0;
@@ -164,7 +152,7 @@ const Indent = Extension.create({
               if (newIndent !== currentIndent) {
                 tr.setNodeMarkup(pos, undefined, {
                   ...node.attrs,
-                  indent: newIndent
+                  indent: newIndent,
                 });
               }
             }
@@ -175,9 +163,9 @@ const Indent = Extension.create({
             return true;
           }
           return false;
-        }
+        },
     };
-  }
+  },
 });
 
 export default Indent;

@@ -46,6 +46,8 @@
     "@tiptap/react": "^3.4.2",
     "@tiptap/starter-kit": "^3.4.2",
     "@vercel/analytics": "^1.5.0",
+    "antd": "^6.0.0",
+    "antd-style": "^3.7.1",
     "chart.js": "^4.5.0",
     "docx-pdf": "^0.0.1",
     "file-saver": "^2.0.5",
@@ -70,7 +72,7 @@
     "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
     "sud-icons": "^1.0.4",
-    "sud-ui": "^1.1.2",
+    "sud-ui": "^1.1.5",
     "xml2js": "^0.6.2",
     "xmldom": "^0.6.0"
   },

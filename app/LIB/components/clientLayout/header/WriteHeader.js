@@ -282,6 +282,7 @@ export default function WriteHeader() {
               setFontColor(color.hex);
               editor?.chain()?.focus()?.setColor(color.hex)?.run();
             }}
+            mode="preset"
           >
             {renderBtn(MdFormatColorText, () => {}, "")}
           </ColorPicker>

@@ -13,7 +13,7 @@ import React from "react";
 import { Div } from "sud-ui";
 import { useSetting } from "../../context/SettingContext";
 
-function SortableWidget({ id }) {
+function SortableWidget({ id, panelWidth }) {
   const {
     attributes,
     listeners,
@@ -34,27 +34,22 @@ function SortableWidget({ id }) {
   return (
     <div ref={setNodeRef} style={style} {...attributes} className="w-100">
       {WidgetComponent &&
-        React.cloneElement(WidgetComponent, { dragHandleProps: listeners })}
+        React.cloneElement(WidgetComponent, {
+          dragHandleProps: listeners,
+          width: panelWidth,
+        })}
     </div>
   );
 }
 
-export default function PanelContainer({
-  side,
-  widgets,
-  layoutMode,
-  isDropTarget,
-}) {
+export default function PanelContainer({ side, widgets, isDropTarget }) {
   const { setNodeRef } = useDroppable({
     id: side,
   });
 
   const { setting } = useSetting();
 
-  const panelWidth = setting.panelWidth || 350;
-  const workspaceWidth = setting.workspaceWidth || 800;
-  const panelLeft = setting.panelLeft ?? true;
-  const panelRight = setting.panelRight ?? true;
+  const panelWidth = side === "left" ? setting.panelLeft : setting.panelRight;
 
   return (
     <SortableContext
@@ -70,26 +65,14 @@ export default function PanelContainer({
         background={isDropTarget && "white-8"}
         style={{
           width: `${panelWidth}px`,
-          maxWidth: (() => {
-            if (layoutMode !== "desktop") {
-              return `calc(100vw - ${workspaceWidth}px)`;
-            }
-
-            // 데스크톱 모드에서 한쪽 패널만 활성화된 경우
-            const isOnlyLeftActive = panelLeft && !panelRight;
-            const isOnlyRightActive = !panelLeft && panelRight;
-
-            if (isOnlyLeftActive || isOnlyRightActive) {
-              return `calc(100vw - ${workspaceWidth}px)`;
-            }
-
-            // 양쪽 패널 모두 활성화된 경우
-            return `calc((100vw - ${workspaceWidth}px) / 2)`;
-          })(),
         }}
       >
         {widgets.map((widgetId) => (
-          <SortableWidget key={widgetId} id={widgetId} />
+          <SortableWidget
+            key={widgetId}
+            id={widgetId}
+            panelWidth={panelWidth}
+          />
         ))}
       </Div>
     </SortableContext>

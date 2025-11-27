@@ -7,9 +7,8 @@ const DEFAULT_SETTING = {
   autoSave: false,
   autoSaveDelay: 2000,
   workspaceWidth: 800,
-  panelWidth: 350,
-  panelLeft: true,
-  panelRight: true,
+  panelLeft: 350,
+  panelRight: 350,
 };
 
 const localStorageKey = "DOCKIT_SETTING";
@@ -31,15 +30,21 @@ export function SettingProvider({ children }) {
     // 로딩 중이거나 데이터가 없으면 null 반환
     if (settingLoading || !rawSetting) return null;
 
+    const parseValue = (value, fallback) => {
+      const parsed = parseFloat(value);
+      // 숫자가 아니면(NaN) fallback 반환, 숫자면(0 포함) parsed 반환
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+
     return {
       ...rawSetting,
       autoSaveDelay:
         Number(rawSetting.autoSaveDelay) || DEFAULT_SETTING.autoSaveDelay,
       workspaceWidth:
         Number(rawSetting.workspaceWidth) || DEFAULT_SETTING.workspaceWidth,
-      panelWidth: Number(rawSetting.panelWidth) || DEFAULT_SETTING.panelWidth,
-      panelLeft: rawSetting.panelLeft ?? DEFAULT_SETTING.panelLeft,
-      panelRight: rawSetting.panelRight ?? DEFAULT_SETTING.panelRight,
+      // float로 변환
+      panelLeft: parseValue(rawSetting.panelLeft, DEFAULT_SETTING.panelLeft),
+      panelRight: parseValue(rawSetting.panelRight, DEFAULT_SETTING.panelRight),
     };
   }, [rawSetting, settingLoading]);
 

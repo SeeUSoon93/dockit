@@ -145,19 +145,22 @@ u {
 
 .tiptap-container ul:not([data-type="taskList"]) li::before,
 .tiptap-container ol li::before {
-  margin-right: 0.3em !important; /* 번호와 텍스트 사이 간격 */
-  line-height: inherit !important; /* p와 동일한 line-height 사용 */
-  vertical-align: baseline !important; /* 베이스라인 미세 조정 */
+  margin-right: 0.3em !important;
+  line-height: inherit !important;
+  vertical-align: baseline !important;
   position: relative !important;
-  top: 0.05em !important; /* 살짝 아래로 미세 조정 */
+  top: 0.05em !important;
+  flex-shrink: 0; /* 마커가 찌그러지지 않게 고정 */
 }
 
-/* 2. 일반 리스트(ul) 스타일 */
+/* 2. 일반 리스트(ul) 스타일 & 마커 수정 */
 .tiptap-container ul:not([data-type="taskList"]) {
   list-style: none !important;
   padding: 0 !important;
   margin: 1em 0 !important;
 }
+
+/* 기본 마커 */
 .tiptap-container ul:not([data-type="taskList"]) li::before {
   content: var(--list-1-content, "•") !important;
 }
@@ -228,6 +231,28 @@ u {
   margin-left: 64px !important;
 }
 
+/* --- 점 리스트(Bullet List) 전용 들여쓰기 교정 --- */
+
+/* 16px */
+.tiptap-container ul:not([data-type="taskList"]) li:has(p[data-indent="16"]) {
+  margin-left: 16px !important;
+}
+
+/* 32px */
+.tiptap-container ul:not([data-type="taskList"]) li:has(p[data-indent="32"]) {
+  margin-left: 32px !important;
+}
+
+/* 48px */
+.tiptap-container ul:not([data-type="taskList"]) li:has(p[data-indent="48"]) {
+  margin-left: 48px !important;
+}
+
+/* 64px */
+.tiptap-container ul:not([data-type="taskList"]) li:has(p[data-indent="64"]) {
+  margin-left: 64px !important;
+}
+
 /* Task 리스트 들여쓰기 - p 요소의 indent에 따라 전체 li 들여쓰기 */
 .tiptap-container ul[data-type="taskList"] li:has(p[data-indent="16"]) {
   margin-left: 16px !important;
@@ -247,6 +272,9 @@ u {
 
 /* Task 리스트의 p 요소 자체의 margin은 제거 */
 .tiptap-container ul[data-type="taskList"] p[data-indent] {
+  margin-left: 0 !important;
+}
+.tiptap-container li > p[data-indent] {
   margin-left: 0 !important;
 }
 
@@ -358,7 +386,7 @@ u {
 }
 
 .tiptap-container table th {
-  background: #5cdbd3;
+  background: #b5f5ec;
   border-left: 1px solid #006d75;
   border-right: 1px solid #006d75;
   border-bottom: 2px solid #006d75;

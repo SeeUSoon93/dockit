@@ -83,11 +83,11 @@ export default function Header({
       onClick: () => setOpenWidgetDrawer(true),
       icon: GridFourDiaOutline,
     },
-    {
-      tooltip: "설정",
-      onClick: () => setOpenSettingsDrawer(true),
-      icon: SettingOutline,
-    },
+    // {
+    //   tooltip: "설정",
+    //   onClick: () => setOpenSettingsDrawer(true),
+    //   icon: SettingOutline,
+    // },
     {
       tooltip: "테마 변경",
       onClick: () => setIsDarkMode(!isDarkMode),
