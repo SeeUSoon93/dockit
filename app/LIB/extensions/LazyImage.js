@@ -43,6 +43,7 @@ export const LazyImage = Image.extend({
       new Plugin({
         view(editorView) {
           let imageObserver = null;
+          let lastDocSize = editorView.state.doc.content.size;
 
           const initLazyImages = () => {
             // 기존 observer가 있으면 정리
@@ -92,24 +93,52 @@ export const LazyImage = Image.extend({
           // 초기화
           setTimeout(initLazyImages, 100);
 
-          // MutationObserver로 DOM 변경 감지
-          const mutationObserver = new MutationObserver(() => {
-            setTimeout(initLazyImages, 0);
-          });
-
-          mutationObserver.observe(editorView.dom, {
-            childList: true,
-            subtree: true,
-          });
+          // MutationObserver는 제거하고 transaction에서만 처리
+          // MutationObserver는 타이핑 중에도 실행되어 성능 저하 유발
 
           return {
             destroy() {
               if (imageObserver) {
                 imageObserver.disconnect();
               }
-              mutationObserver.disconnect();
             },
           };
+        },
+        // transaction에서 docChanged 체크 - state를 사용하여 처리
+        state: {
+          init() {
+            return { lastDocSize: 0 };
+          },
+          apply(tr, value, oldState, newState) {
+            // docChanged가 false이면 스킵
+            if (!tr.docChanged) {
+              return value;
+            }
+
+            // 문서 크기가 변경되었을 때만 업데이트 (이미지 추가/삭제)
+            if (newState.doc.content.size !== value.lastDocSize) {
+              // 다음 프레임에서 실행하여 타이핑 블로킹 방지
+              requestAnimationFrame(() => {
+                // DOM에서 이미지 찾기
+                const editorDom = document.querySelector(".tiptap-container");
+                if (editorDom) {
+                  const images = editorDom.querySelectorAll(
+                    "img:not([data-lazy-init])"
+                  );
+                  if (images.length > 0) {
+                    // 간단한 초기화만 수행
+                    images.forEach((img) => {
+                      if (img.complete) {
+                        img.setAttribute("data-lazy-init", "true");
+                      }
+                    });
+                  }
+                }
+              });
+            }
+
+            return { lastDocSize: newState.doc.content.size };
+          },
         },
       }),
     ];

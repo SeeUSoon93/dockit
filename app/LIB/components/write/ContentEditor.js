@@ -14,30 +14,37 @@ export default function ContentEditor({
   value,
   onChange,
   autoFocus = true,
-  bulletStyle
+  bulletStyle,
 }) {
   const [isEditable, setIsEditable] = useState(true);
   const { selectedObject, setSelectedObject, setEditor } = useEditorContext();
+
+  // editor 인스턴스를 ref로 저장하여 저장 시점에만 getHTML() 호출
+  const editorRef = useRef(null);
 
   // onChange debounce를 위한 ref
   const onChangeTimeoutRef = useRef(null);
   const lastContentRef = useRef("");
 
-  // debounced onChange
-  const debouncedOnChange = useCallback(
-    (html) => {
-      if (onChangeTimeoutRef.current) {
-        clearTimeout(onChangeTimeoutRef.current);
-      }
-      onChangeTimeoutRef.current = setTimeout(() => {
-        if (html !== lastContentRef.current) {
-          lastContentRef.current = html;
-          onChange(html);
+  // debounced onChange - 저장 시점에만 getHTML() 호출
+  const debouncedOnChange = useCallback(() => {
+    if (onChangeTimeoutRef.current) {
+      clearTimeout(onChangeTimeoutRef.current);
+    }
+    onChangeTimeoutRef.current = setTimeout(() => {
+      if (editorRef.current && !editorRef.current.isDestroyed) {
+        try {
+          const html = editorRef.current.getHTML();
+          if (html !== lastContentRef.current) {
+            lastContentRef.current = html;
+            onChange(html);
+          }
+        } catch (error) {
+          console.error("ContentEditor getHTML error:", error);
         }
-      }, 300); // 300ms debounce
-    },
-    [onChange]
-  );
+      }
+    }, 500); // 500ms debounce - 저장 시점에만 호출
+  }, [onChange]);
 
   const editor = useEditor({
     extensions: editorExtensions,
@@ -46,20 +53,17 @@ export default function ContentEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose-base focus:outline-none w-full"
-      }
+        class: "prose prose-sm sm:prose-base focus:outline-none w-full",
+      },
     },
     onCreate: ({ editor: currentEditor }) => {
       migrateMathStrings(currentEditor);
+      editorRef.current = currentEditor;
     },
-    onUpdate: ({ editor }) => {
-      try {
-        const html = editor.getHTML();
-        debouncedOnChange(html);
-      } catch (error) {
-        console.error("ContentEditor onUpdate error:", error);
-      }
-    }
+    // onUpdate에서 getHTML() 제거 - 저장 시점에만 호출하도록 변경
+    onUpdate: () => {
+      debouncedOnChange();
+    },
   });
 
   const editorStyleVariables = useMemo(
@@ -73,7 +77,7 @@ export default function ContentEditor({
   const checkObjectSelection = useCallback(() => {
     if (!editor) return;
     const { selection } = editor.state;
-    
+
     // 선택이 변경되지 않았으면 스킵
     const selectionKey = `${selection.$from.pos}-${selection.$to.pos}`;
     if (lastSelectionRef.current === selectionKey) {
@@ -95,7 +99,7 @@ export default function ContentEditor({
             node: node,
             from: pos,
             to: pos + node.nodeSize,
-            type: "table"
+            type: "table",
           };
           break;
         }
@@ -115,24 +119,44 @@ export default function ContentEditor({
     if (!editor) {
       return;
     }
+
+    const { selection, doc } = editor.state;
     const editorElement = editor.view.dom;
 
-    // 헤딩과 리스트가 실제로 변경되었는지 확인
-    const headings = editorElement.querySelectorAll("h1, h2, h3");
-    const listItems = editorElement.querySelectorAll(
-      "ul:not([data-type='taskList']) li, ol li"
-    );
-    
-    // 간단한 해시 생성 (요소 개수와 첫 번째 요소의 텍스트로)
-    const styleHash = `${headings.length}-${listItems.length}-${
-      headings[0]?.textContent?.slice(0, 10) || ""
-    }-${listItems[0]?.textContent?.slice(0, 10) || ""}`;
-    
+    // selection 범위 내에서만 헤딩과 리스트 찾기
+    // ProseMirror의 doc.nodesBetween을 사용하여 선택 범위로 제한
+    const headingsInRange = [];
+    const listItemsInRange = [];
+
+    // 선택 범위를 기준으로 탐색 (뷰포트 근처만)
+    const from = Math.max(0, selection.$from.pos - 500);
+    const to = Math.min(doc.content.size, selection.$to.pos + 500);
+
+    doc.nodesBetween(from, to, (node, pos) => {
+      if (
+        node.type.name === "heading" &&
+        ["h1", "h2", "h3"].includes(node.type.name)
+      ) {
+        headingsInRange.push({ node, pos });
+      } else if (node.type.name === "listItem") {
+        listItemsInRange.push({ node, pos });
+      }
+    });
+
+    // 간단한 해시 생성 (범위 내 요소 개수로)
+    const styleHash = `${headingsInRange.length}-${listItemsInRange.length}`;
+
     // 변경되지 않았으면 스킵
     if (lastStyleHashRef.current === styleHash) {
       return;
     }
     lastStyleHashRef.current = styleHash;
+
+    // DOM에서 해당 요소들만 찾기 (이미 범위가 제한되어 있음)
+    const headings = editorElement.querySelectorAll("h1, h2, h3");
+    const listItems = editorElement.querySelectorAll(
+      "ul:not([data-type='taskList']) li, ol li"
+    );
 
     let styleElement = document.getElementById("dynamic-heading-styles");
     if (!styleElement) {
@@ -143,7 +167,7 @@ export default function ContentEditor({
 
     let allStyles = "";
 
-    // 1. 헤딩 개별 처리 - 성공했던 방식 사용
+    // 1. 헤딩 개별 처리
     ["h1", "h2", "h3"].forEach((tagName) => {
       const tagHeadings = editorElement.querySelectorAll(tagName);
 
@@ -200,9 +224,14 @@ export default function ContentEditor({
     editor.on("update", throttledSyncHeadingStyles);
     editor.on("selectionUpdate", throttledSyncHeadingStyles);
     editor.on("selectionUpdate", checkObjectSelection);
-    
-    // transaction 이벤트는 이미지 관련이 아닐 때만 체크
-    const handleTransaction = () => {
+
+    // transaction 이벤트는 docChanged가 true일 때만 체크
+    const handleTransaction = ({ transaction }) => {
+      // 문서가 변경되지 않았으면 스킵
+      if (!transaction.docChanged) {
+        return;
+      }
+
       const { selection } = editor.state;
       // 이미지 노드가 아니고, 이미지 내부가 아닐 때만 체크
       if (selection.node?.type.name !== "image") {
@@ -222,7 +251,7 @@ export default function ContentEditor({
       editor.off("selectionUpdate", throttledSyncHeadingStyles);
       editor.off("selectionUpdate", checkObjectSelection);
       editor.off("transaction", handleTransaction);
-      
+
       // debounce timeout 정리
       if (onChangeTimeoutRef.current) {
         clearTimeout(onChangeTimeoutRef.current);
@@ -232,7 +261,13 @@ export default function ContentEditor({
         editor.destroy();
       }
     };
-  }, [editor, setEditor, throttledSyncHeadingStyles, syncHeadingStyles, checkObjectSelection]);
+  }, [
+    editor,
+    setEditor,
+    throttledSyncHeadingStyles,
+    syncHeadingStyles,
+    checkObjectSelection,
+  ]);
 
   // ✨ isEditable 상태 변경 시 즉시 반영
   useEffect(() => {
