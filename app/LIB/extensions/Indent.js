@@ -80,14 +80,12 @@ const Indent = Extension.create({
 
               // Task List 특별 처리: taskItem 내부의 paragraph에 indent 적용하되, CSS에서 전체 li를 이동
               if (node.type.name === "taskItem") {
-                console.log("taskItem 건너뛰기 - paragraph에서 처리");
                 // taskItem 자체는 건너뛰고, 내부 paragraph에서 처리
                 return;
               } else if (
                 parentNode.type.name === "taskItem" &&
                 node.type.name === "paragraph"
               ) {
-                console.log("taskItem 내부의 paragraph에 indent 적용");
                 // Task List의 paragraph에 indent 적용 (CSS에서 전체 li 이동)
               }
 

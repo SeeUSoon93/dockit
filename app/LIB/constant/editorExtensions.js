@@ -37,6 +37,7 @@ import Superscript from "@tiptap/extension-superscript";
 import CustomTable from "../extensions/CustomTable";
 import Indent from "../extensions/Indent";
 import { FormatPainter } from "../extensions/FormatPainter";
+import { LazyImage } from "../extensions/LazyImage";
 
 const CustomDocument = Document.extend({
   content: `(block | columnBlock)+`,
@@ -45,7 +46,7 @@ const CustomDocument = Document.extend({
 export const editorExtensions = [
   CustomDocument,
   Paragraph,
-  Image.configure({ allowBase64: true }),
+  LazyImage.configure({ allowBase64: true }),
   Blockquote,
   CodeBlock,
   BulletList,
