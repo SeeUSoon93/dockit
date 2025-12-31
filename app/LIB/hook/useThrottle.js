@@ -33,4 +33,3 @@ export function useThrottle(callback, delay) {
     [callback, delay]
   );
 }
-
