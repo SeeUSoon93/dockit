@@ -257,7 +257,7 @@ export default function WriteHeader() {
           size="sm"
           shadow="none"
           options={fontOptions}
-          style={{ width: "150px", overflow: "hidden" }}
+          style={{ width: "120px", overflow: "hidden" }}
           border={false}
           value={font}
           searchable
