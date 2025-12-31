@@ -7,8 +7,16 @@ import {
 import { Code, PhotoOutline, Print, ShareFill } from "sud-icons";
 import { AiFillSave } from "react-icons/ai";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
-import { Button, ColorPicker, Divider, Select, Upload, toast } from "sud-ui";
-import { useEffect, useState } from "react";
+import {
+  Button,
+  ColorPicker,
+  Divider,
+  Input,
+  Select,
+  Upload,
+  toast,
+} from "sud-ui";
+import { useEffect, useState, useRef } from "react";
 import { HiMinus, HiPlus } from "react-icons/hi";
 import { GrDocumentConfig } from "react-icons/gr";
 import { useParams } from "next/navigation";
@@ -35,6 +43,7 @@ import DocSettingModal from "./DocSettingModal";
 import { fontOptions } from "@/app/LIB/constant/fontOptions";
 import { LuSubscript, LuSuperscript } from "react-icons/lu";
 import { findParentNode } from "@tiptap/core";
+import { inputProps } from "@/app/LIB/constant/uiProps";
 export default function WriteHeader() {
   const { editor, printAction, saveAction, downloadPDFAction } =
     useEditorContext();
@@ -46,6 +55,11 @@ export default function WriteHeader() {
   const [fontColor, setFontColor] = useState("#000000");
 
   const [docSettingModalOpen, setDocSettingModalOpen] = useState(false);
+
+  // 에디터 선택 상태를 저장하기 위한 ref
+  const savedSelectionRef = useRef(null);
+  // Input의 실제 DOM 요소를 참조하기 위한 ref
+  const fontSizeInputRef = useRef(null);
 
   useEffect(() => {
     if (!editor) return;
@@ -85,6 +99,50 @@ export default function WriteHeader() {
       editor.off("selectionUpdate", updateToolbarState);
     };
   }, [editor]); // 의존성 배열은 그대로 [editor] 입니다.
+
+  // Input의 실제 input 요소에 포커스 이벤트 리스너 추가
+  useEffect(() => {
+    if (!fontSizeInputRef.current) return;
+
+    // Input 컴포넌트 내부의 실제 input 요소 찾기
+    const findInputElement = (element) => {
+      if (!element) return null;
+      if (element.tagName === "INPUT") return element;
+      return element.querySelector("input");
+    };
+
+    const inputElement = findInputElement(fontSizeInputRef.current);
+    if (!inputElement) return;
+
+    // 포커스 이벤트 리스너 추가
+    const handleFocus = () => {
+      // Input에 포커스가 가기 전에 에디터 선택 상태 저장
+      if (editor) {
+        const { from, to } = editor.state.selection;
+        if (from !== to) {
+          savedSelectionRef.current = { from, to };
+        }
+      }
+    };
+
+    // mousedown 이벤트로도 처리 (포커스보다 먼저 실행)
+    const handleMouseDown = () => {
+      if (editor) {
+        const { from, to } = editor.state.selection;
+        if (from !== to) {
+          savedSelectionRef.current = { from, to };
+        }
+      }
+    };
+
+    inputElement.addEventListener("mousedown", handleMouseDown, true);
+    inputElement.addEventListener("focus", handleFocus, true);
+
+    return () => {
+      inputElement.removeEventListener("mousedown", handleMouseDown, true);
+      inputElement.removeEventListener("focus", handleFocus, true);
+    };
+  }, [editor, fontSizeInputRef]);
 
   // [추가] 폰트 크기 변경 로직을 처리하는 함수
   const handleFontSize = (size) => {
@@ -202,6 +260,7 @@ export default function WriteHeader() {
           style={{ width: "150px", overflow: "hidden" }}
           border={false}
           value={font}
+          searchable
           onChange={(value) => {
             console.log(value);
             setFont(value);
@@ -232,7 +291,72 @@ export default function WriteHeader() {
           !editor,
           ""
         )}
-        <span className="text-xs">{currentFontSize}px</span>
+        <div
+          ref={fontSizeInputRef}
+          onMouseDown={(e) => {
+            // Input 영역 클릭 시 에디터 선택 상태 저장
+            // onMouseDown은 onFocus보다 먼저 실행됨
+            if (editor) {
+              const { from, to } = editor.state.selection;
+              if (from !== to) {
+                savedSelectionRef.current = { from, to };
+              }
+            }
+          }}
+        >
+          <Input
+            className="text-xs"
+            value={currentFontSize}
+            onChange={(e) => {
+              const value = e.target.value;
+              setCurrentFontSize(value);
+
+              // 숫자로 변환 가능한 경우에만 폰트 크기 적용
+              const numValue = parseInt(value, 10);
+              if (!isNaN(numValue) && numValue > 0 && editor) {
+                // 저장된 선택 상태가 있으면 즉시 복원하고 폰트 크기 적용
+                if (savedSelectionRef.current) {
+                  const { from, to } = savedSelectionRef.current;
+                  // 동기적으로 선택 복원 및 폰트 크기 적용
+                  editor
+                    .chain()
+                    .setTextSelection({ from, to })
+                    .setMark("textStyle", { fontSize: `${numValue}px` })
+                    .run();
+                } else {
+                  // 선택 상태가 없으면 현재 커서 위치에 적용
+                  handleFontSize(numValue);
+                }
+              }
+            }}
+            onBlur={() => {
+              // Input에서 포커스가 벗어날 때 에디터에 다시 포커스
+              if (editor && savedSelectionRef.current) {
+                const { from, to } = savedSelectionRef.current;
+                setTimeout(() => {
+                  editor.chain().setTextSelection({ from, to }).focus().run();
+                  savedSelectionRef.current = null;
+                }, 0);
+              }
+            }}
+            onKeyDown={(e) => {
+              // Enter 키를 누르면 포커스를 에디터로 돌려보냄
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (editor && savedSelectionRef.current) {
+                  const { from, to } = savedSelectionRef.current;
+                  editor.chain().setTextSelection({ from, to }).focus().run();
+                  savedSelectionRef.current = null;
+                }
+              }
+            }}
+            {...inputProps}
+            suffix={"px"}
+            style={{ width: "50px" }}
+            border={false}
+            background="transparent"
+          />
+        </div>
         {renderBtn(
           HiPlus,
           // 새로운 핸들러 함수를 사용
