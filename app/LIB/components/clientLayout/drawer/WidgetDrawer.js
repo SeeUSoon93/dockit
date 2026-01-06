@@ -7,13 +7,14 @@ import {
   FaDice,
   FaNoteSticky,
 } from "react-icons/fa6";
-import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
+import { MdImageSearch } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
 import {
   TbChartDotsFilled,
   TbDatabaseSmile,
   TbEdit,
   TbMath,
+  TbMathSymbols,
 } from "react-icons/tb";
 import { PiListNumbersFill } from "react-icons/pi";
 import { CalendarOutline, Map, TimerOutline } from "sud-icons";
@@ -99,11 +100,7 @@ export default function WidgetDrawer({
             {/* 문서 작성 */}
             <Typography pretendard="SB">문서 작성</Typography>
             <div className="grid col-4 w-100 gap-20">
-              {renderWidgetItem(
-                MdKeyboardCommandKey,
-                "특수문자",
-                "specialChar"
-              )}
+              {renderWidgetItem(TbMathSymbols, "특수문자", "specialChar")}
               {renderWidgetItem(TbMath, "LATEX", "latex")}
               {renderWidgetItem(PiListNumbersFill, "목차", "index")}
               {renderWidgetItem(TbChartDotsFilled, "차트", "madeChart")}

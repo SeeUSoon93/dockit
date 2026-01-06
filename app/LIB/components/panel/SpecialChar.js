@@ -1,11 +1,12 @@
-import { Button, Card, Divider, Input, Typography } from "sud-ui";
+import { Button, Divider, Input, Typography } from "sud-ui";
 import WidgetCard from "./WidgetCard";
-import { MdAdd, MdKeyboardCommandKey } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
 import { useEditorContext } from "@/app/LIB/context/EditorContext";
 import { useCharContext } from "@/app/LIB/context/CharContext";
 import { inputProps } from "../../constant/uiProps";
 import { useState } from "react";
 import { SettingOutline } from "sud-icons";
+import { TbMathSymbols } from "react-icons/tb";
 
 export default function SpecialChar({ dragHandleProps }) {
   const { editor } = useEditorContext();
@@ -42,7 +43,7 @@ export default function SpecialChar({ dragHandleProps }) {
 
   return (
     <WidgetCard
-      icon={MdKeyboardCommandKey}
+      icon={TbMathSymbols}
       title="특수 문자"
       dragHandleProps={dragHandleProps}
       titleBtn={

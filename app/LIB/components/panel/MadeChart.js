@@ -9,6 +9,7 @@ import {
   TbChartDotsFilled,
   TbChartLine,
   TbChartPie,
+  TbMathXy,
 } from "react-icons/tb";
 import { IoCopyOutline } from "react-icons/io5";
 
@@ -16,6 +17,7 @@ export default function MadeChart({ dragHandleProps }) {
   const { selectedObject, editor } = useEditorContext();
   const [tableData, setTableData] = React.useState(null);
   const [chartType, setChartType] = React.useState("bar");
+  const [isAxesSwapped, setIsAxesSwapped] = React.useState(false);
   const chartRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -49,13 +51,37 @@ export default function MadeChart({ dragHandleProps }) {
   const getChartData = () => {
     if (!tableData || tableData.length < 2) return null;
 
-    const headers = tableData[0]; // 첫 번째 행은 헤더
-    const dataRows = tableData.slice(1); // 나머지는 데이터
+    let processedData = tableData;
+
+    // 축이 전환된 경우 테이블을 transpose
+    if (isAxesSwapped) {
+      const maxCols = Math.max(...tableData.map((row) => row.length));
+      processedData = [];
+      for (let colIndex = 0; colIndex < maxCols; colIndex++) {
+        const newRow = [];
+        for (let rowIndex = 0; rowIndex < tableData.length; rowIndex++) {
+          newRow.push(tableData[rowIndex][colIndex] || "");
+        }
+        processedData.push(newRow);
+      }
+    }
+
+    const headers = processedData[0]; // 첫 번째 행은 헤더
+    const dataRows = processedData.slice(1); // 나머지는 데이터
 
     const labels = dataRows.map((row) => row[0]); // 첫 번째 컬럼은 라벨
 
     if (chartType === "pie") {
       // 파이 차트는 첫 번째 데이터셋만 사용
+      const pieColors = [
+        { bg: "rgba(255, 99, 132, 0.5)", border: "rgba(255, 99, 132, 1)" }, // #FF6384
+        { bg: "rgba(54, 162, 235, 0.5)", border: "rgba(54, 162, 235, 1)" }, // #36A2EB
+        { bg: "rgba(255, 206, 86, 0.5)", border: "rgba(255, 206, 86, 1)" }, // #FFCE56
+        { bg: "rgba(75, 192, 192, 0.5)", border: "rgba(75, 192, 192, 1)" }, // #4BC0C0
+        { bg: "rgba(153, 102, 255, 0.5)", border: "rgba(153, 102, 255, 1)" }, // #9966FF
+        { bg: "rgba(255, 159, 64, 0.5)", border: "rgba(255, 159, 64, 1)" }, // #FF9F40
+      ];
+
       return {
         labels: labels,
         datasets: [
@@ -64,14 +90,9 @@ export default function MadeChart({ dragHandleProps }) {
               const value = parseFloat(row[1]);
               return isNaN(value) ? 0 : value;
             }),
-            backgroundColor: [
-              "#FF6384",
-              "#36A2EB",
-              "#FFCE56",
-              "#4BC0C0",
-              "#9966FF",
-              "#FF9F40",
-            ],
+            backgroundColor: pieColors.map((c) => c.bg),
+            borderColor: pieColors.map((c) => c.border),
+            borderWidth: 2,
           },
         ],
       };
@@ -241,10 +262,17 @@ export default function MadeChart({ dragHandleProps }) {
                 onChange={setChartType}
                 block
               />
+              <Button
+                size="sm"
+                onClick={() => setIsAxesSwapped(!isAxesSwapped)}
+              >
+                x / y 축 전환
+              </Button>
               <Card shadow="none" width="100%">
                 <Chart
                   tableData={tableData}
                   chartType={chartType}
+                  isAxesSwapped={isAxesSwapped}
                   ref={chartRef}
                 />
               </Card>
