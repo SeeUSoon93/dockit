@@ -5,7 +5,7 @@ import {
   FaBookBookmark,
   FaCalculator,
   FaDice,
-  FaNoteSticky
+  FaNoteSticky,
 } from "react-icons/fa6";
 import { MdImageSearch, MdKeyboardCommandKey } from "react-icons/md";
 import { usePanels } from "@/app/LIB/context/PanelContext";
@@ -13,19 +13,20 @@ import {
   TbChartDotsFilled,
   TbDatabaseSmile,
   TbEdit,
-  TbMath
+  TbMath,
 } from "react-icons/tb";
 import { PiListNumbersFill } from "react-icons/pi";
 import { CalendarOutline, Map, TimerOutline } from "sud-icons";
 import { BsMusicPlayerFill, BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
 import { GiSouthKorea, GiStarSattelites } from "react-icons/gi";
+import { useEffect } from "react";
 
 export default function WidgetDrawer({
   openWidgetDrawer,
-  setOpenWidgetDrawer
+  setOpenWidgetDrawer,
 }) {
-  const { left, right, toggle } = usePanels();
+  const { left, right, toggle, setLeft, remove } = usePanels();
 
   // 툴킷 등록
   const registerWidget = (type) => {
@@ -51,6 +52,32 @@ export default function WidgetDrawer({
       </Div>
     );
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const isCtrlOrCmd = event.metaKey || event.ctrlKey;
+
+      // Ctrl + F: 찾기 및 바꾸기 모달 열기
+      if (isCtrlOrCmd && event.key.toLowerCase() === "f") {
+        event.preventDefault(); // 브라우저 기본 찾기 동작 방지
+
+        const widgetType = "findAndReplace";
+        const isExist = left.includes(widgetType) || right.includes(widgetType);
+
+        if (isExist) {
+          // 이미 있으면 제거
+          remove(widgetType);
+        } else {
+          // 없으면 왼쪽 첫 번째에 추가
+          setLeft((prev) => [widgetType, ...prev]);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [left, right, setLeft, remove]);
 
   return (
     <Template
