@@ -1,248 +1,168 @@
 import WidgetCard from "./WidgetCard";
 import { useEditorContext } from "../../context/EditorContext";
-import { Button, Card, Segmented, Typography } from "sud-ui";
+import {
+  Button,
+  Card,
+  ColorPicker,
+  Input,
+  Segmented,
+  Typography,
+} from "sud-ui";
 import Chart from "./ChartComponent/Chart";
 
-import React from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
+  TbChartArea,
   TbChartBar,
   TbChartDotsFilled,
   TbChartLine,
   TbChartPie,
-  TbMathXy,
+  TbChartRadar,
 } from "react-icons/tb";
 import { IoCopyOutline } from "react-icons/io5";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { inputProps } from "../../constant/uiProps";
 
 export default function MadeChart({ dragHandleProps }) {
-  const { selectedObject, editor } = useEditorContext();
-  const [tableData, setTableData] = React.useState(null);
-  const [chartType, setChartType] = React.useState("bar");
-  const [isAxesSwapped, setIsAxesSwapped] = React.useState(false);
-  const chartRef = React.useRef(null);
+  const { selectedObject } = useEditorContext();
+  const [tableData, setTableData] = useState(null);
+  const [chartType, setChartType] = useState("bar");
+  const [isAxesSwapped, setIsAxesSwapped] = useState(false);
+  const [viewDataValue, setViewDataValue] = useState(false);
+  const [viewLegend, setViewLegend] = useState(false);
+  const chartRef = useRef(null);
 
-  React.useEffect(() => {
-    if (selectedObject && selectedObject.node.type.name === "table") {
-      const tableNode = selectedObject.node;
-      const tableData = [];
-      for (let rowIndex = 0; rowIndex < tableNode.childCount; rowIndex++) {
-        const rowNode = tableNode.child(rowIndex);
-        const rowData = [];
+  const [chartColors, setChartColors] = useState([]);
+  const [openPickerIndex, setOpenPickerIndex] = useState(null);
 
-        for (let cellIndex = 0; cellIndex < rowNode.childCount; cellIndex++) {
-          const cellNode = rowNode.child(cellIndex);
-          const cellText = cellNode.textContent || "";
-          rowData.push(cellText);
-        }
-        tableData.push(rowData);
-      }
-      setTableData(tableData);
-    } else {
-      setTableData(null);
+  const [viewYLabel, setViewYLabel] = useState(true);
+  const [ratio, setRatio] = useState("1/1");
+
+  // 1. 테이블 데이터 추출 로직
+  useEffect(() => {
+    if (!selectedObject || selectedObject.node.type.name !== "table") {
+      // 선택 해제 시 즉시 null로 날리지 말고, 정말 다른 걸 선택했을 때만 날림
+      return;
     }
-  }, [selectedObject]);
 
-  const chartOptions = [
-    { value: "bar", label: <TbChartBar /> },
-    { value: "line", label: <TbChartLine /> },
-    { value: "pie", label: <TbChartPie /> },
-  ];
+    const tableNode = selectedObject.node;
+    const extracted = [];
+    for (let i = 0; i < tableNode.childCount; i++) {
+      const row = tableNode.child(i);
+      const rowData = [];
+      for (let j = 0; j < row.childCount; j++) {
+        rowData.push(row.child(j).textContent || "");
+      }
+      extracted.push(rowData);
+    }
 
-  // 차트 데이터 가공 함수 (Chart.js와 동일한 로직)
-  const getChartData = () => {
-    if (!tableData || tableData.length < 2) return null;
+    const newStr = JSON.stringify(extracted);
+    if (newStr !== JSON.stringify(tableData)) {
+      setTableData(extracted);
+    }
+  }, [selectedObject, tableData]);
 
-    let processedData = tableData;
-
-    // 축이 전환된 경우 테이블을 transpose
+  // 2. 색상 개수 계산
+  const chartColorIndex = useMemo(() => {
+    if (!tableData || tableData.length === 0) return 0;
     if (isAxesSwapped) {
-      const maxCols = Math.max(...tableData.map((row) => row.length));
-      processedData = [];
-      for (let colIndex = 0; colIndex < maxCols; colIndex++) {
-        const newRow = [];
-        for (let rowIndex = 0; rowIndex < tableData.length; rowIndex++) {
-          newRow.push(tableData[rowIndex][colIndex] || "");
-        }
-        processedData.push(newRow);
-      }
+      return chartType === "pie"
+        ? tableData[0].length - 1
+        : tableData.length - 1;
+    } else {
+      return chartType === "pie"
+        ? tableData.length - 1
+        : tableData[0].length - 1;
     }
+  }, [tableData, isAxesSwapped, chartType]);
 
-    const headers = processedData[0]; // 첫 번째 행은 헤더
-    const dataRows = processedData.slice(1); // 나머지는 데이터
+  // 3. ★ 색상 배열 동기화 (기존 색상을 보존하는 가드 추가)
+  useEffect(() => {
+    if (chartColorIndex <= 0) return;
 
-    const labels = dataRows.map((row) => row[0]); // 첫 번째 컬럼은 라벨
+    setChartColors((prev) => {
+      // 개수가 줄어들거나 늘어났을 때만 조정하되, 기존 색상은 유지
+      if (prev.length === chartColorIndex) return prev;
 
-    if (chartType === "pie") {
-      // 파이 차트는 첫 번째 데이터셋만 사용
-      const pieColors = [
-        { bg: "rgba(255, 99, 132, 0.5)", border: "rgba(255, 99, 132, 1)" }, // #FF6384
-        { bg: "rgba(54, 162, 235, 0.5)", border: "rgba(54, 162, 235, 1)" }, // #36A2EB
-        { bg: "rgba(255, 206, 86, 0.5)", border: "rgba(255, 206, 86, 1)" }, // #FFCE56
-        { bg: "rgba(75, 192, 192, 0.5)", border: "rgba(75, 192, 192, 1)" }, // #4BC0C0
-        { bg: "rgba(153, 102, 255, 0.5)", border: "rgba(153, 102, 255, 1)" }, // #9966FF
-        { bg: "rgba(255, 159, 64, 0.5)", border: "rgba(255, 159, 64, 1)" }, // #FF9F40
+      const defaultColors = [
+        "#13c2c2",
+        "#1677ff",
+        "#52c41a",
+        "#eb4d28",
+        "#a0d911",
+        "#346aa3",
       ];
+      const next = [...prev];
 
-      return {
-        labels: labels,
-        datasets: [
-          {
-            data: dataRows.map((row) => {
-              const value = parseFloat(row[1]);
-              return isNaN(value) ? 0 : value;
-            }),
-            backgroundColor: pieColors.map((c) => c.bg),
-            borderColor: pieColors.map((c) => c.border),
-            borderWidth: 2,
-          },
-        ],
-      };
-    }
-
-    return {
-      labels: labels,
-      datasets: headers.slice(1).map((header, index) => ({
-        label: header,
-        data: dataRows.map((row) => {
-          const value = parseFloat(row[index + 1]);
-          return isNaN(value) ? 0 : value;
-        }),
-        backgroundColor: `rgba(${54 + index * 50}, ${162 + index * 30}, ${
-          235 - index * 40
-        }, 0.5)`,
-        borderColor: `rgba(${54 + index * 50}, ${162 + index * 30}, ${
-          235 - index * 40
-        }, 1)`,
-        borderWidth: 2,
-        tension: chartType === "line" ? 0.4 : 0,
-        fill: false,
-      })),
-    };
-  };
-
-  // 새로운 캔버스에 완전히 새로운 차트를 그려서 복사
-  const copyChartAsImage = async () => {
-    if (!tableData) return;
-
-    try {
-      // 차트 타입에 따른 적절한 비율 계산
-      let targetWidth, targetHeight;
-      const baseSize = 800; // 더 큰 기본 크기
-
-      if (chartType === "pie") {
-        // 파이 차트는 정사각형
-        targetWidth = baseSize;
-        targetHeight = baseSize;
-      } else {
-        // bar, line 차트는 데이터 개수에 따라 가로 길이 조정
-        const dataCount = tableData.length - 1; // 헤더 제외
-        const widthMultiplier = Math.min(Math.max(dataCount / 4, 1), 2.5);
-        targetWidth = Math.floor(baseSize * widthMultiplier);
-        targetHeight = Math.floor(baseSize * 0.7); // 적절한 비율
+      if (next.length < chartColorIndex) {
+        for (let i = next.length; i < chartColorIndex; i++) {
+          next[i] = defaultColors[i % defaultColors.length];
+        }
       }
+      return next.slice(0, chartColorIndex);
+    });
+  }, [chartColorIndex]);
 
-      // 새로운 캔버스 생성
-      const canvas = document.createElement("canvas");
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-      const ctx = canvas.getContext("2d");
+  const copyChartAsImage = async () => {
+    if (!tableData || !chartRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const chartContainer = chartRef.current.closest("div");
 
-      // 배경을 흰색으로 설정
-      ctx.fillStyle = "white";
-      ctx.fillRect(0, 0, targetWidth, targetHeight);
+      // 1. 배율 설정
+      const captureScale = 2;
+      const fontGrowthFactor = 1.2; // 최종 이미지에서 폰트가 원본의 1.2배만 되도록 설정
+      const fontAdjustmentRatio = fontGrowthFactor / captureScale;
 
-      // Chart.js 차트 데이터 가져오기
-      const chartData = getChartData();
-      if (!chartData) return;
+      const canvas = await html2canvas(chartContainer, {
+        backgroundColor: "#ffffff",
+        scale: captureScale,
+        useCORS: true,
+        logging: false, // 불필요한 로그 제거
+        onclone: (clonedDoc) => {
+          // 2. Recharts의 주요 텍스트 클래스들 타겟팅
+          // .recharts-text: 일반 텍스트
+          // .recharts-cartesian-axis-tick-value: 축 눈금 값
+          // .recharts-label: 데이터 라벨 리스트
+          const selectors =
+            ".recharts-text, .recharts-cartesian-axis-tick-value, .recharts-label, text, tspan";
+          const textElements = clonedDoc.querySelectorAll(selectors);
 
-      // Chart.js로 새로운 차트 생성
-      const { Chart } = await import("chart.js/auto");
+          textElements.forEach((el) => {
+            // 3. 현재 폰트 크기 파악 (없으면 기본값 12px)
+            const currentFontSize =
+              parseFloat(window.getComputedStyle(el).fontSize) || 12;
+            const newSize = `${currentFontSize * fontAdjustmentRatio}px`;
 
-      const newChart = new Chart(ctx, {
-        type: chartType,
-        data: chartData,
-        options: {
-          responsive: false,
-          maintainAspectRatio: false,
-          animation: false, // 애니메이션 끄기
-          plugins: {
-            legend: {
-              position: "bottom",
-              labels: {
-                font: {
-                  size: 24, // 범례 폰트 크기 대폭 증가
-                  weight: "bold",
-                },
-                padding: 20,
-              },
-            },
-            tooltip: {
-              titleFont: {
-                size: 20,
-              },
-              bodyFont: {
-                size: 18,
-              },
-            },
-          },
-          scales:
-            chartType !== "pie"
-              ? {
-                  x: {
-                    ticks: {
-                      font: {
-                        size: 20, // X축 라벨 폰트 크기 대폭 증가
-                        weight: "bold",
-                      },
-                    },
-                    title: {
-                      font: {
-                        size: 22,
-                        weight: "bold",
-                      },
-                    },
-                  },
-                  y: {
-                    ticks: {
-                      font: {
-                        size: 20, // Y축 라벨 폰트 크기 대폭 증가
-                        weight: "bold",
-                      },
-                    },
-                    title: {
-                      font: {
-                        size: 22,
-                        weight: "bold",
-                      },
-                    },
-                  },
-                }
-              : {},
+            // 4. 스타일(CSS)과 속성(Attribute) 둘 다 강제 적용
+            el.style.setProperty("font-size", newSize, "important");
+
+            if (
+              el.tagName.toLowerCase() === "text" ||
+              el.tagName.toLowerCase() === "tspan"
+            ) {
+              // SVG 요소는 setAttribute가 가장 확실합니다.
+              el.setAttribute("font-size", newSize);
+              // Recharts 특유의 위치 어긋남 방지를 위해 스타일로도 고정
+              el.style.fontSize = newSize;
+            }
+          });
         },
       });
 
-      // 차트 렌더링 완료 대기
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // 캔버스를 Blob으로 변환
-      const blob = await new Promise((resolve) => {
-        canvas.toBlob(resolve, "image/png", 1.0);
-      });
-
-      // 클립보드에 복사
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          "image/png": blob,
-        }),
-      ]);
-
-      // 차트 인스턴스 정리
-      newChart.destroy();
-
-      console.log(
-        `차트 이미지가 클립보드에 복사되었습니다 (${targetWidth}x${targetHeight})`
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            navigator.clipboard.write([
+              new ClipboardItem({ "image/png": blob }),
+            ]);
+          }
+        },
+        "image/png",
+        1.0
       );
-    } catch (error) {
-      console.error("차트 복사 중 오류:", error);
+    } catch (e) {
+      console.error("차트 복사 실패:", e);
     }
   };
 
@@ -254,28 +174,117 @@ export default function MadeChart({ dragHandleProps }) {
     >
       <div className="w-100 flex flex-col gap-10">
         <div className="flex justify-center">
-          {selectedObject && selectedObject.node.type.name === "table" ? (
-            <div className="flex flex-col gap-10 items-center w-100 ">
+          {tableData ? (
+            <div className="flex flex-col gap-10 items-center w-100">
               <Segmented
-                options={chartOptions}
+                options={[
+                  { value: "bar", label: <TbChartBar /> },
+                  { value: "line", label: <TbChartLine /> },
+                  { value: "area", label: <TbChartArea /> },
+                  { value: "pie", label: <TbChartPie /> },
+                  { value: "radar", label: <TbChartRadar /> },
+                ]}
                 value={chartType}
                 onChange={setChartType}
                 block
               />
-              <Button
-                size="sm"
-                onClick={() => setIsAxesSwapped(!isAxesSwapped)}
+
+              <div className="grid col-4 w-100 gap-10">
+                <Button
+                  size="sm"
+                  onClick={() => setIsAxesSwapped(!isAxesSwapped)}
+                >
+                  <Typography size="sm" pretendard="SB">
+                    X/Y 축 전환
+                  </Typography>
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => setViewDataValue(!viewDataValue)}
+                  background={!viewDataValue && "neutral-2"}
+                  color={viewDataValue ? "blue" : "neutral"}
+                >
+                  <Typography size="sm" pretendard={viewDataValue && "SB"}>
+                    데이터 값
+                  </Typography>
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => setViewYLabel(!viewYLabel)}
+                  background={!viewYLabel && "neutral-2"}
+                  color={viewYLabel ? "blue" : "neutral"}
+                >
+                  <Typography size="sm" pretendard={viewYLabel && "SB"}>
+                    Y축 라벨
+                  </Typography>
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => setViewLegend(!viewLegend)}
+                  background={!viewLegend && "neutral-2"}
+                  color={viewLegend ? "blue" : "neutral"}
+                >
+                  <Typography size="sm" pretendard={viewLegend && "SB"}>
+                    범례
+                  </Typography>
+                </Button>
+              </div>
+
+              {/* ★ 색상 선택 UI - 이벤트 전파 방지 추가 */}
+              <div
+                className={`grid col-${Math.min(
+                  chartColorIndex,
+                  7
+                )} w-100 gap-10`}
+                onMouseDown={(e) => e.stopPropagation()} // 에디터 포커스 뺏기 방지
               >
-                x / y 축 전환
-              </Button>
+                {chartColors.map((color, index) => (
+                  <div key={index} className="flex flex-col w-100">
+                    <ColorPicker
+                      className="w-100"
+                      open={openPickerIndex === index}
+                      setOpen={(isOpen) =>
+                        setOpenPickerIndex(isOpen ? index : null)
+                      }
+                      color={color}
+                      onChange={(c) => {
+                        // ★ 여기서 상태를 업데이트할 때 확실하게 새 배열 생성
+                        setChartColors((prev) => {
+                          const next = [...prev];
+                          next[index] = c.hex;
+                          return next;
+                        });
+                        setOpenPickerIndex(null);
+                      }}
+                      mode="preset"
+                    >
+                      {/* Button의 background가 sud-ui에서 안 먹힐 경우를 대비해 style 병행 */}
+                      <Button className="w-100" background={color} />
+                    </ColorPicker>
+                  </div>
+                ))}
+              </div>
+              <Input
+                {...inputProps}
+                value={ratio}
+                onChange={(e) => setRatio(e.target.value)}
+                prefix={"너비 / 높이 : "}
+              />
+
               <Card shadow="none" width="100%">
                 <Chart
                   tableData={tableData}
                   chartType={chartType}
                   isAxesSwapped={isAxesSwapped}
                   ref={chartRef}
+                  viewDataValue={viewDataValue}
+                  viewLegend={viewLegend}
+                  chartColors={chartColors}
+                  viewYLabel={viewYLabel}
+                  ratio={ratio}
                 />
               </Card>
+
               <Button
                 icon={<IoCopyOutline size={16} />}
                 onClick={copyChartAsImage}
