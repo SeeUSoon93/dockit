@@ -193,9 +193,9 @@ const Chart = React.forwardRef(
                 {/* 격자선: strokeDasharray로 점선 스타일 지정 */}
                 {/* <CartesianGrid strokeDasharray="1 1" /> */}
                 {/* X축: dataKey로 라벨 데이터 지정 */}
-                <XAxis dataKey="name" fontSize={12} />
+                <XAxis dataKey="name" fontSize={12} tickLine={false} />
                 {/* Y축: 자동 스케일 */}
-                {viewYLabel && <YAxis fontSize={12} />}
+                {viewYLabel && <YAxis fontSize={12} tickLine={false} />}
                 {/* 툴팁: 마우스 오버 시 데이터 표시 */}
                 {/* <Tooltip /> */}
                 {/* 범례: 데이터셋 이름 표시 */}
@@ -254,8 +254,8 @@ const Chart = React.forwardRef(
                 }}
               >
                 {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                <XAxis dataKey="name" fontSize={12} />
-                {viewYLabel && <YAxis fontSize={12} />}
+                <XAxis dataKey="name" fontSize={12} tickLine={false} />
+                {viewYLabel && <YAxis fontSize={12} tickLine={false} />}
                 {/* <Tooltip /> */}
                 {viewLegend && <Legend {...legendProps} />}
                 {keys.map((key, index) => (
@@ -310,8 +310,8 @@ const Chart = React.forwardRef(
                 }}
               >
                 {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                <XAxis dataKey="name" fontSize={12} />
-                {viewYLabel && <YAxis fontSize={12} />}
+                <XAxis dataKey="name" fontSize={12} tickLine={false} />
+                {viewYLabel && <YAxis fontSize={12} tickLine={false} />}
                 {/* <Tooltip /> */}
                 {viewLegend && <Legend {...legendProps} />}
                 {keys.map((key, index) => (
@@ -447,7 +447,7 @@ const Chart = React.forwardRef(
                 {/* 극좌표계 격자선 */}
                 <PolarGrid />
                 {/* 각도축: 라벨 표시 */}
-                <PolarAngleAxis dataKey="name" fontSize={12} />
+                <PolarAngleAxis dataKey="name" fontSize={12} tickLine={false} />
                 {/* 반경축: 값 범위 표시 */}
                 {/* <PolarRadiusAxis
                   angle={90} // 90도 위치
@@ -487,8 +487,8 @@ const Chart = React.forwardRef(
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data}>
                 {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                <XAxis dataKey="name" />
-                {viewYLabel && <YAxis />}
+                <XAxis dataKey="name" tickLine={false} />
+                {viewYLabel && <YAxis tickLine={false} />}
                 {/* <Tooltip /> */}
                 {viewLegend && <Legend {...legendProps} />}
                 {keys.map((key, index) => (

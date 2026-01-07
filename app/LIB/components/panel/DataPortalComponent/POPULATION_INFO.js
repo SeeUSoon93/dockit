@@ -2,62 +2,17 @@ import { inputProps } from "@/app/LIB/constant/uiProps";
 import { useEffect, useState } from "react";
 import { Card, Divider, DotSpinner, Input, Select, Typography } from "sud-ui";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  LabelList,
   Legend,
-} from "chart.js";
-import { Bar, Line } from "react-chartjs-2";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-// 값 표시를 위한 플러그인
-const valueLabelPlugin = {
-  id: "valueLabel",
-  afterDatasetsDraw: (chart) => {
-    if (chart.config?.options?.indexAxis === "y") {
-      return;
-    }
-    if (chart.config?.type === "line") {
-      return;
-    }
-    const ctx = chart.ctx;
-    chart.data.datasets.forEach((dataset, i) => {
-      const meta = chart.getDatasetMeta(i);
-      meta.data.forEach((bar, index) => {
-        const value = dataset.data[index];
-        const x = bar.x;
-        const y = bar.y;
-        ctx.save();
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.font = "600 14px sans-serif";
-        ctx.fillStyle = "#4B5563";
-        const formattedValue = Math.abs(value)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        ctx.fillText(formattedValue, x, y - 5);
-        ctx.restore();
-      });
-    });
-  },
-};
-
-ChartJS.register(valueLabelPlugin);
+  Cell,
+} from "recharts";
 
 export default function POPULATION_INFO() {
   const [mainData, setMainData] = useState(null);
@@ -132,24 +87,19 @@ export default function POPULATION_INFO() {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  // 차트 데이터 구성
-  const chartData = mainData
-    ? {
-        labels: ["남자", "여자"],
-        datasets: [
-          {
-            label: "인구 수",
-            data: [
-              parseInt(mainData.maleNmprCnt) || 0,
-              parseInt(mainData.femlNmprCnt) || 0,
-            ],
-            backgroundColor: ["#36A2EB", "#FF6384"], // 남자 파란색, 여자 빨간색
-            borderColor: ["#36A2EB", "#FF6384"],
-            borderWidth: 1,
-          },
-        ],
-      }
-    : null;
+  // 막대 차트 데이터 구성 (Recharts 형식)
+  const barChartData = mainData
+    ? [
+        {
+          name: "남자",
+          value: parseInt(mainData.maleNmprCnt) || 0,
+        },
+        {
+          name: "여자",
+          value: parseInt(mainData.femlNmprCnt) || 0,
+        },
+      ]
+    : [];
 
   // Y축 최대값 계산 (최대 인구 수의 1.2배로 여유 공간 확보)
   const maxValue = mainData
@@ -158,52 +108,6 @@ export default function POPULATION_INFO() {
         parseInt(mainData.femlNmprCnt) || 0
       ) * 1.2
     : 0;
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            return `${context.label}: ${formatNumber(context.parsed.y)}명`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          font: {
-            size: 14,
-            weight: 400,
-          },
-        },
-        grid: {
-          display: false,
-        },
-        border: {
-          display: false,
-        },
-      },
-      y: {
-        beginAtZero: true,
-        max: maxValue,
-        ticks: {
-          display: false,
-        },
-        grid: {
-          display: false,
-        },
-        border: {
-          display: false,
-        },
-      },
-    },
-  };
 
   const ageLabels = [
     "0-9세",
@@ -227,129 +131,31 @@ export default function POPULATION_INFO() {
     ? mainData.femlAgeArray.map((value) => parseInt(value, 10) || 0)
     : null;
 
-  const maleAgePoints =
-    maleAgeCounts && maleAgeCounts.length === ageLabels.length
+  // Area 차트 데이터 구성 (Recharts 형식)
+  const areaChartData =
+    maleAgeCounts &&
+    femaleAgeCounts &&
+    maleAgeCounts.length === ageLabels.length &&
+    femaleAgeCounts.length === ageLabels.length
       ? ageLabels.map((label, index) => ({
-          x: maleAgeCounts[index] || 0,
-          y: label,
+          name: label,
+          남자: maleAgeCounts[index] * -1 || 0,
+          여자: femaleAgeCounts[index] || 0,
         }))
-      : null;
+      : [];
 
-  const femaleAgePoints =
-    femaleAgeCounts && femaleAgeCounts.length === ageLabels.length
-      ? ageLabels.map((label, index) => ({
-          x: femaleAgeCounts[index] || 0,
-          y: label,
-        }))
-      : null;
-
-  const populationLineData =
-    maleAgePoints && femaleAgePoints
-      ? {
-          datasets: [
-            {
-              label: "남자",
-              data: maleAgePoints,
-              borderColor: "#36A2EB",
-              backgroundColor: "rgba(54, 162, 235, 0.15)",
-              pointBackgroundColor: "#36A2EB",
-              pointBorderColor: "#36A2EB",
-              pointRadius: 4,
-              tension: 0.3,
-              fill: false,
-              parsing: {
-                xAxisKey: "x",
-                yAxisKey: "y",
-              },
-            },
-            {
-              label: "여자",
-              data: femaleAgePoints,
-              borderColor: "#FF6384",
-              backgroundColor: "rgba(255, 99, 132, 0.15)",
-              pointBackgroundColor: "#FF6384",
-              pointBorderColor: "#FF6384",
-              pointRadius: 4,
-              tension: 0.3,
-              fill: false,
-              parsing: {
-                xAxisKey: "x",
-                yAxisKey: "y",
-              },
-            },
-          ],
-        }
-      : null;
-
-  const lineMaxValue =
-    maleAgePoints && femaleAgePoints
+  // X축 최대값 계산 (남자는 음수이므로 절댓값 사용)
+  const areaMaxValue =
+    areaChartData.length > 0
       ? Math.max(
-          ...maleAgePoints.map((point) => point.x || 0),
-          ...femaleAgePoints.map((point) => point.x || 0)
+          ...areaChartData.map((item) =>
+            Math.max(Math.abs(item.남자), Math.abs(item.여자))
+          )
         )
       : 0;
 
-  const lineAxisMax =
-    lineMaxValue > 0 ? Math.ceil(lineMaxValue / 500) * 500 : 500;
-
-  const populationLineOptions = populationLineData
-    ? {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          mode: "index",
-          intersect: false,
-        },
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              usePointStyle: true,
-              boxWidth: 6,
-              padding: 16,
-            },
-          },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                const { x, y } = context.parsed;
-                return `${context.dataset.label}, ${y} : ${formatNumber(x)}명`;
-              },
-            },
-          },
-        },
-        scales: {
-          x: {
-            type: "linear",
-            grid: {
-              display: false,
-            },
-            ticks: {
-              callback: (value) => formatNumber(value),
-              font: {
-                size: 12,
-              },
-            },
-            min: 0,
-            suggestedMax: lineAxisMax,
-          },
-          y: {
-            type: "category",
-            labels: ageLabels,
-            reverse: true,
-            beginAtZero: true,
-            ticks: {
-              font: {
-                size: 12,
-              },
-            },
-            grid: {
-              display: false,
-            },
-          },
-        },
-      }
-    : null;
+  const areaAxisMax =
+    areaMaxValue > 0 ? Math.ceil(areaMaxValue / 500) * 500 : 500;
 
   // (srchFrYm이 이 함수 스코프에서 접근 가능하다고 가정)
 
@@ -449,8 +255,34 @@ export default function POPULATION_INFO() {
 
                 {/* 성별 인구 분포 */}
                 <Divider content="성별 인구 분포" />
-                <div style={{ height: "150px", width: "100%" }}>
-                  {chartData && <Bar data={chartData} options={chartOptions} />}
+                <div style={{ height: "200px", width: "100%" }}>
+                  {barChartData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={barChartData}
+                        margin={{ top: 20, right: 10, bottom: 5, left: 0 }}
+                      >
+                        <XAxis dataKey="name" fontSize={14} tickLine={false} />
+                        <YAxis domain={[0, maxValue]} hide />
+                        <Bar dataKey="value" radius={[5, 5, 0, 0]}>
+                          {barChartData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={index === 0 ? "#36A2EB" : "#FF6384"}
+                            />
+                          ))}
+                          <LabelList
+                            dataKey="value"
+                            position="top"
+                            formatter={(value) => formatNumber(value)}
+                            fontSize={14}
+                            fontWeight={600}
+                            fill="#4B5563"
+                          />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : null}
                 </div>
                 <div className="flex jus-end">
                   <Typography size="sm" color="cool-gray-7">
@@ -468,13 +300,74 @@ export default function POPULATION_INFO() {
 
                 {/* 연령별 인구 분포 */}
                 <Divider content="연령별 인구 분포" />
-                {/* 연령대별 추이 선형 차트 */}
-                <div style={{ height: "320px", width: "100%" }}>
-                  {populationLineData && populationLineOptions ? (
-                    <Line
-                      data={populationLineData}
-                      options={populationLineOptions}
-                    />
+                {/* 연령대별 추이 Area 차트 */}
+                <div style={{ height: "350px", width: "100%" }}>
+                  {areaChartData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={areaChartData}
+                        margin={{ top: 15, right: 20, left: 0 }}
+                        layout="vertical"
+                      >
+                        <XAxis
+                          type="number"
+                          domain={[-areaAxisMax, areaAxisMax]}
+                          tickFormatter={(value) =>
+                            formatNumber(Math.abs(value))
+                          }
+                          fontSize={12}
+                          tickLine={false}
+                        />
+                        <YAxis
+                          type="category"
+                          dataKey="name"
+                          fontSize={12}
+                          reversed
+                          tickLine={false}
+                        />
+                        <Legend
+                          verticalAlign="bottom"
+                          iconType="line"
+                          wrapperStyle={{ paddingTop: "10px" }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="남자"
+                          stackId="1"
+                          stroke="#36A2EB"
+                          fill="#36A2EB"
+                          fillOpacity={0.2}
+                          strokeWidth={2}
+                          dot={{ r: 1 }}
+                        >
+                          <LabelList
+                            dataKey="남자"
+                            position="left"
+                            formatter={(value) => formatNumber(Math.abs(value))}
+                            fontSize={12}
+                            offset={5}
+                          />
+                        </Area>
+                        <Area
+                          type="monotone"
+                          dataKey="여자"
+                          stackId="2"
+                          stroke="#FF6384"
+                          fill="#FF6384"
+                          fillOpacity={0.2}
+                          strokeWidth={2}
+                          dot={{ r: 1 }}
+                        >
+                          <LabelList
+                            dataKey="여자"
+                            position="right"
+                            formatter={(value) => formatNumber(value)}
+                            fontSize={12}
+                            offset={5}
+                          />
+                        </Area>
+                      </AreaChart>
+                    </ResponsiveContainer>
                   ) : (
                     <div className="flex jus-cen item-cen h-100">
                       <Typography color="cool-gray-7" size="sm">
