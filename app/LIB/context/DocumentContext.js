@@ -37,6 +37,7 @@ export function DocumentProvider({ children }) {
   const [bulletStyle, setBulletStyle] = useState(null);
   const [contentURL, setContentURL] = useState("");
   const [thumbnail, setThumbnail] = useState("");
+  const [teamMembers, setTeamMembers] = useState([]);
 
   const latestStateRef = useRef();
 
@@ -50,8 +51,9 @@ export function DocumentProvider({ children }) {
       content,
       docSetting,
       bulletStyle,
+      teamMembers,
     };
-  }, [title, content, docSetting, bulletStyle]);
+  }, [title, content, docSetting, bulletStyle, teamMembers]);
 
   const generateThumbnail = useCallback(async (htmlContent, docSettings) => {
     try {
@@ -121,6 +123,7 @@ export function DocumentProvider({ children }) {
       setBulletStyle(fetchedDoc.bulletStyle || null);
       setContentURL(fetchedDoc.contentURL || "");
       setThumbnail(fetchedDoc.thumbnail || null);
+      setTeamMembers(fetchedDoc.teamMembers || []);
     } catch (error) {
       console.error("문서 로드 실패:", error);
       setDocument(null);
@@ -157,6 +160,7 @@ export function DocumentProvider({ children }) {
           title: dataToSave.title,
           docSetting: dataToSave.docSetting,
           bulletStyle: dataToSave.bulletStyle,
+          teamMembers: dataToSave.teamMembers,
         };
 
         const user = auth.currentUser;
@@ -236,6 +240,8 @@ export function DocumentProvider({ children }) {
     loadDocument,
     clearDocument,
     saveDocument,
+    teamMembers,
+    setTeamMembers,
   };
   // 주석
   return (

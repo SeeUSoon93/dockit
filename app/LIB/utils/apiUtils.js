@@ -29,8 +29,8 @@ export const callApi = async (url, options) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 
   if (!response.ok) {

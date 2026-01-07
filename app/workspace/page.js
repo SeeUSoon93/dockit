@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card, Div, DotSpinner, Image, toast, Typography } from "sud-ui";
+import { Card, Div, DotSpinner, Image, Tabs, toast, Typography } from "sud-ui";
 import {
   createData,
   deleteData,
   fetchDataList,
   updateData,
   moveData,
-  fetchDataTree
+  fetchDataTree,
 } from "../LIB/utils/dataUtils";
 import { useRouter } from "next/navigation";
 import { useUser } from "../LIB/context/UserContext";
@@ -19,6 +19,7 @@ import { TriangleLeft } from "sud-icons";
 import { FaFile, FaFolder } from "react-icons/fa6";
 import { formatTime } from "../LIB/utils/commonUtils";
 import { useLayout } from "../LIB/context/LayoutContext";
+import { RiTeamFill } from "react-icons/ri";
 
 const storage = getStorage();
 
@@ -32,7 +33,7 @@ export default function WorkspacePage() {
   const [listLoading, setListLoading] = useState(false);
   const [currentFolderId, setCurrentFolderId] = useState(null);
   const [currentPath, setCurrentPath] = useState([]);
-
+  const [collaborations, setCollaborations] = useState([]);
   // 모달 상태
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [renameModalOpen, setRenameModalOpen] = useState(false);
@@ -44,7 +45,7 @@ export default function WorkspacePage() {
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
-    y: 0
+    y: 0,
   });
 
   // 드래그앤드롭 상태
@@ -60,9 +61,11 @@ export default function WorkspacePage() {
     try {
       const docs = await fetchDataList("documents", folderId);
       const folders = await fetchDataList("folders", folderId);
+      const collaborations = await fetchDataList("collaborations");
 
       setContentList([folders.content, docs.content]);
       setCurrentFolderId(folderId);
+      setCollaborations(collaborations.content);
     } catch (error) {
       console.error("데이터 가져오기 실패:", error);
     } finally {
@@ -285,7 +288,7 @@ export default function WorkspacePage() {
     setContextMenu({
       visible: true,
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
     });
   };
 
@@ -293,6 +296,311 @@ export default function WorkspacePage() {
     setContextMenu({ visible: false, x: 0, y: 0 });
     setSelectedItem(null);
   };
+
+  console.log(collaborations);
+
+  const tabOptions = [
+    {
+      key: "documents",
+      label: (
+        <div className="flex items-center gap-10 w-100">
+          {currentPath.length > 0 && (
+            <Div
+              onClick={handleGoBack}
+              className="flex items-center gap-5"
+              color="cool-gray-8"
+            >
+              <TriangleLeft size={20} />
+            </Div>
+          )}
+          <div className="flex items-center gap-5">
+            <Typography color="cool-gray-6">홈</Typography>
+            {currentPath.map((folder) => (
+              <div key={folder.id} className="flex items-center gap-5">
+                <Typography color="cool-gray-4">/</Typography>
+                <Typography>{folder.title}</Typography>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+      children: (
+        <>
+          {/* 콘텐츠 목록 */}
+          {listLoading ? (
+            <div className="flex justify-center w-100 items-center pd-y-50">
+              <DotSpinner />
+            </div>
+          ) : contentList.length === 0 ? (
+            <div className="flex justify-center w-100 text-center pd-y-50">
+              <Typography color={"cool-gray-7"}>
+                컨텐츠가 없습니다.
+                <br /> 마우스 우클릭으로 새 문서 또는 폴더를 만들어주세요.
+              </Typography>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-20 w-100">
+              {contentList.map(
+                (list) =>
+                  list &&
+                  list.length > 0 && (
+                    <div
+                      key={list[0]._id}
+                      className={`grid gap-10 items-start w-100 ${
+                        layoutMode === "desktop" ? "col-4" : "col-2"
+                      }`}
+                    >
+                      {list.map((item) => {
+                        const type = item.content_type;
+                        const isDragged = draggedItem?._id === item._id;
+                        const isDragOver = dragOverItem?._id === item._id;
+
+                        return (
+                          <div
+                            key={item._id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, item)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={(e) => handleDragOver(e, item)}
+                            onDragLeave={handleDragLeave}
+                            onDrop={(e) => handleDrop(e, item)}
+                            onContextMenu={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedItem(item);
+                              setContextMenu({
+                                visible: true,
+                                x: e.clientX,
+                                y: e.clientY,
+                              });
+                            }}
+                            onDoubleClick={() => {
+                              if (type === "folders") {
+                                handleOpenFolder(item._id, item.title);
+                              } else {
+                                router.push(`/workspace/${item._id}`);
+                              }
+                            }}
+                            className={`cursor-pointer transition-all duration-200 w-100   ${
+                              isDragged ? "opacity-50 scale-95" : ""
+                            } ${
+                              isDragOver
+                                ? "ring-2 ring-blue-500 bg-blue-50"
+                                : ""
+                            }`}
+                          >
+                            <Div
+                              className="flex flex-col items-center gap-5 rounded-lg pd-10 hover-shadow-6"
+                              background={"white-10"}
+                            >
+                              <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap">
+                                <Div color="mint-7">
+                                  {type === "documents" ? (
+                                    <FaFile />
+                                  ) : (
+                                    <FaFolder />
+                                  )}
+                                </Div>
+                                <Typography pretendard="SB">
+                                  {item.title}
+                                </Typography>
+                              </div>
+                              {type === "documents" && (
+                                <>
+                                  <Image
+                                    src={item.thumbnail || "/logo/symbol.png"}
+                                    alt={item.title}
+                                    width={"100%"}
+                                    height={200}
+                                    preview={false}
+                                    mask={null}
+                                  />
+
+                                  <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap justify-end">
+                                    <Typography size="xs" color="cool-gray-8">
+                                      {formatTime(item.updated_at)} 수정됨
+                                    </Typography>
+                                  </div>
+                                </>
+                              )}
+                            </Div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
+              )}
+            </div>
+          )}
+
+          {/* 삭제 모달 */}
+          <DeleteModal
+            modalOpen={deleteModalOpen}
+            setModalOpen={setDeleteModalOpen}
+            deleteInput={deleteInput}
+            setDeleteInput={setDeleteInput}
+            handleDeleteContent={() => {
+              if (selectedItem) {
+                handleDelete(selectedItem.content_type, selectedItem._id);
+              }
+            }}
+            selectedItem={selectedItem}
+          />
+
+          {/* 이름 변경 모달 */}
+          <RenameModal
+            modalOpen={renameModalOpen}
+            setModalOpen={setRenameModalOpen}
+            selectedItem={selectedItem}
+            handleRenameContent={handleRename}
+          />
+
+          {/* 폴더 이동 모달 */}
+          <MoveModal
+            modalOpen={moveModalOpen}
+            setModalOpen={setMoveModalOpen}
+            selectedItem={selectedItem}
+            handleMoveContent={handleMoveContent}
+            folderTree={folderTree}
+          />
+
+          {/* 컨텍스트 메뉴 */}
+          {contextMenu.visible && (
+            <Card
+              className="fixed z-50"
+              style={{
+                left: contextMenu.x,
+                top: contextMenu.y,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {selectedItem ? (
+                // 아이템이 선택된 경우: 이름 변경, 삭제 메뉴
+                <>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setRenameModalOpen(true);
+                      setContextMenu({ visible: false, x: 0, y: 0 });
+                    }}
+                  >
+                    이름 변경
+                  </div>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setMoveModalOpen(true);
+                      setContextMenu({ visible: false, x: 0, y: 0 });
+                    }}
+                  >
+                    폴더 이동
+                  </div>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+                    onClick={() => {
+                      setDeleteModalOpen(true);
+                      setContextMenu({ visible: false, x: 0, y: 0 });
+                    }}
+                  >
+                    삭제
+                  </div>
+                </>
+              ) : (
+                // 빈 공간 우클릭: 새로 만들기 메뉴
+                <>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      handleCreateContent("documents");
+                      setContextMenu({ visible: false, x: 0, y: 0 });
+                    }}
+                  >
+                    새 문서 만들기
+                  </div>
+                  <div
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      handleCreateContent("folders");
+                      setContextMenu({ visible: false, x: 0, y: 0 });
+                    }}
+                  >
+                    폴더 만들기
+                  </div>
+                </>
+              )}
+            </Card>
+          )}
+        </>
+      ),
+    },
+    {
+      key: "collaboration",
+      label: "협업(Beta)",
+      children: (
+        <>
+          {" "}
+          {listLoading ? (
+            <div className="flex justify-center w-100 items-center pd-y-50">
+              <DotSpinner />
+            </div>
+          ) : collaborations.length === 0 ? (
+            <div className="flex justify-center w-100 text-center pd-y-50">
+              <Typography color={"cool-gray-7"}>컨텐츠가 없습니다.</Typography>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-20 w-100">
+              <div
+                className={`grid gap-10 items-start w-100 ${
+                  layoutMode === "desktop" ? "col-4" : "col-2"
+                }`}
+              >
+                {collaborations.map((item) => {
+                  return (
+                    <div
+                      key={item._id}
+                      onDoubleClick={() => {
+                        router.push(`/workspace/${item._id}`);
+                      }}
+                      className="cursor-pointer transition-all duration-200 w-100"
+                    >
+                      <Div
+                        className="flex flex-col items-center gap-5 rounded-lg pd-10 hover-shadow-6"
+                        background={"white-10"}
+                      >
+                        <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap">
+                          <Div color="mint-7">
+                            <RiTeamFill />
+                          </Div>
+                          <Typography pretendard="SB">{item.title}</Typography>
+                        </div>
+
+                        <>
+                          <Image
+                            src={item.thumbnail || "/logo/symbol.png"}
+                            alt={item.title}
+                            width={"100%"}
+                            height={200}
+                            preview={false}
+                            mask={null}
+                          />
+
+                          <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap justify-end">
+                            <Typography size="xs" color="cool-gray-8">
+                              {formatTime(item.updated_at)} 수정됨
+                            </Typography>
+                          </div>
+                        </>
+                      </Div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </>
+      ),
+    },
+  ];
 
   return (
     <div
@@ -302,226 +610,7 @@ export default function WorkspacePage() {
       onContextMenu={handleContextMenu}
       onClick={handleClickOutside}
     >
-      {/* 현재 경로 표시 */}
-      <div className="flex items-center gap-10 w-100">
-        {currentPath.length > 0 && (
-          <Div
-            onClick={handleGoBack}
-            className="flex items-center gap-5"
-            color="cool-gray-8"
-          >
-            <TriangleLeft size={20} />
-          </Div>
-        )}
-        <div className="flex items-center gap-5">
-          <Typography color="cool-gray-6">홈</Typography>
-          {currentPath.map((folder) => (
-            <div key={folder.id} className="flex items-center gap-5">
-              <Typography color="cool-gray-4">/</Typography>
-              <Typography>{folder.title}</Typography>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 콘텐츠 목록 */}
-      {listLoading ? (
-        <div className="flex justify-center w-100 items-center pd-y-50">
-          <DotSpinner />
-        </div>
-      ) : contentList.length === 0 ? (
-        <div className="flex justify-center w-100 text-center pd-y-50">
-          <Typography color={"cool-gray-7"}>
-            컨텐츠가 없습니다.
-            <br /> 마우스 우클릭으로 새 문서 또는 폴더를 만들어주세요.
-          </Typography>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-20 w-100">
-          {contentList.map(
-            (list) =>
-              list &&
-              list.length > 0 && (
-                <div
-                  key={list[0]._id}
-                  className={`grid gap-10 items-start w-100 ${
-                    layoutMode === "desktop" ? "col-4" : "col-2"
-                  }`}
-                >
-                  {list.map((item) => {
-                    const type = item.content_type;
-                    const isDragged = draggedItem?._id === item._id;
-                    const isDragOver = dragOverItem?._id === item._id;
-
-                    return (
-                      <div
-                        key={item._id}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, item)}
-                        onDragEnd={handleDragEnd}
-                        onDragOver={(e) => handleDragOver(e, item)}
-                        onDragLeave={handleDragLeave}
-                        onDrop={(e) => handleDrop(e, item)}
-                        onContextMenu={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setSelectedItem(item);
-                          setContextMenu({
-                            visible: true,
-                            x: e.clientX,
-                            y: e.clientY
-                          });
-                        }}
-                        onDoubleClick={() => {
-                          if (type === "folders") {
-                            handleOpenFolder(item._id, item.title);
-                          } else {
-                            router.push(`/workspace/${item._id}`);
-                          }
-                        }}
-                        className={`cursor-pointer transition-all duration-200 w-100   ${
-                          isDragged ? "opacity-50 scale-95" : ""
-                        } ${
-                          isDragOver ? "ring-2 ring-blue-500 bg-blue-50" : ""
-                        }`}
-                      >
-                        <Div
-                          className="flex flex-col items-center gap-5 rounded-lg pd-10 hover-shadow-6"
-                          background={"white-10"}
-                        >
-                          <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap">
-                            <Div color="mint-7">
-                              {type === "documents" ? <FaFile /> : <FaFolder />}
-                            </Div>
-                            <Typography pretendard="SB">
-                              {item.title}
-                            </Typography>
-                          </div>
-                          {type === "documents" && (
-                            <>
-                              <Image
-                                src={item.thumbnail || "/logo/symbol.png"}
-                                alt={item.title}
-                                width={"100%"}
-                                height={200}
-                                preview={false}
-                                mask={null}
-                              />
-
-                              <div className="flex items-center gap-5 w-100 overflow-hidden text-ellipsis whitespace-nowrap justify-end">
-                                <Typography size="xs" color="cool-gray-8">
-                                  {formatTime(item.updated_at)} 수정됨
-                                </Typography>
-                              </div>
-                            </>
-                          )}
-                        </Div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )
-          )}
-        </div>
-      )}
-
-      {/* 삭제 모달 */}
-      <DeleteModal
-        modalOpen={deleteModalOpen}
-        setModalOpen={setDeleteModalOpen}
-        deleteInput={deleteInput}
-        setDeleteInput={setDeleteInput}
-        handleDeleteContent={() => {
-          if (selectedItem) {
-            handleDelete(selectedItem.content_type, selectedItem._id);
-          }
-        }}
-        selectedItem={selectedItem}
-      />
-
-      {/* 이름 변경 모달 */}
-      <RenameModal
-        modalOpen={renameModalOpen}
-        setModalOpen={setRenameModalOpen}
-        selectedItem={selectedItem}
-        handleRenameContent={handleRename}
-      />
-
-      {/* 폴더 이동 모달 */}
-      <MoveModal
-        modalOpen={moveModalOpen}
-        setModalOpen={setMoveModalOpen}
-        selectedItem={selectedItem}
-        handleMoveContent={handleMoveContent}
-        folderTree={folderTree}
-      />
-
-      {/* 컨텍스트 메뉴 */}
-      {contextMenu.visible && (
-        <Card
-          className="fixed z-50"
-          style={{
-            left: contextMenu.x,
-            top: contextMenu.y
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {selectedItem ? (
-            // 아이템이 선택된 경우: 이름 변경, 삭제 메뉴
-            <>
-              <div
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  setRenameModalOpen(true);
-                  setContextMenu({ visible: false, x: 0, y: 0 });
-                }}
-              >
-                이름 변경
-              </div>
-              <div
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  setMoveModalOpen(true);
-                  setContextMenu({ visible: false, x: 0, y: 0 });
-                }}
-              >
-                폴더 이동
-              </div>
-              <div
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
-                onClick={() => {
-                  setDeleteModalOpen(true);
-                  setContextMenu({ visible: false, x: 0, y: 0 });
-                }}
-              >
-                삭제
-              </div>
-            </>
-          ) : (
-            // 빈 공간 우클릭: 새로 만들기 메뉴
-            <>
-              <div
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  handleCreateContent("documents");
-                  setContextMenu({ visible: false, x: 0, y: 0 });
-                }}
-              >
-                새 문서 만들기
-              </div>
-              <div
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  handleCreateContent("folders");
-                  setContextMenu({ visible: false, x: 0, y: 0 });
-                }}
-              >
-                폴더 만들기
-              </div>
-            </>
-          )}
-        </Card>
-      )}
+      <Tabs options={tabOptions} />
     </div>
   );
 }

@@ -423,6 +423,12 @@ u {
   border-bottom: 2px solid #006d75;
 }
 
+.tiptap-container img {
+  &.ProseMirror-selectednode {
+    outline: 2px solid #006d75;
+  }
+}
+
 .sud-select,
 .sud-select sud-hover {
   background: transparent !important;

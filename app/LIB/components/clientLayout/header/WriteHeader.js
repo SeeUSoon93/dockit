@@ -29,6 +29,7 @@ import {
   PiListNumbersBold,
   PiTableFill,
   PiTextAlignCenterBold,
+  PiTextAlignJustifyBold,
   PiTextAlignLeftBold,
   PiTextAlignRightBold,
   PiTextBBold,
@@ -44,6 +45,8 @@ import { fontOptions } from "@/app/LIB/constant/fontOptions";
 import { LuSubscript, LuSuperscript } from "react-icons/lu";
 import { findParentNode } from "@tiptap/core";
 import { inputProps } from "@/app/LIB/constant/uiProps";
+import AddTeamMemberModal from "./AddTeamMemberModal";
+import { RiTeamFill } from "react-icons/ri";
 export default function WriteHeader() {
   const { editor, printAction, saveAction, downloadPDFAction } =
     useEditorContext();
@@ -55,6 +58,10 @@ export default function WriteHeader() {
   const [fontColor, setFontColor] = useState("#000000");
 
   const [docSettingModalOpen, setDocSettingModalOpen] = useState(false);
+
+  // 팀원 추가 모달 상태
+  const [addTeamMemberModalOpen, setAddTeamMemberModalOpen] = useState(false);
+  const [selectedTeamMember, setSelectedTeamMember] = useState([]);
 
   // 에디터 선택 상태를 저장하기 위한 ref
   const savedSelectionRef = useRef(null);
@@ -420,6 +427,11 @@ export default function WriteHeader() {
       {/* 정렬 */}
       <>
         {renderBtn(
+          PiTextAlignJustifyBold,
+          () => editor?.chain()?.focus()?.setTextAlign("justify")?.run(),
+          ""
+        )}
+        {renderBtn(
           PiTextAlignLeftBold,
           () => editor?.chain()?.focus()?.setTextAlign("left")?.run(),
           ""
@@ -562,10 +574,17 @@ export default function WriteHeader() {
         },
         ""
       )}
+      {/* {renderBtn(RiTeamFill, () => setAddTeamMemberModalOpen(true), "")} */}
 
       <DocSettingModal
         setDocSettingModalOpen={setDocSettingModalOpen}
         docSettingModalOpen={docSettingModalOpen}
+      />
+      <AddTeamMemberModal
+        addTeamMemberModalOpen={addTeamMemberModalOpen}
+        setAddTeamMemberModalOpen={setAddTeamMemberModalOpen}
+        selectedTeamMember={selectedTeamMember}
+        setSelectedTeamMember={setSelectedTeamMember}
       />
     </div>
   );
