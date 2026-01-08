@@ -1,60 +1,34 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useZoom(minScale = 0.5, maxScale = 4, step = 0.1) {
   const [scale, setScale] = useState(1);
   const containerRef = useRef(null);
+
   useEffect(() => {
-    const blockBrowserZoom = (e) => {
+    const handleWheel = (e) => {
       if (e.ctrlKey) {
+        // 1. [가장 중요] 전역에서 브라우저 줌을 무조건 막음
         e.preventDefault();
+
+        // 2. 휠 방향 계산
+        const delta = e.deltaY * -1;
+
+        setScale((prev) => {
+          const next = prev + (delta > 0 ? step : -step);
+          return Math.max(minScale, Math.min(next, maxScale));
+        });
       }
     };
 
-    window.addEventListener("wheel", blockBrowserZoom, {
-      passive: false, // ❗ 필수
-    });
+    // 3. 특정 div가 아니라 window에 리스너를 등록해서 브라우저가 개입할 틈을 안 줌
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      window.removeEventListener("wheel", blockBrowserZoom);
+      window.removeEventListener("wheel", handleWheel);
     };
-  }, []);
-  // 휠 이벤트 (확대/축소) 로직만 남김
-  const onWheel = useCallback(
-    (e) => {
-      // Ctrl 키가 눌려있지 않으면 무시
-      if (!e.ctrlKey) return;
-
-      // 이벤트가 containerRef 내부에서 발생했는지 확인
-      const container = containerRef.current;
-      if (!container) return;
-
-      // 이벤트 타겟이 container 내부에 있는지 확인
-      if (!container.contains(e.target)) return;
-
-      // 이벤트 전파 방지 및 기본 동작 방지
-      e.preventDefault();
-      e.stopPropagation();
-
-      const delta = e.deltaY * -1;
-      const newScale = scale + (delta > 0 ? step : -step);
-      const clampedScale = Math.max(minScale, Math.min(newScale, maxScale));
-
-      setScale(clampedScale);
-    },
-    [scale, minScale, maxScale, step]
-  );
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    // capture phase에서 이벤트 리스너 추가하여 먼저 처리
-    container.addEventListener("wheel", onWheel, { capture: true });
-    return () =>
-      container.removeEventListener("wheel", onWheel, { capture: true });
-  }, [onWheel]);
+  }, [minScale, maxScale, step]); // 여기도 scale은 빼야 리스너가 안 꼬입니다.
 
   return { containerRef, scale };
 }

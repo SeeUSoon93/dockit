@@ -99,15 +99,20 @@ export default function Content({
             >
               <div
                 ref={containerRef}
-                style={{
-                  transform: `scale(${scale})`,
-                  transformOrigin: "top center",
-                  width: "100%",
-                  height: "100%",
-                  minHeight: "100%",
-                }}
+                className="overflow-x-scroll overflow-y-hidden"
               >
-                {children}
+                <div
+                  style={{
+                    transform: `scale(${scale})`,
+                    transformOrigin: "top center",
+
+                    width: "100%",
+                    height: "100%",
+                    minHeight: "100%",
+                  }}
+                >
+                  {children}
+                </div>
               </div>
             </Splitter.Panel>
 
