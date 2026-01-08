@@ -768,3 +768,55 @@ u {
   font-family: "NanumMyeongjoExtraBold";
   src: url("/fonts/NanumMyeongjoExtraBold.ttf") format("truetype");
 }
+
+/* 학교안심 */
+@font-face {
+  font-family: "HakgyoansimDunggeunmisoB";
+  src: url("/fonts/HakgyoansimDunggeunmisoB.ttf") format("truetype");
+}
+@font-face {
+  font-family: "HakgyoansimDunggeunmisoR";
+  src: url("/fonts/HakgyoansimDunggeunmisoR.ttf") format("truetype");
+}
+@font-face {
+  font-family: "HakgyoansimPuzzleOutline";
+  src: url("/fonts/HakgyoansimPuzzleOutline.ttf") format("truetype");
+}
+@font-face {
+  font-family: "HakgyoansimPuzzleBlack";
+  src: url("/fonts/HakgyoansimPuzzleBlack.ttf") format("truetype");
+}
+/* hs */
+@font-face {
+  font-family: "HSsummer";
+  src: url("/fonts/HSsummer.ttf") format("truetype");
+}
+@font-face {
+  font-family: "HSSaemaul";
+  src: url("/fonts/HSSaemaul.ttf") format("truetype");
+}
+@font-face {
+  font-family: "HSGyeoulNoonkott";
+  src: url("/fonts/HSGyeoulNoonkott.ttf") format("truetype");
+}
+@font-face {
+  font-family: "HSBombaram";
+  src: url("/fonts/HSBombaram.ttf") format("truetype");
+}
+
+/* etc */
+@font-face {
+  font-family: "RoundedFixedsys";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
+    format("woff");
+  font-weight: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Galmuri9";
+  src: url("/fonts/Galmuri9.ttf") format("truetype");
+}
+@font-face {
+  font-family: "goding";
+  src: url("/fonts/goding.ttf") format("truetype");
+}

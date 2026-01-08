@@ -31,9 +31,9 @@ export const fontOptions = [
   { value: "NotoSerifKR-SemiBold", label: "노토세리프 SemiBold" },
 
   // GmarketSans
-  { value: "GmarketSansTTFBold", label: "지마켓산스 Bold" },
-  { value: "GmarketSansTTFLight", label: "지마켓산스 Light" },
-  { value: "GmarketSansTTFMedium", label: "지마켓산스 Medium" },
+  { value: "GmarketSansTTFBold", label: "G마켓산스 Bold" },
+  { value: "GmarketSansTTFLight", label: "G마켓산스 Light" },
+  { value: "GmarketSansTTFMedium", label: "G마켓산스 Medium" },
 
   // MaruBuri
   { value: "MaruBuri-Bold", label: "마루부리 Bold" },
@@ -51,5 +51,22 @@ export const fontOptions = [
   { value: "NanumGothicExtraBold", label: "나눔고딕 ExtraBold" },
   { value: "NanumMyeongjo", label: "나눔명조" },
   { value: "NanumMyeongjoBold", label: "나눔명조 Bold" },
-  { value: "NanumMyeongjoExtraBold", label: "나눔명조 ExtraBold" }
+  { value: "NanumMyeongjoExtraBold", label: "나눔명조 ExtraBold" },
+
+  // 학교안심
+  { value: "HakgyoansimDunggeunmisoB", label: "학교안심 둥근미소 B" },
+  { value: "HakgyoansimDunggeunmisoR", label: "학교안심 둥근미소 R" },
+  { value: "HakgyoansimPuzzleOutline", label: "학교안심 퍼즐 아웃라인" },
+  { value: "HakgyoansimPuzzleBlack", label: "학교안심 퍼즐 블랙" },
+
+  // hs
+  { value: "HSsummer", label: "HS여름물빛체" },
+  { value: "HSSaemaul", label: "HS새마을체" },
+  { value: "HSGyeoulNoonkott", label: "HS겨울눈꽃체2.0" },
+  { value: "HSBombaram", label: "HS봄바람체2.1" },
+
+  // etc
+  { value: "RoundedFixedsys", label: "둥근모꼴" },
+  { value: "Galmuri9", label: "갈무리9" },
+  { value: "goding", label: "나눔손글씨 고딕 아니고 고딩" },
 ];
