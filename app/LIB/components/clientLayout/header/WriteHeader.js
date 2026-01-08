@@ -236,6 +236,65 @@ export default function WriteHeader() {
     reader.readAsDataURL(file);
   };
 
+  const weightPriority = {
+    Thin: 1,
+    ExtraLight: 2,
+    Light: 3,
+    Regular: 4,
+    Medium: 5,
+    SemiBold: 6,
+    Bold: 7,
+    ExtraBold: 8,
+    Black: 9,
+    // 학교안심 등 특수 접미사 처리
+    R: 4,
+    B: 7,
+    "Puzzle Outline": 1,
+    "Puzzle Black": 9,
+  };
+
+  const sortedFontOptions = [...fontOptions].sort((a, b) => {
+    const labelA = a.label;
+    const labelB = b.label;
+
+    // 1. 언어 판별 (영어 우선)
+    const isEngA = /^[A-Za-z]/.test(labelA);
+    const isEngB = /^[A-Za-z]/.test(labelB);
+
+    if (isEngA && !isEngB) return -1;
+    if (!isEngA && isEngB) return 1;
+
+    // 2. 이름과 굵기 분리 로직
+    const getInfo = (label) => {
+      // 가중치 키워드들을 긴 것부터 정렬하여 매칭 (ExtraLight가 Light보다 먼저 매칭되도록)
+      const weights = Object.keys(weightPriority).sort(
+        (x, y) => y.length - x.length
+      );
+      let family = label;
+      let weightScore = 4; // 기본값 Regular
+
+      for (const w of weights) {
+        if (label.includes(w)) {
+          family = label.replace(w, "").trim(); // 폰트 패밀리 이름만 추출
+          weightScore = weightPriority[w];
+          break;
+        }
+      }
+      return { family, weightScore };
+    };
+
+    const infoA = getInfo(labelA);
+    const infoB = getInfo(labelB);
+
+    // 3. 폰트 이름(Family)이 다르면 가나다/알파벳 순 정렬
+    if (infoA.family !== infoB.family) {
+      return infoA.family.localeCompare(infoB.family, "ko");
+    }
+
+    // 4. 이름이 같으면 굵기(Weight) 가중치 순 정렬
+    return infoA.weightScore - infoB.weightScore;
+  });
+
   return (
     <div className="flex gap-5 items-center overflow-x-auto">
       {/* 취소 & 재실행 */}
@@ -263,8 +322,8 @@ export default function WriteHeader() {
           colorType="text"
           size="sm"
           shadow="none"
-          options={fontOptions}
-          style={{ width: "120px", overflow: "hidden" }}
+          options={sortedFontOptions}
+          style={{ width: "200px", overflow: "hidden" }}
           border={false}
           value={font}
           searchable
