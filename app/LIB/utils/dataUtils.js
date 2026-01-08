@@ -32,6 +32,7 @@ export const fetchData = async (contentType, docId) => {
 export const fetchDataList = async (
   contentType,
   parentId = null,
+  title = null,
   page = 1,
   limit = 100
 ) => {
@@ -39,7 +40,7 @@ export const fetchDataList = async (
   if (parentId !== null) params.append("parent_id", parentId);
   params.append("page", page.toString());
   params.append("limit", limit.toString());
-
+  if (title !== null) params.append("title", title);
   return callApi(`${API_BASE_URL}/${contentType}?${params.toString()}`, {
     method: "GET",
   });

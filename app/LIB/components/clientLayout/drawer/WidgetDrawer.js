@@ -12,11 +12,12 @@ import { usePanels } from "@/app/LIB/context/PanelContext";
 import {
   TbChartDotsFilled,
   TbDatabaseSmile,
+  TbDeviceIpadHorizontalQuestion,
   TbEdit,
   TbMath,
   TbMathSymbols,
 } from "react-icons/tb";
-import { PiListNumbersFill } from "react-icons/pi";
+import { PiListNumbersFill, PiSealQuestionFill } from "react-icons/pi";
 import { CalendarOutline, Map, TimerOutline } from "sud-icons";
 import { BsMusicPlayerFill, BsTranslate } from "react-icons/bs";
 import { RiChatAiFill, RiImageAiFill } from "react-icons/ri";
@@ -42,7 +43,7 @@ export default function WidgetDrawer({
     return (
       <Div className="flex flex-col item-cen gap-5">
         <Button
-          icon={<Icon size="24" />}
+          icon={<Icon size="27" />}
           onClick={() => registerWidget(key)}
           background={isRegistered && "mint-7"}
           color={isRegistered ? "mint-1" : "mint-7"}
@@ -90,7 +91,7 @@ export default function WidgetDrawer({
           <div className="flex flex-col gap-10">
             {/* AI */}
             <Typography pretendard="SB">AI(Beta)</Typography>
-            <div className="grid col-4 w-100 gap-20">
+            <div className="grid col-3 w-100 gap-10">
               {renderWidgetItem(RiChatAiFill, "AI 채팅", "aiChat")}
               {renderWidgetItem(RiImageAiFill, "AI 이미지", "aiImage")}
             </div>
@@ -99,7 +100,7 @@ export default function WidgetDrawer({
           <div className="flex flex-col gap-10">
             {/* 문서 작성 */}
             <Typography pretendard="SB">문서 작성</Typography>
-            <div className="grid col-4 w-100 gap-20">
+            <div className="grid col-3 w-100 gap-10">
               {renderWidgetItem(TbMathSymbols, "특수문자", "specialChar")}
               {renderWidgetItem(TbMath, "LATEX", "latex")}
               {renderWidgetItem(PiListNumbersFill, "목차", "index")}
@@ -111,7 +112,7 @@ export default function WidgetDrawer({
           <div className="flex flex-col gap-10">
             {/* 자료 탐색 */}
             <Typography pretendard="SB">자료 탐색</Typography>
-            <div className="grid col-4 w-100 gap-20">
+            <div className="grid col-3 w-100 gap-10">
               {renderWidgetItem(FaBookBookmark, "사전", "dictionary")}
               {renderWidgetItem(MdImageSearch, "이미지 검색", "imageSearch")}
               {renderWidgetItem(GiSouthKorea, "행정지도", "geoJson")}
@@ -124,7 +125,7 @@ export default function WidgetDrawer({
           <div className="flex flex-col gap-10">
             {/* 도구 */}
             <Typography pretendard="SB">도구</Typography>
-            <div className="grid col-4 w-100 gap-20">
+            <div className="grid col-3 w-100 gap-10">
               {renderWidgetItem(BsTranslate, "번역기", "translate")}
               {renderWidgetItem(FaNoteSticky, "메모장", "memo")}
               {renderWidgetItem(FaCalculator, "계산기", "calculator")}
@@ -135,7 +136,8 @@ export default function WidgetDrawer({
           <div className="flex flex-col gap-10">
             {/* 기타 */}
             <Typography pretendard="SB">기타</Typography>
-            <div className="grid col-4 w-100 gap-20">
+            <div className="grid col-3 w-100 gap-10">
+              {renderWidgetItem(PiSealQuestionFill, "자주 묻는 질문", "qna")}
               {renderWidgetItem(GiStarSattelites, "띠별 운세", "fortune")}
               {renderWidgetItem(FaDice, "주사위", "dice")}
               {renderWidgetItem(

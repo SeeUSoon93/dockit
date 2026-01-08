@@ -1,6 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card, Div, DotSpinner, Image, Tabs, toast, Typography } from "sud-ui";
+import {
+  Card,
+  Div,
+  DotSpinner,
+  Image,
+  Input,
+  Tabs,
+  toast,
+  Typography,
+} from "sud-ui";
+import { FaSearch } from "react-icons/fa";
+import { IoIosCloseCircle } from "react-icons/io";
 import {
   createData,
   deleteData,
@@ -20,6 +31,7 @@ import { FaFile, FaFolder } from "react-icons/fa6";
 import { formatTime } from "../LIB/utils/commonUtils";
 import { useLayout } from "../LIB/context/LayoutContext";
 import { RiTeamFill } from "react-icons/ri";
+import { inputProps } from "../LIB/constant/uiProps";
 
 const storage = getStorage();
 
@@ -34,6 +46,8 @@ export default function WorkspacePage() {
   const [currentFolderId, setCurrentFolderId] = useState(null);
   const [currentPath, setCurrentPath] = useState([]);
   const [collaborations, setCollaborations] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchMode, setSearchMode] = useState(false);
   // 모달 상태
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [renameModalOpen, setRenameModalOpen] = useState(false);
@@ -56,12 +70,16 @@ export default function WorkspacePage() {
   const [folderTree, setFolderTree] = useState([]);
 
   // 데이터 가져오기
-  const fetchContent = async (folderId = null) => {
+  const fetchContent = async (folderId = null, title = null) => {
     setListLoading(true);
     try {
-      const docs = await fetchDataList("documents", folderId);
-      const folders = await fetchDataList("folders", folderId);
-      const collaborations = await fetchDataList("collaborations");
+      const docs = await fetchDataList("documents", folderId, title);
+      const folders = await fetchDataList("folders", folderId, title);
+      const collaborations = await fetchDataList(
+        "collaborations",
+        folderId,
+        title
+      );
 
       setContentList([folders.content, docs.content]);
       setCurrentFolderId(folderId);
@@ -604,12 +622,47 @@ export default function WorkspacePage() {
 
   return (
     <div
-      className={`flex flex-col w-50 items-start pd-y-50 gap-20 ${
+      className={`flex flex-col items-start pd-y-20 ${
         layoutMode === "desktop" ? "w-50" : "w-100 pd-x-10"
       }`}
       onContextMenu={handleContextMenu}
       onClick={handleClickOutside}
     >
+      <div className="flex jus-end w-100">
+        {!searchMode ? (
+          <Div
+            color="cool-gray-8"
+            className="cursor-pointer"
+            onClick={() => setSearchMode(true)}
+          >
+            <FaSearch size={20} />
+          </Div>
+        ) : (
+          <Input
+            {...inputProps}
+            style={{ width: layoutMode === "desktop" ? "250px" : "150px" }}
+            placeholder="파일 명으로 검색"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onEnter={() => fetchContent(currentFolderId, searchTerm)}
+            shape="capsule"
+            afterIcon={
+              <Div
+                color="cool-gray-8"
+                className="cursor-pointer"
+                onClick={() => {
+                  setSearchMode(false);
+                  setSearchTerm("");
+                  fetchContent(currentFolderId);
+                  fetchFolderTree();
+                }}
+              >
+                <IoIosCloseCircle size={20} />
+              </Div>
+            }
+          />
+        )}
+      </div>
       <Tabs options={tabOptions} />
     </div>
   );

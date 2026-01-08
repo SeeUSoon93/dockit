@@ -20,6 +20,7 @@ import MusicPlayer from "../components/panel/MusicPlayer";
 import LATEX from "../components/panel/LATEX";
 import DataPortal from "../components/panel/DataPortal";
 import FindAndReplace from "../components/panel/FindAndReplace";
+import QNA from "../components/panel/QNA";
 
 export const widgets = {
   objectEditor: <ObjectEditer />, // 글자 수
@@ -44,4 +45,5 @@ export const widgets = {
   latex: <LATEX />, // LATEX
   dataPortal: <DataPortal />, // 공공데이터
   findAndReplace: <FindAndReplace />, // 찾기 및 바꾸기
+  qna: <QNA />, // Q&A
 };
