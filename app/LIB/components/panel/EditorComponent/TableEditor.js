@@ -7,7 +7,7 @@ import {
   TbFreezeRow,
   TbRowInsertBottom,
   TbRowInsertTop,
-  TbRowRemove
+  TbRowRemove,
 } from "react-icons/tb";
 import { LuTable2, LuTableCellsMerge, LuTableCellsSplit } from "react-icons/lu";
 import { Button, Card, ColorPicker, Typography } from "sud-ui";
@@ -35,64 +35,64 @@ export default function TableEditor({ editor, selectedObject }) {
     {
       icon: TbColumnInsertLeft,
       tooltip: "왼쪽에 열 추가",
-      onClick: () => editor.chain().focus().addColumnBefore().run()
+      onClick: () => editor.chain().focus().addColumnBefore().run(),
     },
     {
       icon: TbColumnInsertRight,
       tooltip: "오른쪽에 열 추가",
-      onClick: () => editor.chain().focus().addColumnAfter().run()
+      onClick: () => editor.chain().focus().addColumnAfter().run(),
     },
     {
       icon: TbColumnRemove,
       tooltip: "열 삭제",
-      onClick: () => editor.chain().focus().deleteColumn().run()
+      onClick: () => editor.chain().focus().deleteColumn().run(),
     },
     {
       icon: TbFreezeColumn,
       tooltip: "열 제목 토글",
-      onClick: () => editor.chain().focus().toggleHeaderColumn().run()
-    }
+      onClick: () => editor.chain().focus().toggleHeaderColumn().run(),
+    },
   ];
 
   const rowBtnList = [
     {
       icon: TbRowInsertBottom,
       tooltip: "아래에 행 추가",
-      onClick: () => editor.chain().focus().addRowAfter().run()
+      onClick: () => editor.chain().focus().addRowAfter().run(),
     },
     {
       icon: TbRowInsertTop,
       tooltip: "위에 행 추가",
-      onClick: () => editor.chain().focus().addRowBefore().run()
+      onClick: () => editor.chain().focus().addRowBefore().run(),
     },
     {
       icon: TbRowRemove,
       tooltip: "행 삭제",
-      onClick: () => editor.chain().focus().deleteRow().run()
+      onClick: () => editor.chain().focus().deleteRow().run(),
     },
     {
       icon: TbFreezeRow,
       tooltip: "행 제목 토글",
-      onClick: () => editor.chain().focus().toggleHeaderRow().run()
-    }
+      onClick: () => editor.chain().focus().toggleHeaderRow().run(),
+    },
   ];
 
   const cellBtnList = [
     {
       icon: LuTableCellsMerge,
       tooltip: "셀 병합",
-      onClick: () => editor.chain().focus().mergeCells().run()
+      onClick: () => editor.chain().focus().mergeCells().run(),
     },
     {
       icon: LuTableCellsSplit,
       tooltip: "셀 나누기",
-      onClick: () => editor.chain().focus().splitCell().run()
+      onClick: () => editor.chain().focus().splitCell().run(),
     },
     {
       icon: LuTable2,
       tooltip: "셀 헤더 토글",
-      onClick: () => editor.chain().focus().toggleHeaderCell().run()
-    }
+      onClick: () => editor.chain().focus().toggleHeaderCell().run(),
+    },
   ];
   // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
   // ■■■■■■■■■■■ 스타일 ■■■■■■■■■■■■■■■■■■

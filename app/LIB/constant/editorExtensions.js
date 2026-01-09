@@ -63,7 +63,13 @@ export const editorExtensions = [
     types: ["heading", "paragraph"],
     defaultAlignment: "left",
   }),
-  TableKit.configure({ table: { resizable: true } }),
+  TableKit.configure({
+    table: {
+      resizable: true,
+      lastColumnResizable: true,
+      allowTableNodeAttributes: true,
+    },
+  }),
   Color.configure({ types: ["textStyle"] }),
   FontFamily.configure({ types: ["textStyle"] }),
   BackgroundColor.configure({ types: ["textStyle"] }),
